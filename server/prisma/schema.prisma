@@ -52,15 +52,34 @@ model Address {
 }
 
 model Category {
-  id          String   @id @default(uuid())
-  name        String   @unique
-  slug        String   @unique
+  id          String    @id @default(uuid())
+  name        String    @unique
+  slug        String    @unique
   description String?
   image       String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  products    Product[]
+
+  @@map("categories")
+}
+
+model Product {
+  id          String   @id @default(uuid())
+  name        String
+  slug        String   @unique
+  description String?
+  price       Int
+  salePrice   Int?
+  sku         String   @unique
+  stock       Int      @default(0)
+  categoryId  String
+  images      String[]
+  isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  category Category @relation(fields: [categoryId], references: [id])
 
-
-  @@map("categories")
+  @@map("products")
 }
