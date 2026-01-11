@@ -3,7 +3,6 @@ import jwt from "jsonwebtoken";
 import prisma from "../config/prisma";
 import { AppError } from "../middleware/errorHandler";
 
-
 export const authService = {
   // register new user
   async register(data: {
@@ -43,10 +42,11 @@ export const authService = {
       },
     });
 
+    // generate JWT token
     const token = jwt.sign(
       { userId: user.id, role: user.role },
       process.env.JWT_SECRET || "secret",
-      { expiresIn: process.env.JWT_EXPIRES_IN || "7d" }
+      { expiresIn: process.env.JWT_EXPIRES_IN || "7d" } as any
     );
     return { user, token };
   },
