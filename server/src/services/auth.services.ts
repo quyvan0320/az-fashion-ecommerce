@@ -50,4 +50,34 @@ export const authService = {
     );
     return { user, token };
   },
+
+  // login user
+  async login(email: string, password: string) {
+    // find user by email
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      throw new AppError("Thông tin đăng nhập không hợp lệ", 401);
+    }
+
+    //compare password
+    const isValidPassword = await bcrypt.compare(password, user.password);
+    if (!isValidPassword) {
+      throw new AppError("Thông tin đăng nhập không hợp lệ", 401);
+    }
+
+    // generate JWT token
+    const token = jwt.sign(
+      { userId: user.id, role: user.role },
+      process.env.JWT_SECRET || "secret",
+      { expiresIn: process.env.JWT_EXPIRES_IN || "7d" } as any
+    );
+
+    // remove password from user object
+    const { password: _, ...userWhitoutPassword } = user;
+
+    return { user: userWhitoutPassword, token };
+  },
 };
