@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import prisma from "../config/prisma";
 import { AppError } from "../middleware/errorHandler";
 
+
 export const authService = {
   // register new user
   async register(data: {
@@ -79,5 +80,26 @@ export const authService = {
     const { password: _, ...userWhitoutPassword } = user;
 
     return { user: userWhitoutPassword, token };
+  },
+
+  // get user
+  async getProfile(userId: string) {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        phone: true,
+        role: true,
+        createdAt: true,
+        addresses: true,
+      },
+    });
+    if (!user) {
+      throw new AppError("Người dùng không tồn tại", 404);
+    }
+    return user;
   },
 };
