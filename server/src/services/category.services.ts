@@ -101,7 +101,7 @@ export const categoryService = {
 
     return {
       categories,
-      panigation: {
+      pagination: {
         page,
         limit,
         total,

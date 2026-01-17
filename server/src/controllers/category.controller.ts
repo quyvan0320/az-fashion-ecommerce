@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { validationResult } from "express-validator";
 import { AppError } from "../middleware/errorHandler";
 import { categoryService } from "../services/category.services";
+import { stat } from "node:fs";
 
 export const categoryController = {
   // create new category
@@ -29,4 +30,14 @@ export const categoryController = {
       next(error);
     }
   },
+
+  // get all categories with pagination and search
+  async getAll(req: Request, res: Response, next: NextFunction) {
+    try {
+        const result = await categoryService.getAll(req.query);
+        res.json({status: true, data: result.categories, panigation: result.pagination});
+    } catch (error) {
+        next(error);
+    }
+  }
 };
