@@ -6,6 +6,7 @@ import compression from "compression";
 import dotenv from "dotenv";
 import { errorHandler } from "./middleware/errorHandler";
 import authRoute from "./routes/auth.routes";
+import categoryRoute from "./routes/category.routes";
 
 // Load environment variables from .env file
 dotenv.config();
@@ -28,8 +29,8 @@ app.use(express.json()); // parse json request body
 app.use(express.urlencoded({ extended: true })); // parse urlencoded request body
 
 // api routes
-app.use("/api/auth", authRoute)
-
+app.use("/api/auth", authRoute);
+app.use("/api/category", categoryRoute);
 
 // check server status
 app.get("/health", (req, res) => {
@@ -37,7 +38,6 @@ app.get("/health", (req, res) => {
 });
 
 app.use(errorHandler); // global error handler
-
 
 // start server
 app.listen(PORT, () => {
