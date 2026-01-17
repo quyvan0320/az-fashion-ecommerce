@@ -1,10 +1,14 @@
 import { Router } from "express";
 import { categoryController } from "../controllers/category.controller";
-import { createCategoryValidator } from "../validators/category.validator";
+import {
+  createCategoryValidator,
+  getCategoriesValidator,
+} from "../validators/category.validator";
 import { authenticate, authorize } from "../middleware/auth";
 
 const router = Router();
 
+//create
 router.post(
   "/",
   authenticate,
@@ -12,5 +16,9 @@ router.post(
   createCategoryValidator,
   categoryController.create
 );
+
+
+//get all
+router.get("/", getCategoriesValidator, categoryController.getAll);
 
 export default router;

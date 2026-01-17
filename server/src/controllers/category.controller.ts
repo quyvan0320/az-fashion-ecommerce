@@ -34,10 +34,14 @@ export const categoryController = {
   // get all categories with pagination and search
   async getAll(req: Request, res: Response, next: NextFunction) {
     try {
-        const result = await categoryService.getAll(req.query);
-        res.json({status: true, data: result.categories, panigation: result.pagination});
+      const result = await categoryService.getAll(req.query);
+      res.json({
+        status: true,
+        data: result.categories,
+        panigation: result.pagination,
+      });
     } catch (error) {
-        next(error);
+      next(error);
     }
-  }
+  },
 };
