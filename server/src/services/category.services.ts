@@ -21,6 +21,12 @@ interface CreateCategoryInput {
   image?: string;
 }
 
+interface GetCategoriesInput {
+  page?: number;
+  limit?: number;
+  search?: string;
+}
+
 export const categoryService = {
   // create new category
   async create(data: CreateCategoryInput) {
@@ -58,5 +64,51 @@ export const categoryService = {
         slug,
       },
     });
+  },
+
+  // get all categories with pagination and search
+  async getAll(query: GetCategoriesInput) {
+    const page = Number(query.page) || 1;
+    const limit = Number(query.limit) || 10;
+    const skip = (page - 1) * limit;
+    const search = query.search || "";
+
+    // if where search is provided
+    const where = search
+      ? {
+          OR: [
+            { name: { contains: search, mode: "insensitive" as const } },
+            { description: { contains: search, mode: "insensitive" as const } },
+          ],
+        }
+      : {};
+
+    // get category with total count
+    const [categories, total] = await Promise.all([
+      prisma.category.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { createdAt: "desc" },
+        include: {
+          _count: {
+            select: { products: true },
+          },
+        },
+      }),
+      prisma.category.count({ where }),
+    ]);
+
+    return {
+      categories,
+      panigation: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+        hasNext: page * limit < total,
+        hasPrev: page > 1,
+      },
+    };
   },
 };
