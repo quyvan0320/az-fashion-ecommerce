@@ -1,6 +1,6 @@
-import e, { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction } from "express";
 import { authService } from "../services/auth.services";
-import { register } from "node:module";
+
 
 export const authController = {
   async register(req: Request, res: Response, next: NextFunction) {
