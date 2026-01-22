@@ -44,4 +44,16 @@ export const categoryController = {
       next(error);
     }
   },
+
+  // get category by id
+
+  async getById(req: Request, res: Response, next: NextFunction) {
+    try {
+      const {id} = req.params;
+      const category = await categoryService.getById(id);
+      res.json({success: true, data: category})
+    } catch (error) {
+      next(error);
+    }
+  }
 };
