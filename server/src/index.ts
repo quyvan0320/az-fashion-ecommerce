@@ -30,7 +30,7 @@ app.use(express.urlencoded({ extended: true })); // parse urlencoded request bod
 
 // api routes
 app.use("/api/auth", authRoute);
-app.use("/api/category", categoryRoute);
+app.use("/api/categories", categoryRoute);
 
 // check server status
 app.get("/health", (req, res) => {

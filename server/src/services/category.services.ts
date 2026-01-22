@@ -111,4 +111,37 @@ export const categoryService = {
       },
     };
   },
+
+  // get category by id
+  async getById(id: string) {
+    const category = await prisma.category.findUnique({
+      where: { id },
+      include: {
+        _count: {
+          select: { products: true },
+        },
+        products: {
+          take: 10, // get only 10 products
+          where: {
+            isActive: true,
+          },
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            price: true,
+            images: true,
+            salePrice: true,
+            stock: true,
+          },
+        },
+      },
+    });
+
+    if (!category) {
+      throw new AppError("Danh mục không tồn tại", 404);
+    }
+
+    return category;
+  },
 };
