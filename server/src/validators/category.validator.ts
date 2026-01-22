@@ -40,3 +40,11 @@ export const getCategoriesValidator = [
     .isLength({ max: 100 })
     .withMessage("Từ khóa tìm kiếm không được vượt quá 100 ký tự"),
 ];
+
+
+// Validator for category ID parameter
+export const categoryIdParamValidator = [
+  param("id")
+  .isUUID()
+  .withMessage("ID danh mục không hợp lệ"),
+]
