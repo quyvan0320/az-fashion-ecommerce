@@ -16,7 +16,7 @@ export const categoryController = {
             .array()
             .map((err) => err.msg)
             .join(","),
-          400
+          400,
         );
       }
 
@@ -46,14 +46,24 @@ export const categoryController = {
   },
 
   // get category by id
-
   async getById(req: Request, res: Response, next: NextFunction) {
     try {
-      const {id} = req.params;
+      const { id } = req.params;
       const category = await categoryService.getById(id);
-      res.json({success: true, data: category})
+      res.json({ success: true, data: category });
     } catch (error) {
       next(error);
     }
-  }
+  },
+
+  // get category by slug
+  async getBySlug(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { slug } = req.params;
+      const category = await categoryService.getBySlug(slug);
+      res.json({ success: true, data: category });
+    } catch (error) {
+      next(error);
+    }
+  },
 };
