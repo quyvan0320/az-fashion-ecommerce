@@ -144,4 +144,21 @@ export const categoryService = {
 
     return category;
   },
+
+  // get category by slug
+  async getBySlug(slug: string) {
+    const category = await prisma.category.findUnique({
+      where: { slug },
+      include: {
+        _count: {
+          select: { products: true },
+        },
+      },
+    });
+    if (!category) {
+      throw new AppError("Danh mục không tồn tại", 404);
+    }
+
+    return category;
+  },
 };
