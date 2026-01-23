@@ -48,3 +48,13 @@ export const categoryIdParamValidator = [
   .isUUID()
   .withMessage("ID danh mục không hợp lệ"),
 ]
+
+// Validator for category slug parameter
+export const categorySlugParamValidator = [
+  param("slug")
+    .trim()
+    .notEmpty()
+    .withMessage("Slug danh mục không được để trống")
+    .matches(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
+    .withMessage("Slug danh mục không hợp lệ"),
+]
