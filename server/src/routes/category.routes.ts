@@ -21,7 +21,7 @@ router.post(
 // get by id
 router.get("/:id", categoryIdParamValidator, categoryController.getById);
 // get by slug
-router.get("/:slug", categorySlugParamValidator, categoryController.getBySlug);
+router.get("/slug/:slug", categorySlugParamValidator, categoryController.getBySlug);
 
 //get all
 router.get("/", getCategoriesValidator, categoryController.getAll);
