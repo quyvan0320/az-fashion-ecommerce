@@ -2,6 +2,7 @@ import { Router } from "express";
 import { categoryController } from "../controllers/category.controller";
 import {
   categoryIdParamValidator,
+  categorySlugParamValidator,
   createCategoryValidator,
   getCategoriesValidator,
 } from "../validators/category.validator";
@@ -19,6 +20,8 @@ router.post(
 );
 // get by id
 router.get("/:id", categoryIdParamValidator, categoryController.getById);
+// get by slug
+router.get("/:slug", categorySlugParamValidator, categoryController.getBySlug);
 
 //get all
 router.get("/", getCategoriesValidator, categoryController.getAll);
