@@ -238,4 +238,44 @@ export const categoryService = {
 
     return prisma.category.delete({ where: { id } });
   },
+
+  // get stats
+  async getStats() {
+    const [totalCategories, categoriesWithProducts] = await Promise.all([
+      prisma.category.count(),
+      prisma.category.count({
+        where: {
+          products: {
+            some: {},
+          },
+        },
+      }),
+    ]);
+
+    // top 5 categories by number of products
+    const topCategories = await prisma.category.findMany({
+      take: 5,
+      orderBy: {
+        products: {
+          _count: "desc",
+        },
+      },
+      include: {
+        _count: {
+          select: { products: true },
+        },
+      },
+    });
+
+    return {
+      totalCategories,
+      categoriesWithProducts,
+      emptyCategories: totalCategories - categoriesWithProducts,
+      topCategories: topCategories.map((cate) => ({
+        id: cate.id,
+        name: cate.name,
+        productCount: cate._count.products,
+      })),
+    };
+  },
 };
