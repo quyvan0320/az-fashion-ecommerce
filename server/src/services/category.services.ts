@@ -27,6 +27,12 @@ interface GetCategoriesInput {
   search?: string;
 }
 
+interface UpdateCategoryInput {
+  name?: string;
+  description?: string;
+  image?: string;
+}
+
 export const categoryService = {
   // create new category
   async create(data: CreateCategoryInput) {
@@ -160,5 +166,48 @@ export const categoryService = {
     }
 
     return category;
+  },
+
+  async update(id: string, data: UpdateCategoryInput) {
+    // check existing category
+    const category = await prisma.category.findUnique({
+      where: { id },
+    });
+
+    if (!category) {
+      throw new AppError("Danh mục không tồn tại", 404);
+    }
+
+    // name update, generate new slug
+    let slug = category.slug;
+    if (data.name && data.name !== category.name) {
+      slug = generateSlug(data.name);
+
+      // check if slug already exists
+      const existingSlug = await prisma.category.findUnique({
+        where: { slug, NOT: { id } },
+      });
+
+      if (existingSlug) {
+        slug = `${slug}-${Date.now()}`;
+      }
+
+      // check existing name
+      const existingName = await prisma.category.findUnique({
+        where: { name: data.name, NOT: { id } },
+      });
+
+      if (existingName) {
+        throw new AppError("Danh mục đã tồn tại", 400);
+      }
+    }
+
+    return prisma.category.update({
+      where: { id },
+      data: {
+        ...data,
+        slug,
+      },
+    });
   },
 };
