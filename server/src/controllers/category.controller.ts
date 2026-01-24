@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { validationResult } from "express-validator";
 import { AppError } from "../middleware/errorHandler";
-import { categoryService } from "../services/category.services";
+import { categoryService } from "../services/category.service";
 import { stat } from "node:fs";
 
 export const categoryController = {
