@@ -168,6 +168,7 @@ export const categoryService = {
     return category;
   },
 
+  // update category
   async update(id: string, data: UpdateCategoryInput) {
     // check existing category
     const category = await prisma.category.findUnique({
@@ -209,5 +210,32 @@ export const categoryService = {
         slug,
       },
     });
+  },
+
+  // delete category
+  async delete(id: string) {
+    // check existing category
+    const category = await prisma.category.findUnique({
+      where: { id },
+      include: {
+        _count: {
+          select: { products: true },
+        },
+      },
+    });
+
+    if (!category) {
+      throw new AppError("Danh mục không tồn tại", 404);
+    }
+
+    // if has products, cannot delete
+    if (category._count.products > 0) {
+      throw new AppError(
+        `Không thể xóa danh mục có sản phẩm ${category._count.products}. Vui lòng xóa hoặc chuyển các sản phẩm trong danh mục này trước`,
+        400,
+      );
+    }
+
+    return prisma.category.delete({ where: { id } });
   },
 };
