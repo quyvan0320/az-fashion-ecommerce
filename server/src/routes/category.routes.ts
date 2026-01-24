@@ -5,6 +5,7 @@ import {
   categorySlugParamValidator,
   createCategoryValidator,
   getCategoriesValidator,
+  updateCategoryValidator,
 } from "../validators/category.validator";
 import { authenticate, authorize } from "../middleware/auth";
 
@@ -17,6 +18,14 @@ router.post(
   authorize("ADMIN"),
   createCategoryValidator,
   categoryController.create,
+);
+
+router.put(
+  "/:id",
+  authenticate,
+  authorize("ADMIN"),
+  updateCategoryValidator,
+  categoryController.update,
 );
 // get by id
 router.get("/:id", categoryIdParamValidator, categoryController.getById);

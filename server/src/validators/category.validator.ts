@@ -21,7 +21,6 @@ export const createCategoryValidator = [
     .withMessage("Hình ảnh phải là một URL hợp lệ"),
 ];
 
-
 // Validator for getting categories with pagination and search
 export const getCategoriesValidator = [
   query("page")
@@ -41,13 +40,10 @@ export const getCategoriesValidator = [
     .withMessage("Từ khóa tìm kiếm không được vượt quá 100 ký tự"),
 ];
 
-
 // Validator for category ID parameter
 export const categoryIdParamValidator = [
-  param("id")
-  .isUUID()
-  .withMessage("ID danh mục không hợp lệ"),
-]
+  param("id").isUUID().withMessage("ID danh mục không hợp lệ"),
+];
 
 // Validator for category slug parameter
 export const categorySlugParamValidator = [
@@ -57,4 +53,29 @@ export const categorySlugParamValidator = [
     .withMessage("Slug danh mục không được để trống")
     .matches(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
     .withMessage("Slug danh mục không hợp lệ"),
-]
+];
+
+// Validator for updating a category
+export const updateCategoryValidator = [
+  param("id").isUUID().withMessage("ID danh mục không hợp lệ"),
+
+  body("name")
+    .optional()
+    .trim()
+    .notEmpty()
+    .withMessage("Tên danh mục không được để trống")
+    .isLength({ min: 2, max: 100 })
+    .withMessage("Tên danh mục phải có độ dài từ 2 đến 100 ký tự"),
+
+  body("description")
+    .optional()
+    .trim()
+    .isLength({ max: 500 })
+    .withMessage("Mô tả danh mục không được vượt quá 500 ký tự"),
+
+  body("image")
+    .optional()
+    .trim()
+    .isURL()
+    .withMessage("Hình ảnh phải là một URL hợp lệ"),
+];
