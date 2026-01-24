@@ -20,6 +20,7 @@ router.post(
   categoryController.create,
 );
 
+// update
 router.put(
   "/:id",
   authenticate,
@@ -27,10 +28,24 @@ router.put(
   updateCategoryValidator,
   categoryController.update,
 );
+
+// delete
+router.delete(
+  "/:id",
+  authenticate,
+  authorize("ADMIN"),
+  categoryIdParamValidator,
+  categoryController.delete,
+);
+
 // get by id
 router.get("/:id", categoryIdParamValidator, categoryController.getById);
 // get by slug
-router.get("/slug/:slug", categorySlugParamValidator, categoryController.getBySlug);
+router.get(
+  "/slug/:slug",
+  categorySlugParamValidator,
+  categoryController.getBySlug,
+);
 
 //get all
 router.get("/", getCategoriesValidator, categoryController.getAll);
