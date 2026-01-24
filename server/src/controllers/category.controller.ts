@@ -66,4 +66,29 @@ export const categoryController = {
       next(error);
     }
   },
+
+  // update category
+  async update(req: Request, res: Response, next: NextFunction) {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        throw new AppError(
+          errors
+            .array()
+            .map((err) => err.msg)
+            .join(","),
+          400,
+        );
+      }
+      const { id } = req.params;
+      const category = await categoryService.update(id, req.body);
+      res.json({
+        success: true,
+        messge: "Cập nhật danh mục thành công",
+        data: category,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
 };
