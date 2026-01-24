@@ -91,4 +91,15 @@ export const categoryController = {
       next(error);
     }
   },
+
+  // delete category
+  async delete(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params;
+      await categoryService.delete(id);
+      res.json({ success: true, message: "Xóa danh mục thành công" });
+    } catch (error) {
+      next(error);
+    }
+  },
 };
