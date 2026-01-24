@@ -102,4 +102,14 @@ export const categoryController = {
       next(error);
     }
   },
+
+  // get stats
+  async getStats(req: Request, res: Response, next: NextFunction) {
+    try {
+      const stats = await categoryService.getStats();
+      res.json({ success: true, data: stats });
+    } catch (error) {
+      next(error);
+    }
+  },
 };
