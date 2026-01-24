@@ -38,6 +38,14 @@ router.delete(
   categoryController.delete,
 );
 
+// stats
+router.get(
+  "/admin/stats",
+  authenticate,
+  authorize("ADMIN"),
+  categoryController.getStats,
+);
+
 // get by id
 router.get("/:id", categoryIdParamValidator, categoryController.getById);
 // get by slug
