@@ -18,13 +18,11 @@ export const productController = {
       }
 
       const product = await productService.create(req.body);
-      res
-        .status(201)
-        .json({
-          status: 200,
-          message: "Sản phẩm đã được tạo thành công",
-          data: product,
-        });
+      res.status(201).json({
+        success: true,
+        message: "Sản phẩm đã được tạo thành công",
+        data: product,
+      });
     } catch (error) {
       next(error);
     }

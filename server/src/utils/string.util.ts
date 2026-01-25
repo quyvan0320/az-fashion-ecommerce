@@ -12,7 +12,13 @@ export const generateSlug = (name: string): string => {
 
 // generate unique SKU
 export const generateSKU = (name: string, categoryId: string): string => {
-  const prefix = name.substring(0, 3).toUpperCase();
+  const cleanName = name
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[đĐ]/g, "d")
+    .replace(/\s+/g, "")
+    .toUpperCase();
+  const prefix = cleanName.substring(0, 3).toUpperCase();
   const catePrefix = categoryId.substring(0, 3).toUpperCase();
   const timestamp = Date.now().toString().slice(-6);
   return `${prefix}-${catePrefix}-${timestamp}`;
