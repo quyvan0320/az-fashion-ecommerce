@@ -5,8 +5,8 @@ import morgan from "morgan";
 import compression from "compression";
 import dotenv from "dotenv";
 import { errorHandler } from "./middleware/errorHandler";
-import authRoute from "./routes/auth.routes";
-import categoryRoute from "./routes/category.routes";
+import authRoute from "./routes/auth.route";
+import categoryRoute from "./routes/category.route";
 import productRoute from "./routes/product.route";
 
 // Load environment variables from .env file
