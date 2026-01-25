@@ -7,6 +7,7 @@ import dotenv from "dotenv";
 import { errorHandler } from "./middleware/errorHandler";
 import authRoute from "./routes/auth.routes";
 import categoryRoute from "./routes/category.routes";
+import productRoute from "./routes/product.route";
 
 // Load environment variables from .env file
 dotenv.config();
@@ -31,6 +32,7 @@ app.use(express.urlencoded({ extended: true })); // parse urlencoded request bod
 // api routes
 app.use("/api/auth", authRoute);
 app.use("/api/categories", categoryRoute);
+app.use("/api/products", productRoute);
 
 // check server status
 app.get("/health", (req, res) => {
