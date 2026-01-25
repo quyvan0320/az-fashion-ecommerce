@@ -10,7 +10,7 @@ export interface CreateProductInput {
   isActive?: boolean;
 }
 
-export interface GetProductQuery {
+export interface GetProductsQuery {
   page?: number;
   limit?: number;
   search?: string;

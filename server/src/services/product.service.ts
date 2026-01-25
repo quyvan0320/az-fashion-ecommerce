@@ -1,5 +1,9 @@
+import { Prisma } from "@prisma/client";
 import prisma from "../config/prisma";
-import { CreateProductInput } from "../interfaces/product.interface";
+import {
+  CreateProductInput,
+  GetProductsQuery,
+} from "../interfaces/product.interface";
 import { AppError } from "../middleware/errorHandler";
 import { generateSKU, generateSlug } from "../utils/string.util";
 
@@ -60,4 +64,118 @@ export const productService = {
     });
   },
 
+  // get all by search filter and sort
+  async getAll(query: GetProductsQuery) {
+    const page = Number(query.page) || 1;
+    const limit = Number(query.limit) || 20;
+    const skip = (page - 1) * limit;
+
+    // build where clause
+    const where: Prisma.ProductWhereInput = {};
+
+    // search name & description
+    if (query.search) {
+      where.OR = [
+        {
+          name: { contains: query.search, mode: "insensitive" },
+          description: { contains: query.search, mode: "insensitive" },
+        },
+      ];
+    }
+
+    // filter category
+    if (query.categoryId) {
+      where.categoryId = query.categoryId;
+    }
+
+    // filter price range
+    if (query.minPrice !== undefined || query.maxPrice !== undefined) {
+      where.price = {};
+      if (query.minPrice !== undefined) {
+        where.price.gte = Number(query.minPrice);
+      }
+      if (query.maxPrice !== undefined) {
+        where.price.lte = Number(query.maxPrice);
+      }
+    }
+
+    // filter  stock
+    if (query.inStock === true) {
+      where.stock = { gt: 0 };
+    }
+
+    // filter active status
+    if (query.isActive !== undefined) {
+      where.isActive = query.isActive === true;
+    }
+
+    // build orderby
+    const sortBy = query.sortBy || "createdAt";
+    const order = query.order || "desc";
+    const orderBy: Prisma.ProductOrderByWithRelationInput = {
+      [sortBy]: order,
+    };
+
+    // get products
+    const [products, total] = await Promise.all([
+      prisma.product.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy,
+        include: {
+          category: {
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+            },
+          },
+          _count: {
+            select: {
+              reviews: true,
+              variants: true,
+            },
+          },
+        },
+      }),
+      prisma.product.count({ where }),
+    ]);
+
+ 
+    // get list id 20 products
+    const productIds = products.map((p) => p.id);
+
+    // calculate avg  all  product
+    const stats = await prisma.review.groupBy({
+      by: ["productId"],
+      where: { productId: { in: productIds } },
+      _avg: { rating: true },
+      _count: { rating: true },
+    });
+
+    // index product
+    const statsMap = new Map(stats.map((s) => [s.productId, s]));
+
+    
+    const productWithRating = products.map((product) => {
+      const s = statsMap.get(product.id);
+      return {
+        ...product,
+        averageRating: s?._avg.rating || 0,
+        reviewCount: s?._count.rating || 0,
+        variantCount: product._count.variants,
+      };
+    });
+
+    return {
+      products: productWithRating,
+      pagination: page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+      hasNext: page * limit < total,
+      hasPrev: page > 1,
+    };
+  },
 };
