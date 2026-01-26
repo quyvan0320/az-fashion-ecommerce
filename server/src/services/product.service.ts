@@ -275,4 +275,9 @@ export const productService = {
       averageRating: avgRating._avg.rating || 0,
     };
   },
+
+  // get product by query
+  async getByCategory(categoryId: string, query: GetProductsQuery) {
+    return this.getAll({...query, categoryId})
+  }
 };
