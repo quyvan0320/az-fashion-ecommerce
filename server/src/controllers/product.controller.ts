@@ -54,12 +54,29 @@ export const productController = {
     }
   },
 
-   //get by slug
+  //get by slug
   async getBySlug(req: Request, res: Response, next: NextFunction) {
     try {
       const { slug } = req.params;
       const product = await productService.getBySlug(slug);
       res.status(201).json({ success: true, data: product });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  // get product by category
+  async getByCategory(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { categoryId } = req.params;
+      const result = await productService.getByCategory(categoryId, req.query);
+      res
+        .status(201)
+        .json({
+          success: true,
+          data: result.products,
+          pagination: result.pagination,
+        });
     } catch (error) {
       next(error);
     }
