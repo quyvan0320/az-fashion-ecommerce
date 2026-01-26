@@ -42,4 +42,15 @@ export const productController = {
       next(error);
     }
   },
+
+  //get by id
+  async getById(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params;
+      const product = await productService.getById(id);
+      res.status(201).json({ success: true, data: product });
+    } catch (error) {
+      next(error);
+    }
+  },
 };
