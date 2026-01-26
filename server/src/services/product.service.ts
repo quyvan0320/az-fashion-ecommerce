@@ -228,4 +228,51 @@ export const productService = {
       reviewCount: product._count.reviews,
     };
   },
+
+   // get by slug
+  async getBySlug(slug: string) {
+    // check exist product
+    const product = await prisma.product.findUnique({
+      where: { slug },
+      include: {
+        category: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+          },
+        },
+        variants: true,
+        reviews: {
+          take: 10,
+          orderBy: { createdAt: "desc" },
+          include: {
+            user: {
+              select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+              },
+            },
+          },
+        },
+    
+      },
+    });
+
+    if (!product) {
+      throw new AppError("Sản phẩm không tồn tại", 404);
+    }
+
+    // calculate avg rating
+    const avgRating = await prisma.review.aggregate({
+      where: { productId: product.id },
+      _avg: { rating: true },
+    });
+
+    return {
+      ...product,
+      averageRating: avgRating._avg.rating || 0,
+    };
+  },
 };

@@ -117,9 +117,21 @@ export const getProductsValidator = [
     .withMessage("Thứ tự phải là asc hoặc desc"),
 ];
 
-// get product param
+// get id product param
 export const productIdValidator = [
   param('id')
   .isUUID()
   .withMessage("ID sản phẩm không hợp lệ")
 ]
+
+
+
+// get slug product param
+export const productSlugValidator = [
+  param("slug")
+    .trim()
+    .notEmpty()
+    .withMessage("Slug sản phẩm không được để trống")
+    .matches(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
+    .withMessage("Slug sản phẩm không hợp lệ"),
+];
