@@ -124,6 +124,12 @@ export const productIdValidator = [
   .withMessage("ID sản phẩm không hợp lệ")
 ]
 
+// get id category param
+export const categoryIdValidator = [
+  param('id')
+  .isUUID()
+  .withMessage("ID danh mục không hợp lệ")
+]
 
 
 // get slug product param
