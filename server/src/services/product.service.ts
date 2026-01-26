@@ -142,7 +142,6 @@ export const productService = {
       prisma.product.count({ where }),
     ]);
 
- 
     // get list id 20 products
     const productIds = products.map((p) => p.id);
 
@@ -157,7 +156,6 @@ export const productService = {
     // index product
     const statsMap = new Map(stats.map((s) => [s.productId, s]));
 
-    
     const productWithRating = products.map((product) => {
       const s = statsMap.get(product.id);
       return {
@@ -176,6 +174,58 @@ export const productService = {
       totalPages: Math.ceil(total / limit),
       hasNext: page * limit < total,
       hasPrev: page > 1,
+    };
+  },
+
+  // get by id
+  async getById(id: string) {
+    // check exist product
+    const product = await prisma.product.findUnique({
+      where: { id },
+      include: {
+        category: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+          },
+        },
+        variants: true,
+        reviews: {
+          take: 10,
+          orderBy: { createdAt: "desc" },
+          include: {
+            user: {
+              select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+              },
+            },
+          },
+        },
+        _count: {
+          select: {
+            reviews: true,
+          },
+        },
+      },
+    });
+
+    if (!product) {
+      throw new AppError("Sản phẩm không tồn tại", 404);
+    }
+
+    // calculate avg rating
+    const avgRating = await prisma.review.aggregate({
+      where: { productId: id },
+      _avg: { rating: true },
+    });
+
+    return {
+      ...product,
+      averageRating: avgRating._avg.rating || 0,
+      reviewCount: product._count.reviews,
     };
   },
 };
