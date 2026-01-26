@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { authenticate, authorize } from "../middleware/auth";
 import {
+  categoryIdValidator,
   createProductValidator,
   getProductsValidator,
   productIdValidator,
@@ -25,8 +26,15 @@ router.get("/", getProductsValidator, productController.getAll);
 // get by id
 router.get("/:id", productIdValidator, productController.getById);
 
-
 // get by slug
 router.get("/slug/:slug", productSlugValidator, productController.getBySlug);
+
+// get by category
+router.get(
+  "/category/:categoryId",
+  categoryIdValidator,
+  getProductsValidator,
+  productController.getByCategory,
+);
 
 export default router;
