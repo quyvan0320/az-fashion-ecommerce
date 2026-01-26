@@ -14,7 +14,7 @@ export interface GetProductsQuery {
   page?: number;
   limit?: number;
   search?: string;
-  categoryId: string;
+  categoryId?: string;
   minPrice?: number;
   maxPrice?: number;
   inStock?: boolean;

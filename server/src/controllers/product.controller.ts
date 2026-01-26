@@ -4,6 +4,7 @@ import { AppError } from "../middleware/errorHandler";
 import { productService } from "../services/product.service";
 
 export const productController = {
+  // create
   async create(req: Request, res: Response, next: NextFunction) {
     try {
       const errors = validationResult(req);
@@ -22,6 +23,20 @@ export const productController = {
         success: true,
         message: "Sản phẩm đã được tạo thành công",
         data: product,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  // get all by panigation and search filter
+  async getAll(req: Request, res: Response, next: NextFunction) {
+    try {
+      const result = await productService.getAll(req.query);
+      res.status(201).json({
+        success: true,
+        data: result,
+        pagination: result.pagination,
       });
     } catch (error) {
       next(error);

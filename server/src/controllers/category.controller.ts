@@ -38,7 +38,7 @@ export const categoryController = {
       res.json({
         status: true,
         data: result.categories,
-        panigation: result.pagination,
+        pagination: result.pagination,
       });
     } catch (error) {
       next(error);
