@@ -53,4 +53,15 @@ export const productController = {
       next(error);
     }
   },
+
+   //get by slug
+  async getBySlug(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { slug } = req.params;
+      const product = await productService.getBySlug(slug);
+      res.status(201).json({ success: true, data: product });
+    } catch (error) {
+      next(error);
+    }
+  },
 };
