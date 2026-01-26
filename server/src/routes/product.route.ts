@@ -3,6 +3,7 @@ import { authenticate, authorize } from "../middleware/auth";
 import {
   createProductValidator,
   getProductsValidator,
+  productIdValidator,
 } from "../validators/product.validator";
 import { productController } from "../controllers/product.controller";
 
@@ -19,5 +20,8 @@ router.post(
 
 // get all
 router.get("/", getProductsValidator, productController.getAll);
+
+// get by id
+router.get("/:id", productIdValidator, productController.getById);
 
 export default router;
