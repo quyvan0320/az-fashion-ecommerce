@@ -1,6 +1,9 @@
 import { Router } from "express";
 import { authenticate, authorize } from "../middleware/auth";
-import { createProductValidator } from "../validators/product.validator";
+import {
+  createProductValidator,
+  getProductsValidator,
+} from "../validators/product.validator";
 import { productController } from "../controllers/product.controller";
 
 const router = Router();
@@ -13,5 +16,8 @@ router.post(
   createProductValidator,
   productController.create,
 );
+
+// get all
+router.get("/", getProductsValidator, productController.getAll);
 
 export default router;
