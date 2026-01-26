@@ -116,3 +116,10 @@ export const getProductsValidator = [
     .isIn(["asc", "desc"])
     .withMessage("Thứ tự phải là asc hoặc desc"),
 ];
+
+// get product param
+export const productIdValidator = [
+  param('id')
+  .isUUID()
+  .withMessage("ID sản phẩm không hợp lệ")
+]
