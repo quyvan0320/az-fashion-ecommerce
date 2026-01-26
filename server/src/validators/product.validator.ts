@@ -1,5 +1,6 @@
 import { param, body, query } from "express-validator";
 
+// create product
 export const createProductValidator = [
   body("name")
     .trim()
@@ -60,4 +61,58 @@ export const createProductValidator = [
     .optional()
     .isBoolean()
     .withMessage("isActive phải là kiểu Boolean"),
+];
+
+// get products query
+export const getProductsValidator = [
+  query("page")
+    .optional()
+    .isInt({ min: 1 })
+    .withMessage("Trang phải là số nguyên dương"),
+
+  query("limit")
+    .optional()
+    .isInt({ min: 1, max: 100 })
+    .withMessage("Giới hạn phải nằm trong khoảng từ 1 đến 100"),
+
+  query("search")
+    .optional()
+    .trim()
+    .isLength({ max: 100 })
+    .withMessage("Truy vấn tìm kiếm không được quá 100 ký tự"),
+
+  query("categoryId")
+    .optional()
+    .isUUID()
+    .withMessage("ID danh mục không hợp lệ"),
+
+  query("minPrice")
+    .optional()
+    .isInt({ min: 0 })
+    .withMessage("Giá tối thiểu phải là số nguyên dương"),
+
+  query("maxPrice")
+    .optional()
+    .isInt({ min: 0 })
+    .withMessage("Giá cao nhất phải là số nguyên dương"),
+
+  query("inStock")
+    .optional()
+    .isBoolean()
+    .withMessage("Truy vấn tồn kho phải là một Boolean"),
+
+  query("isActive")
+    .optional()
+    .isBoolean()
+    .withMessage("Truy vấn hiệu lực phải là một Boolean"),
+
+  query("sortBy")
+    .optional()
+    .isIn(["price", "name", "createdAt", "stock"])
+    .withMessage("Sắp xếp phải là 1 trong: price, name, createdAt, stock"),
+
+  query("order")
+    .optional()
+    .isIn(["asc", "desc"])
+    .withMessage("Thứ tự phải là asc hoặc desc"),
 ];
