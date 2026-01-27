@@ -379,4 +379,26 @@ export const productService = {
 
     return prisma.product.delete({ where: { id } });
   },
+
+  //update stock
+  async updateStock(id: string, quantity: number) {
+    const product = await prisma.product.findUnique({
+      where: { id },
+    });
+
+    if (!product) {
+      throw new AppError("Product not found", 404);
+    }
+
+    const newStock = product.stock + quantity;
+
+    if (newStock < 0) {
+      throw new AppError("Không đủ hàng", 400);
+    }
+
+    return prisma.product.update({
+      where: { id },
+      data: { stock: newStock },
+    });
+  },
 };
