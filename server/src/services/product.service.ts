@@ -435,4 +435,35 @@ export const productService = {
       },
     });
   },
+
+  // get related product same category
+  async getRelated(productId: string, limit: number = 4) {
+    const product = await prisma.product.findUnique({
+      where: { id: productId },
+      select: { categoryId: true },
+    });
+
+    if (!product) {
+      throw new AppError("Sản phẩm không tồn tại", 404);
+    }
+
+    return prisma.product.findMany({
+      where: {
+        categoryId: product.categoryId,
+        isActive: true,
+        NOT: { id: productId },
+      },
+      take: limit,
+      orderBy: { createdAt: "desc" },
+      include: {
+        category: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+          },
+        },
+      },
+    });
+  },
 };
