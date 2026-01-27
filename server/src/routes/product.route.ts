@@ -13,7 +13,6 @@ import { productController } from "../controllers/product.controller";
 
 const router = Router();
 
-
 // get featured
 router.get("/featured", productController.getFeatured);
 
@@ -58,6 +57,9 @@ router.patch(
   productController.toggleActive,
 );
 
+// get related
+router.get("/:id/related", productIdValidator, productController.getRelated);
+
 // admin update
 router.put(
   "/:id",
@@ -85,12 +87,7 @@ router.delete(
   productController.delete,
 );
 
-
-
 // get by id
 router.get("/:id", productIdValidator, productController.getById);
-
-
-
 
 export default router;
