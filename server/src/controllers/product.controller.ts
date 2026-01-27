@@ -167,4 +167,20 @@ export const productController = {
       next(error);
     }
   },
+
+    // related product
+  async getRelated(req: Request, res: Response, next: NextFunction) {
+    try {
+      const limit = Number(req.query.limit) || 4;
+      const {id} = req.params
+      const product = await productService.getRelated(id,limit);
+      res.status(201).json({
+        success: true,
+        data: product,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
 };
+
