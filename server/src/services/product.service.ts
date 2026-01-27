@@ -303,7 +303,7 @@ export const productService = {
     }
 
     // new slug if name changed
-    let slug = product.name;
+    let slug = product.slug;
     if (data.name && data.name !== product.name) {
       slug = generateSlug(data.name);
 
