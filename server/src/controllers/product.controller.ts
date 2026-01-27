@@ -136,4 +136,19 @@ export const productController = {
       next(error);
     }
   },
+  // toggle active
+  async toggleActive(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params;
+
+      const product = await productService.toggleActive(id);
+      res.status(201).json({
+        success: true,
+        message: `Sản phẩm ${product.isActive ? "đã được kích hoạt" : "đã vô hiêu hóa"} thành công`,
+        data: product,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
 };
