@@ -70,13 +70,36 @@ export const productController = {
     try {
       const { categoryId } = req.params;
       const result = await productService.getByCategory(categoryId, req.query);
-      res
-        .status(201)
-        .json({
-          success: true,
-          data: result.products,
-          pagination: result.pagination,
-        });
+      res.status(201).json({
+        success: true,
+        data: result.products,
+        pagination: result.pagination,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  // update
+  async update(req: Request, res: Response, next: NextFunction) {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        throw new AppError(
+          errors
+            .array()
+            .map((err) => err.msg)
+            .join(""),
+          400,
+        );
+      }
+      const { id } = req.params;
+      const product = await productService.update(id, req.body);
+      res.status(201).json({
+        success: true,
+        message: "Sản phẩm đã được cập nhật thành công",
+        data: product,
+      });
     } catch (error) {
       next(error);
     }
