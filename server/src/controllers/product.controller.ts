@@ -152,4 +152,19 @@ export const productController = {
       next(error);
     }
   },
+
+  // featured product
+  async getFeatured(req: Request, res: Response, next: NextFunction) {
+    try {
+      const limit = Number(req.query.limit) || 8;
+
+      const product = await productService.getFeatured(limit);
+      res.status(201).json({
+        success: true,
+        data: product,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
 };
