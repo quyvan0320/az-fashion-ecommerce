@@ -116,4 +116,24 @@ export const productController = {
       next(error);
     }
   },
+
+  // update stock product
+  async updateStock(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params;
+      const { quantity } = req.body;
+
+      if (typeof quantity !== "number") {
+        throw new AppError("Số lượng phải là kiểu số nguyên", 400);
+      }
+      const product = await productService.updateStock(id, quantity);
+      res.status(201).json({
+        success: true,
+        message: "Kho hàng đã được cập nhật",
+        data: product,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
 };
