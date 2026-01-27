@@ -136,6 +136,7 @@ export const productController = {
       next(error);
     }
   },
+
   // toggle active
   async toggleActive(req: Request, res: Response, next: NextFunction) {
     try {
@@ -144,7 +145,7 @@ export const productController = {
       const product = await productService.toggleActive(id);
       res.status(201).json({
         success: true,
-        message: `Sản phẩm ${product.isActive ? "đã được kích hoạt" : "đã vô hiệu hóa"} thành công`,
+        message: `Sản phẩm ${product.isActive ? "đã được kích hoạt" : "đã vô hiêu hóa"} thành công`,
         data: product,
       });
     } catch (error) {
