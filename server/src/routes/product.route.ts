@@ -21,7 +21,6 @@ router.post(
   productController.create,
 );
 
-
 // admin update
 router.put(
   "/:id",
@@ -29,6 +28,15 @@ router.put(
   authorize("ADMIN"),
   updateProductValidator,
   productController.update,
+);
+
+// admin delete
+router.delete(
+  "/:id",
+  authenticate,
+  authorize("ADMIN"),
+  productIdValidator,
+  productController.delete,
 );
 
 // get all
