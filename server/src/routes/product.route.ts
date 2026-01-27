@@ -13,6 +13,13 @@ import { productController } from "../controllers/product.controller";
 
 const router = Router();
 
+
+// get featured
+router.get("/featured", productController.getFeatured);
+
+// get all
+router.get("/", getProductsValidator, productController.getAll);
+
 // admin create
 router.post(
   "/",
@@ -20,6 +27,35 @@ router.post(
   authorize("ADMIN"),
   createProductValidator,
   productController.create,
+);
+
+// get by category
+router.get(
+  "/category/:categoryId",
+  categoryIdValidator,
+  getProductsValidator,
+  productController.getByCategory,
+);
+
+// get by slug
+router.get("/slug/:slug", productSlugValidator, productController.getBySlug);
+
+// admin update stock
+router.patch(
+  "/:id/stock",
+  authenticate,
+  authorize("ADMIN"),
+  updateStockValidator,
+  productController.updateStock,
+);
+
+// admin toggle active
+router.patch(
+  "/:id/toggle-active",
+  authenticate,
+  authorize("ADMIN"),
+  productIdValidator,
+  productController.toggleActive,
 );
 
 // admin update
@@ -49,39 +85,12 @@ router.delete(
   productController.delete,
 );
 
-// admin update stock
-router.patch(
-  "/:id/stock",
-  authenticate,
-  authorize("ADMIN"),
-  updateStockValidator,
-  productController.updateStock,
-);
 
-// admin toggle active
-router.patch(
-  "/:id/toggle-active",
-  authenticate,
-  authorize("ADMIN"),
-  productIdValidator,
-  productController.toggleActive,
-);
-
-// get all
-router.get("/", getProductsValidator, productController.getAll);
 
 // get by id
 router.get("/:id", productIdValidator, productController.getById);
 
-// get by slug
-router.get("/slug/:slug", productSlugValidator, productController.getBySlug);
 
-// get by category
-router.get(
-  "/category/:categoryId",
-  categoryIdValidator,
-  getProductsValidator,
-  productController.getByCategory,
-);
+
 
 export default router;

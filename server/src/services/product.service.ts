@@ -420,11 +420,10 @@ export const productService = {
 
   // product for homepage
   async getFeatured(limit: number = 8) {
-    return await prisma.product.findMany({
+    return prisma.product.findMany({
       where: { isActive: true },
       take: limit,
       orderBy: { createdAt: "desc" },
-
       include: {
         category: {
           select: {
