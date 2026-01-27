@@ -206,3 +206,16 @@ export const updateProductValidator = [
     .isBoolean()
     .withMessage("isActive phải là kiểu Boolean"),
 ];
+
+// update stock
+export const updateStockValidator = [
+  param('id')
+    .isUUID()
+    .withMessage('Invalid product ID'),
+
+  body('quantity')
+    .notEmpty()
+    .withMessage('Quantity is required')
+    .isInt()
+    .withMessage('Quantity must be an integer'),
+];
