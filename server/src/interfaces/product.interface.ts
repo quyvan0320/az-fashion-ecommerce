@@ -10,6 +10,18 @@ export interface CreateProductInput {
   isActive?: boolean;
 }
 
+export interface UpdateProductInput {
+  name?: string;
+  description?: string;
+  price?: number;
+  salePrice?: number;
+  sku?: string;
+  stock?: number;
+  categoryId?: string;
+  images?: string[];
+  isActive?: boolean;
+}
+
 export interface GetProductsQuery {
   page?: number;
   limit?: number;
