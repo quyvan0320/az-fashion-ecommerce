@@ -3,6 +3,7 @@ import prisma from "../config/prisma";
 import {
   CreateProductInput,
   GetProductsQuery,
+  UpdateProductInput,
 } from "../interfaces/product.interface";
 import { AppError } from "../middleware/errorHandler";
 import { generateSKU, generateSlug } from "../utils/string.util";
@@ -229,7 +230,7 @@ export const productService = {
     };
   },
 
-   // get by slug
+  // get by slug
   async getBySlug(slug: string) {
     // check exist product
     const product = await prisma.product.findUnique({
@@ -256,7 +257,6 @@ export const productService = {
             },
           },
         },
-    
       },
     });
 
@@ -278,6 +278,79 @@ export const productService = {
 
   // get product by query
   async getByCategory(categoryId: string, query: GetProductsQuery) {
-    return this.getAll({...query, categoryId})
-  }
+    return this.getAll({ ...query, categoryId });
+  },
+
+  async update(id: string, data: UpdateProductInput) {
+    // check product exist
+    const product = await prisma.product.findUnique({
+      where: { id },
+    });
+
+    if (!product) {
+      throw new AppError("Sản phẩm không tồn tại", 404);
+    }
+
+    // validate category
+    if (data.categoryId) {
+      const category = await prisma.category.findUnique({
+        where: { id: data.categoryId },
+      });
+
+      if (!category) {
+        throw new AppError("Danh mục không tồn tại", 404);
+      }
+    }
+
+    // new slug if name changed
+    let slug = product.name;
+    if (data.name && data.name !== product.name) {
+      slug = generateSlug(data.name);
+
+      const existingSlug = await prisma.product.findFirst({
+        where: { slug, NOT: { id } },
+      });
+
+      if (existingSlug) {
+        slug = `${slug}-${Date.now()}`;
+      }
+    }
+
+    // check SKU unique changed
+    if (data.sku && data.sku !== product.sku) {
+      const existingSKU = await prisma.product.findUnique({
+        where: { sku: data.sku, NOT: { id } },
+      });
+
+      if (existingSKU) {
+        throw new AppError("SKU đã tồn tại", 400);
+      }
+    }
+
+    // validate price
+    const price = data.price ?? product.price;
+    const salePrice = data.salePrice ?? product.salePrice;
+
+    if (salePrice && salePrice >= price) {
+      throw new AppError("Mức giảm giá phải thấp hơn giá mặc định", 400);
+    }
+
+    // update
+    return prisma.product.update({
+      where: { id },
+      data: {
+        ...data,
+        slug,
+      },
+      include: {
+        category: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+          },
+        },
+      },
+    });
+  },
 };
