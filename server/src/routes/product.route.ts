@@ -58,6 +58,15 @@ router.patch(
   productController.updateStock,
 );
 
+// admin toggle active
+router.patch(
+  "/:id/toggle-active",
+  authenticate,
+  authorize("ADMIN"),
+  productIdValidator,
+  productController.toggleActive,
+);
+
 // get all
 router.get("/", getProductsValidator, productController.getAll);
 
