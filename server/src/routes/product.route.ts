@@ -6,6 +6,7 @@ import {
   getProductsValidator,
   productIdValidator,
   productSlugValidator,
+  updateProductValidator,
 } from "../validators/product.validator";
 import { productController } from "../controllers/product.controller";
 
@@ -18,6 +19,16 @@ router.post(
   authorize("ADMIN"),
   createProductValidator,
   productController.create,
+);
+
+
+// admin update
+router.put(
+  "/:id",
+  authenticate,
+  authorize("ADMIN"),
+  updateProductValidator,
+  productController.update,
 );
 
 // get all
