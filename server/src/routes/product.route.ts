@@ -7,6 +7,7 @@ import {
   productIdValidator,
   productSlugValidator,
   updateProductValidator,
+  updateStockValidator,
 } from "../validators/product.validator";
 import { productController } from "../controllers/product.controller";
 
@@ -37,6 +38,24 @@ router.delete(
   authorize("ADMIN"),
   productIdValidator,
   productController.delete,
+);
+
+// admin delete
+router.delete(
+  "/:id",
+  authenticate,
+  authorize("ADMIN"),
+  productIdValidator,
+  productController.delete,
+);
+
+// admin update stock
+router.patch(
+  "/:id/stock",
+  authenticate,
+  authorize("ADMIN"),
+  updateStockValidator,
+  productController.updateStock,
 );
 
 // get all

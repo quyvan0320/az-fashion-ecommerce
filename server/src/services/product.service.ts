@@ -401,4 +401,20 @@ export const productService = {
       data: { stock: newStock },
     });
   },
+
+  // toggle active
+  async toggleActive(id: string) {
+    const product = await prisma.product.findUnique({
+      where: { id },
+    });
+
+    if (!product) {
+      throw new AppError("Product not found", 404);
+    }
+
+    return prisma.product.update({
+      where: { id },
+      data: { isActive: !product.isActive },
+    });
+  },
 };
