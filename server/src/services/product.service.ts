@@ -353,4 +353,30 @@ export const productService = {
       },
     });
   },
+
+  // delete product
+  async delete(id: string) {
+    // check product exist
+    const product = await prisma.product.findUnique({
+      where: { id },
+      include: {
+        _count: {
+          select: {
+            orderItems: true,
+          },
+        },
+      },
+    });
+
+    if (!product) {
+      throw new AppError("Sản phẩm không tồn tại", 404);
+    }
+
+    // prevent delete if product has order
+    if (product._count.orderItems > 0) {
+      throw new AppError("Không thể xóa với sản phẩm có đơn đặt hàng", 400);
+    }
+
+    return prisma.product.delete({ where: { id } });
+  },
 };
