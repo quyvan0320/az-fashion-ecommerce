@@ -104,4 +104,16 @@ export const productController = {
       next(error);
     }
   },
+  async delete(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params;
+      await productService.delete(id);
+      res.status(201).json({
+        success: true,
+        message: "Sản phẩm đã được xóa thành công",
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
 };
