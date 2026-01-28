@@ -1,6 +1,6 @@
 import cloudinary from "../config/cloudinary";
 import { AppError } from "../middleware/errorHandler";
-import streamifier from 'streamifier'
+import streamifier from "streamifier";
 export const uploadService = {
   // upload 1 pic to cloudinary
   async uploadSingle(file: Express.Multer.File, folder: string = "products") {
@@ -29,13 +29,26 @@ export const uploadService = {
         );
 
         // Convert buffer to stream and upload
-        streamifier.createReadStream(file.buffer).pipe(uploadStream)
+        streamifier.createReadStream(file.buffer).pipe(uploadStream);
       });
     } catch (error) {
-        throw new AppError('Không thể tải hình ảnh lên', 500);
+      throw new AppError("Không thể tải hình ảnh lên", 500);
     }
   },
 
-
-  
+  // upload many images
+  async uploadMultiple(
+    files: Express.Multer.File[],
+    folder: string = "products",
+  ) {
+    try {
+      const uploadPromises = files.map((file) => {
+        return this.uploadSingle(file, folder);
+      });
+      const results = await Promise.all(uploadPromises);
+      return results;
+    } catch (error) {
+      throw new AppError("Không thể tải hình ảnh lên", 500);
+    }
+  },
 };
