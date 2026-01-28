@@ -8,6 +8,7 @@ import { errorHandler } from "./middleware/errorHandler";
 import authRoute from "./routes/auth.route";
 import categoryRoute from "./routes/category.route";
 import productRoute from "./routes/product.route";
+import uploadRoute from "./routes/upload.route";
 
 // Load environment variables from .env file
 dotenv.config();
@@ -33,6 +34,7 @@ app.use(express.urlencoded({ extended: true })); // parse urlencoded request bod
 app.use("/api/auth", authRoute);
 app.use("/api/categories", categoryRoute);
 app.use("/api/products", productRoute);
+app.use("/api/upload", uploadRoute);
 
 // check server status
 app.get("/health", (req, res) => {
