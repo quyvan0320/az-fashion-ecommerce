@@ -25,7 +25,7 @@ router.post(
 
 
 // admin delete  image
-router.post(
+router.delete(
   "/:publicId",
   authenticate,
   authorize("ADMIN"),
