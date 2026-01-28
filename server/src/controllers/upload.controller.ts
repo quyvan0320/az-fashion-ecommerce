@@ -24,7 +24,7 @@ export const uploadController = {
   async uploadMultiple(req: Request, res: Response, next: NextFunction) {
     try {
       const files = req.files as Express.Multer.File[];
-      if (!req.file || files.length === 0) {
+      if (!req.files || files.length === 0) {
         throw new AppError("Không có tệp nào được tải lên", 400);
       }
 
@@ -34,7 +34,7 @@ export const uploadController = {
       const results = await uploadService.uploadMultiple(files);
       res.json({
         success: true,
-        message: `${results.length} được tải lên thành công`,
+        message: `${results.length} tệp được tải lên thành công`,
         data: results,
       });
     } catch (error) {

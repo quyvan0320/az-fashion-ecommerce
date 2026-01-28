@@ -51,4 +51,14 @@ export const uploadService = {
       throw new AppError("Không thể tải hình ảnh lên", 500);
     }
   },
+
+
+  // delete image from cloudinary
+  async deleteImage(publicId: string) {
+    try {
+      await cloudinary.uploader.destroy(publicId);
+    } catch (error) {
+      throw new AppError("Không thể tải hình ảnh lên", 500);
+    }
+  },
 };
