@@ -45,11 +45,11 @@ export const uploadController = {
   // delete image
   async deleteImage(req: Request, res: Response, next: NextFunction) {
     try {
-      const {publicId} = req.params
+      const { publicId } = req.body;
 
-      const decodePublicId = decodeURIComponent(publicId)
-      await uploadService.deleteImage(decodePublicId)
-       res.json({
+      if (!publicId) throw new AppError("Không có Public id", 400);
+      await uploadService.deleteImage(publicId);
+      res.json({
         success: true,
         message: "Hình ảnh đã được xóa thành công",
       });
