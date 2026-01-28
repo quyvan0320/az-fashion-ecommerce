@@ -15,6 +15,30 @@ export const uploadController = {
         message: "Hình ảnh được tải lên thành công",
         data: result,
       });
-    } catch (error) {}
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  // upload manu images
+  async uploadMultiple(req: Request, res: Response, next: NextFunction) {
+    try {
+      const files = req.files as Express.Multer.File[];
+      if (!req.file || files.length === 0) {
+        throw new AppError("Không có tệp nào được tải lên", 400);
+      }
+
+      if (files.length > 10) {
+        throw new AppError("Chỉ tối đa 10 ảnh", 400);
+      }
+      const results = await uploadService.uploadMultiple(files);
+      res.json({
+        success: true,
+        message: `${results.length} được tải lên thành công`,
+        data: results,
+      });
+    } catch (error) {
+      next(error);
+    }
   },
 };
