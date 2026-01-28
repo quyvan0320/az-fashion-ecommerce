@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { authenticate, authorize } from "../middleware/auth";
-import { uploadSingle } from "../middleware/upload";
+import { uploadMultiple, uploadSingle } from "../middleware/upload";
 import { uploadController } from "../controllers/upload.controller";
 
 const router = Router();
@@ -12,6 +12,15 @@ router.post(
   authorize("ADMIN"),
   uploadSingle as any,
   uploadController.uploadSingle,
+);
+
+// admin upload many images
+router.post(
+  "/multiple",
+  authenticate,
+  authorize("ADMIN"),
+  uploadMultiple as any,
+  uploadController.uploadMultiple,
 );
 
 export default router;
