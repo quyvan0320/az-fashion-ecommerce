@@ -23,4 +23,14 @@ router.post(
   uploadController.uploadMultiple,
 );
 
+
+// admin delete  image
+router.post(
+  "/:publicId",
+  authenticate,
+  authorize("ADMIN"),
+  uploadMultiple as any,
+  uploadController.deleteImage,
+);
+
 export default router;

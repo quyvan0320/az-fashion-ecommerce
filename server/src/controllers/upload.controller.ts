@@ -41,4 +41,20 @@ export const uploadController = {
       next(error);
     }
   },
+
+  // delete image
+  async deleteImage(req: Request, res: Response, next: NextFunction) {
+    try {
+      const {publicId} = req.params
+
+      const decodePublicId = decodeURIComponent(publicId)
+      await uploadService.deleteImage(decodePublicId)
+       res.json({
+        success: true,
+        message: "Hình ảnh đã được xóa thành công",
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
 };
