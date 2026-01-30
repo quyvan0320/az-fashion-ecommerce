@@ -3,10 +3,11 @@ import { authenticate } from "../middleware/auth";
 import { addItemValidator } from "../validators/cart.validator";
 import { cartController } from "../controllers/cart.controller";
 
-const router = Router()
+const router = Router();
 
-router.use(authenticate)
+router.use(authenticate);
 
-router.post('/items', addItemValidator, cartController.addItem)
+router.get("/", cartController.getCart);
+router.post("/items", addItemValidator, cartController.addItem);
 
-export default router
+export default router;

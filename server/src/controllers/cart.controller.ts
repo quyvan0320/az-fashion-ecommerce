@@ -4,6 +4,7 @@ import { AppError } from "../middleware/errorHandler";
 import { cartService } from "../services/cart.service";
 
 export const cartController = {
+  // add item to cart
   async addItem(req: Request, res: Response, next: NextFunction) {
     try {
       const errors = validationResult(req);
@@ -28,6 +29,24 @@ export const cartController = {
       res.status(201).json({
         success: true,
         message: "Mặt hàng đã thêm vào giỏ hàng",
+        data: cartItem,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  // get cart from user
+  async getCart(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user?.userId;
+      if (!userId) {
+        throw new AppError("Người dùng chưa đăng nhập", 401);
+      }
+
+      const cartItem = await cartService.getCart(userId);
+      res.status(201).json({
+        success: true,
         data: cartItem,
       });
     } catch (error) {

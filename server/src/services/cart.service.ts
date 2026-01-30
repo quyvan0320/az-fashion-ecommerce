@@ -23,7 +23,10 @@ export const cartService = {
 
     // check stock
     if (product.stock < quantity) {
-      throw new AppError(`Chỉ có ${product.stock} có sẵn trong kho`, 400);
+      throw new AppError(
+        `Chỉ còn ${product.stock} sản phẩm có sẵn trong kho`,
+        400,
+      );
     }
 
     // check if item already in cart
@@ -43,7 +46,7 @@ export const cartService = {
       // check new stock for new quantity
       if (product.stock < newQuantity) {
         throw new AppError(
-          `Không thể thêm số lượng ${quantity} nữa. Chỉ ${product.stock - existingCart.quantity}`,
+          `Không thể thêm số lượng ${quantity} sản phẩm nữa. Chỉ còn ${product.stock - existingCart.quantity} sản phẩm trong kho`,
           400,
         );
       }
@@ -92,5 +95,61 @@ export const cartService = {
     });
 
     return cartItem;
+  },
+
+  // get cart
+  async getCart(userId: string) {
+    const cartItems = await prisma.cartItem.findMany({
+      where: { userId },
+      include: {
+        product: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            price: true,
+            salePrice: true,
+            images: true,
+            stock: true,
+            isActive: true,
+            category: {
+              select: {
+                id: true,
+                name: true,
+                slug: true,
+              },
+            },
+          },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+
+    // calculate subtotal for each item and total
+    const items = cartItems.map((item) => {
+      const price = item.product.salePrice || item.product.price;
+      const subtotal = price * item.quantity;
+
+      return {
+        id: item.id,
+        quantity: item.quantity,
+        product: item.product,
+        price,
+        subtotal,
+      };
+    });
+
+    const total = items.reduce((sum, item) => sum + item.subtotal, 0);
+    const itemCount = items.length;
+    const totalQuantity = items.reduce((sum, item) => sum + item.quantity, 0);
+
+    return {
+      items,
+      summary: {
+        total,
+        itemCount,
+        totalQuantity,
+      },
+    };
   },
 };
