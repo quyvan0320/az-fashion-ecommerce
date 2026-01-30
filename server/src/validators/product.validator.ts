@@ -119,18 +119,13 @@ export const getProductsValidator = [
 
 // get id product param
 export const productIdValidator = [
-  param('id')
-  .isUUID()
-  .withMessage("ID sản phẩm không hợp lệ")
-]
+  param("id").isUUID().withMessage("ID sản phẩm không hợp lệ"),
+];
 
 // get id category param
 export const categoryIdValidator = [
-  param('id')
-  .isUUID()
-  .withMessage("ID danh mục không hợp lệ")
-]
-
+  param("id").isUUID().withMessage("ID danh mục không hợp lệ"),
+];
 
 // get slug product param
 export const productSlugValidator = [
@@ -141,8 +136,6 @@ export const productSlugValidator = [
     .matches(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
     .withMessage("Slug sản phẩm không hợp lệ"),
 ];
-
-
 
 // update product
 export const updateProductValidator = [
@@ -209,13 +202,11 @@ export const updateProductValidator = [
 
 // update stock
 export const updateStockValidator = [
-  param('id')
-    .isUUID()
-    .withMessage('Invalid product ID'),
+  param("id").isUUID().withMessage("ID sản phẩm không hợp lệ"),
 
-  body('quantity')
+  body("quantity")
     .notEmpty()
-    .withMessage('Quantity is required')
+    .withMessage("Số lượng không được để trống")
     .isInt()
-    .withMessage('Quantity must be an integer'),
+    .withMessage("Số lượng phải là 1 số nguyên"),
 ];

@@ -91,6 +91,6 @@ export const cartService = {
       },
     });
 
-    return cartItem
+    return cartItem;
   },
 };
