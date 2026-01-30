@@ -53,4 +53,37 @@ export const cartController = {
       next(error);
     }
   },
+
+  async updateQuantity(req: Request, res: Response, next: NextFunction) {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        throw new AppError(
+          errors
+            .array()
+            .map((err) => err.msg)
+            .join(","),
+          400,
+        );
+      }
+
+      const userId = req.user?.userId;
+      if (!userId) {
+        throw new AppError("Người dùng chưa đăng nhập", 401);
+      }
+
+      const { id } = req.params;
+
+      const { quantity } = req.body;
+
+      const cartItem = await cartService.updateQuantity(userId, id, quantity);
+      res.json({
+        success: true,
+        message: "Giỏ hàng đã được cập nhật",
+        data: cartItem,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
 };

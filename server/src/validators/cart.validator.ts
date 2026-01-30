@@ -12,3 +12,16 @@ export const addItemValidator = [
     .isInt()
     .withMessage("Số lượng phải nằm trong khoản từ 1 đến 100"),
 ];
+
+export const updateQuantityValidator = [
+  param("id")
+    .notEmpty()
+    .withMessage("ID giỏ hàng không được để trống")
+    .isUUID()
+    .withMessage("ID sản phẩm không hợp lệ"),
+
+  body("quantity")
+    .optional()
+    .isInt()
+    .withMessage("Số lượng phải nằm trong khoản từ 1 đến 100"),
+];

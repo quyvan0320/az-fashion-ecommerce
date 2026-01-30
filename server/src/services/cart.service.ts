@@ -152,4 +152,54 @@ export const cartService = {
       },
     };
   },
+
+  // update cart
+  async updateQuantity(userId: string, itemId: string, quantity: number) {
+    // check validate quantity
+    if (quantity < 1) {
+      throw new AppError("Số lượng phải ít nhất là 1", 400);
+    }
+
+    // check cart exist from user
+    const cartItem = await prisma.cartItem.findFirst({
+      where: {
+        id: itemId,
+        userId,
+      },
+      include: {
+        product: true,
+      },
+    });
+
+    if (!cartItem) {
+      throw new AppError("Giỏ hàng không tìm thấy", 404);
+    }
+
+    // check stock
+    if (cartItem.product.stock < quantity) {
+      throw new AppError(
+        `Chỉ còn ${cartItem.product.stock} sản phẩm trong kho`,
+        400,
+      );
+    }
+
+    const updated = await prisma.cartItem.update({
+      where: { id: itemId },
+      data: { quantity },
+      include: {
+        product: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            price: true,
+            salePrice: true,
+            images: true,
+            stock: true,
+          },
+        },
+      },
+    });
+    return updated;
+  },
 };
