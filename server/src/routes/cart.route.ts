@@ -21,13 +21,9 @@ router.put(
 );
 
 // update quantity
-router.delete(
-  "/items/:id",
-  cartItemIdValidator,
-  cartController.removeItem,
-);
+router.delete("/items/:id", cartItemIdValidator, cartController.removeItem);
+router.delete("/", cartController.clearCart);
 // add quantiy
 router.post("/items", addItemValidator, cartController.addItem);
-
 
 export default router;

@@ -103,4 +103,22 @@ export const cartController = {
       next(error);
     }
   },
+
+  async clearCart(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user?.userId;
+
+      if (!userId) {
+        throw new AppError("Người dùng chưa đăng nhập", 401);
+      }
+
+      await cartService.clearItem(userId);
+      res.status(201).json({
+        success: true,
+        message: "Giỏ hàng đã được xóa",
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
 };

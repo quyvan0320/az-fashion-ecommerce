@@ -214,12 +214,20 @@ export const cartService = {
     });
 
     if (!cartItem) {
-      throw new AppError("Mặt hàng không tồn tại", 404)
+      throw new AppError("Mặt hàng không tồn tại", 404);
     }
 
     await prisma.cartItem.delete({
-      where: {id: itemId}
-    })
-    return {message: "Sản phẩm đã được xóa khỏi giỏ hàng"}
+      where: { id: itemId },
+    });
+    return { message: "Sản phẩm đã được xóa khỏi giỏ hàng" };
+  },
+
+  // clear cart
+  async clearItem(userId: string) {
+    await prisma.cartItem.deleteMany({
+      where: { userId },
+    });
+    return { message: "Giỏ hàng đã được xóa" };
   },
 };
