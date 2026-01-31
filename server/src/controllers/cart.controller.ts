@@ -86,4 +86,21 @@ export const cartController = {
       next(error);
     }
   },
+  async removeItem(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user?.userId;
+      const { id } = req.params;
+      if (!userId) {
+        throw new AppError("Người dùng chưa đăng nhập", 401);
+      }
+
+      await cartService.removeItem(userId, id);
+      res.status(201).json({
+        success: true,
+        message: "Sản phẩm đã được xóa khỏi giỏ hàng",
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
 };

@@ -25,3 +25,9 @@ export const updateQuantityValidator = [
     .isInt()
     .withMessage("Số lượng phải nằm trong khoản từ 1 đến 100"),
 ];
+
+export const cartItemIdValidator = [
+  param("id")
+    .isUUID()
+    .withMessage("ID mặt hàng không hợp lệ"),
+];

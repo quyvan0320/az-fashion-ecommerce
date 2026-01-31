@@ -172,7 +172,7 @@ export const cartService = {
     });
 
     if (!cartItem) {
-      throw new AppError("Giỏ hàng không tìm thấy", 404);
+      throw new AppError("Mặt hàng không tìm thấy", 404);
     }
 
     // check stock
@@ -201,5 +201,25 @@ export const cartService = {
       },
     });
     return updated;
+  },
+
+  // remove item from cart
+  async removeItem(userId: string, itemId: string) {
+    // check cart exist from userId
+    const cartItem = await prisma.cartItem.findFirst({
+      where: {
+        id: itemId,
+        userId,
+      },
+    });
+
+    if (!cartItem) {
+      throw new AppError("Mặt hàng không tồn tại", 404)
+    }
+
+    await prisma.cartItem.delete({
+      where: {id: itemId}
+    })
+    return {message: "Sản phẩm đã được xóa khỏi giỏ hàng"}
   },
 };
