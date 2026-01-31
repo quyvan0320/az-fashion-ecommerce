@@ -230,4 +230,67 @@ export const cartService = {
     });
     return { message: "Giỏ hàng đã được xóa" };
   },
+
+  // validate cart before checkout
+  async validateCart(userId: string) {
+    const cartItems = await prisma.cartItem.findMany({
+      where: { userId },
+      include: {
+        product: true,
+      },
+    });
+
+    if (cartItems.length === 0) {
+      throw new AppError("Giỏ hàng trống", 400);
+    }
+
+    const issues: string[] = [];
+    for (const item of cartItems) {
+      // Check product still active
+      if (!item.product.isActive) {
+        issues.push(`Sản phẩm ${item.product.name} hiện không có sẵn`);
+        continue;
+      }
+
+      // check stock
+      if (item.product.stock < item.quantity) {
+        issues.push(
+          `${item.product.name}: Chỉ còn ${item.product.stock} sản phẩm trong giỏ hàng (hiện bạn đang có ${item.quantity} số lượng trong giỏ hàng)`,
+        );
+      }
+    }
+    if (issues.length > 0) {
+      throw new AppError(
+        "Giỏ hàng không đủ điều kiện thanh toán: " + issues.join("; "),
+        400,
+      );
+    }
+
+    return { valid: true };
+  },
+
+  async getCartSummary(userId: string) {
+    const {items, summary} = await this.getCart(userId)
+
+    //validate cart
+   await this.validateCart(userId)
+
+   // calculate shipping
+   const shippingCost = summary.total > 500000 ? 0 : 30000
+
+   // calculate tax
+    const tax = Math.round(summary.total * 0.1)
+
+    const finalTotal = summary.total + shippingCost + tax
+    
+    return {
+      items,
+      subtotal: summary.total,
+      shippingCost,
+      tax,
+      total: finalTotal,
+      itemCount: summary.itemCount,
+      totalQuantity: summary.totalQuantity
+    }
+  }
 };

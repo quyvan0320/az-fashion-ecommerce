@@ -121,4 +121,38 @@ export const cartController = {
       next(error);
     }
   },
+
+  async validateCart(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user?.userId;
+
+      if (!userId) {
+        throw new AppError("Người dùng chưa đăng nhập", 401);
+      }
+      const result = await cartService.validateCart(userId);
+      res.status(201).json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  async getCartSummary(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user?.userId;
+
+      if (!userId) {
+        throw new AppError("Người dùng chưa đăng nhập", 401);
+      }
+      const results = await cartService.getCartSummary(userId);
+      res.status(201).json({
+        success: true,
+        data: results,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
 };

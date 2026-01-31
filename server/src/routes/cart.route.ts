@@ -13,6 +13,12 @@ router.use(authenticate);
 // get cart
 router.get("/", cartController.getCart);
 
+// validate cart to checkout
+router.post("/validate", cartController.validateCart);
+
+// summary total cart
+router.get("/summary", cartController.getCartSummary);
+
 // update quantity
 router.put(
   "/items/:id",
