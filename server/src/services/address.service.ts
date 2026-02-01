@@ -169,4 +169,48 @@ export const addressService = {
     });
     return updated;
   },
+
+  async delete(userId: string, addressId: string) {
+    const address = await prisma.address.findFirst({
+      where: {
+        userId,
+        id: addressId,
+      },
+      include: {
+        _count: {
+          select: { orders: true },
+        },
+      },
+    });
+
+    if (!address) {
+      throw new AppError("Địa chỉ không tồn tại", 404);
+    }
+
+    if (address._count.orders > 0) {
+      throw new AppError(
+        `Không thể xóa địa chỉ với đơn hàng ${address._count.orders}`,
+        400,
+      );
+    }
+
+    if (address.isDefault) {
+      const otherAddresses = await prisma.address.findFirst({
+        where: { userId, NOT: { id: addressId } },
+        orderBy: { createdAt: "desc" },
+      });
+
+      if (otherAddresses) {
+        await prisma.address.update({
+          where: {
+            id: otherAddresses.id,
+          },
+          data: { isDefault: true },
+        });
+      }
+    }
+
+    await prisma.address.delete({ where: { id: addressId } });
+    return { message: "Địa chỉ đã được xóa thành công" };
+  },
 };

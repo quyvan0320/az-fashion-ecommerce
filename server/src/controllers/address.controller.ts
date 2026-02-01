@@ -89,12 +89,25 @@ export const addressController = {
     }
   },
 
-   async setDefault(req: Request, res: Response, next: NextFunction) {
+  async setDefault(req: Request, res: Response, next: NextFunction) {
     try {
       const userId = req.user!.userId;
       const { id } = req.params;
       const address = await addressService.setDefault(userId, id);
       res.json({ success: true, data: address });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  async delete(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user!.userId;
+      const { id } = req.params;
+      await addressService.delete(userId, id);
+      res
+        .status(201)
+        .json({ success: true, message: "Địa chỉ đã được xóa thành công" });
     } catch (error) {
       next(error);
     }

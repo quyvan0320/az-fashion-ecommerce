@@ -26,6 +26,9 @@ router.get("/default", addressController.getDefault);
 //get by id
 router.get("/:id", addressIdValidator, addressController.getById);
 
+//delete
+router.delete("/:id", addressIdValidator, addressController.delete);
+
 //set default
 router.patch("/:id/default", addressIdValidator, addressController.setDefault);
 
