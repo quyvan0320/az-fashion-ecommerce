@@ -10,6 +10,7 @@ import categoryRoute from "./routes/category.route";
 import productRoute from "./routes/product.route";
 import uploadRoute from "./routes/upload.route";
 import cartRouter from "./routes/cart.route";
+import addressRouter from "./routes/address.route";
 
 // Load environment variables from .env file
 dotenv.config();
@@ -36,6 +37,7 @@ app.use("/api/auth", authRoute);
 app.use("/api/categories", categoryRoute);
 app.use("/api/products", productRoute);
 app.use("/api/cart", cartRouter);
+app.use("/api/addresses", addressRouter);
 app.use("/api/upload", uploadRoute);
 
 // check server status
