@@ -26,4 +26,7 @@ router.get("/default", addressController.getDefault);
 //get by id
 router.get("/:id", addressIdValidator, addressController.getById);
 
+//set default
+router.patch("/:id/default", addressIdValidator, addressController.setDefault);
+
 export default router;

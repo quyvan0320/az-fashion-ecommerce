@@ -88,4 +88,15 @@ export const addressController = {
       next(error);
     }
   },
+
+   async setDefault(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user!.userId;
+      const { id } = req.params;
+      const address = await addressService.setDefault(userId, id);
+      res.json({ success: true, data: address });
+    } catch (error) {
+      next(error);
+    }
+  },
 };

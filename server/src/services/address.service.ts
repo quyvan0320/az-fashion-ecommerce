@@ -135,4 +135,38 @@ export const addressService = {
 
     return address;
   },
+
+  async setDefault(userId: string, addressId: string) {
+    const address = await prisma.address.findFirst({
+      where: { userId, id: addressId },
+    });
+
+    if (!address) {
+      throw new AppError("Địa chỉ không tồn tại", 404);
+    }
+
+    if (address.isDefault) {
+      return address;
+    }
+
+    await prisma.address.updateMany({
+      where: {
+        userId,
+        isDefault: true,
+      },
+      data: {
+        isDefault: false,
+      },
+    });
+
+    const updated = await prisma.address.update({
+      where: {
+        id: addressId,
+      },
+      data: {
+        isDefault: true,
+      },
+    });
+    return updated;
+  },
 };
