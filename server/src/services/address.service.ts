@@ -103,21 +103,36 @@ export const addressService = {
       data,
     });
 
-    return updated
+    return updated;
   },
 
-  async getById (userId: string, addressId: string) {
+  async getById(userId: string, addressId: string) {
     const address = await prisma.address.findFirst({
       where: {
         id: addressId,
         userId,
-      }
-    })
+      },
+    });
 
     if (!address) {
-      throw new AppError("Địa chỉ không tồn tại", 404)
+      throw new AppError("Địa chỉ không tồn tại", 404);
     }
 
-    return address
-  }
+    return address;
+  },
+
+  async getDefault(userId: string) {
+    const address = await prisma.address.findFirst({
+      where: {
+        userId,
+        isDefault: true,
+      },
+    });
+
+    if (!address) {
+      throw new AppError("Không có địa chỉ được đặt làm mặc định", 404);
+    }
+
+    return address;
+  },
 };

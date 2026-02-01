@@ -20,6 +20,9 @@ router.post("/", addressInputValidator, addressController.create);
 //update
 router.put("/:id", addressUpdateValidator, addressController.update);
 
+//get default = true
+router.get("/default", addressController.getDefault);
+
 //get by id
 router.get("/:id", addressIdValidator, addressController.getById);
 

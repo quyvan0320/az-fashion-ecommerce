@@ -77,4 +77,15 @@ export const addressController = {
       next(error);
     }
   },
+
+  async getDefault(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user!.userId;
+
+      const address = await addressService.getDefault(userId);
+      res.json({ success: true, data: address });
+    } catch (error) {
+      next(error);
+    }
+  },
 };
