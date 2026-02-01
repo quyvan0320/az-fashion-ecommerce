@@ -85,3 +85,7 @@ export const addressUpdateValidator = [
     .isBoolean()
     .withMessage("isDefault phải là kiểu boolean"),
 ];
+
+export const addressIdValidator = [
+  param("id").isUUID().withMessage("ID địa chỉ không hợp lệ"),
+];

@@ -105,4 +105,19 @@ export const addressService = {
 
     return updated
   },
+
+  async getById (userId: string, addressId: string) {
+    const address = await prisma.address.findFirst({
+      where: {
+        id: addressId,
+        userId,
+      }
+    })
+
+    if (!address) {
+      throw new AppError("Địa chỉ không tồn tại", 404)
+    }
+
+    return address
+  }
 };

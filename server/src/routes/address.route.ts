@@ -2,6 +2,7 @@ import { Router } from "express";
 import { authenticate } from "../middleware/auth";
 import { addressController } from "../controllers/address.controller";
 import {
+  addressIdValidator,
   addressInputValidator,
   addressUpdateValidator,
 } from "../validators/address.validator";
@@ -18,5 +19,8 @@ router.post("/", addressInputValidator, addressController.create);
 
 //update
 router.put("/:id", addressUpdateValidator, addressController.update);
+
+//get by id
+router.get("/:id", addressIdValidator, addressController.getById);
 
 export default router;

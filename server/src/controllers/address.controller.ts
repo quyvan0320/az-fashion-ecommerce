@@ -66,4 +66,15 @@ export const addressController = {
       next(error);
     }
   },
+
+  async getById(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user!.userId;
+      const { id } = req.params;
+      const address = await addressService.getById(userId, id);
+      res.json({ success: true, data: address });
+    } catch (error) {
+      next(error);
+    }
+  },
 };
