@@ -1,5 +1,9 @@
 import prisma from "../config/prisma";
-import { CreateAddressInput } from "../interfaces/address.interface";
+import {
+  CreateAddressInput,
+  UpdateAddressInput,
+} from "../interfaces/address.interface";
+import { AppError } from "../middleware/errorHandler";
 
 export const addressService = {
   // get all address of user
@@ -41,5 +45,64 @@ export const addressService = {
     });
 
     return address;
+  },
+
+  async update(userId: string, addressId: string, data: UpdateAddressInput) {
+    // check address belong user
+    const address = await prisma.address.findFirst({
+      where: {
+        userId,
+        id: addressId,
+      },
+    });
+
+    if (!address) {
+      throw new AppError("Địa chỉ không tồn tại", 404);
+    }
+
+    // if set default = true, unset other addresses
+    if (data.isDefault === true) {
+      await prisma.address.updateMany({
+        where: {
+          userId,
+          isDefault: true,
+          NOT: {
+            id: addressId,
+          },
+        },
+        data: {
+          isDefault: false,
+        },
+      });
+    }
+
+    // unset address
+    if (data.isDefault === false && address.isDefault) {
+      // check have other address
+      const otherAddresses = await prisma.address.count({
+        where: {
+          userId,
+          NOT: {
+            id: addressId,
+          },
+        },
+      });
+
+      if (otherAddresses === 0) {
+        throw new AppError(
+          "Đây là địa chỉ duy nhất của bạn không thể tắt địa chỉ mặc định",
+          400,
+        );
+      }
+    }
+
+    const updated = await prisma.address.update({
+      where: {
+        id: addressId,
+      },
+      data,
+    });
+
+    return updated
   },
 };

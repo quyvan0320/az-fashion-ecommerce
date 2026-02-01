@@ -40,4 +40,30 @@ export const addressController = {
       next(error);
     }
   },
+
+  async update(req: Request, res: Response, next: NextFunction) {
+    try {
+      const errors = validationResult(req);
+
+      if (!errors.isEmpty) {
+        throw new AppError(
+          errors
+            .array()
+            .map((err) => err.msg)
+            .join(", "),
+          400,
+        );
+      }
+      const userId = req.user!.userId;
+      const { id } = req.params;
+      const address = await addressService.update(userId, id, req.body);
+      res.status(201).json({
+        success: true,
+        message: "Địa chỉ đã được cập nhật",
+        data: address,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
 };
