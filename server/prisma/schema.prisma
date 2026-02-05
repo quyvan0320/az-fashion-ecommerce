@@ -107,24 +107,9 @@ model Address {
   @@map("addresses")
 }
 
-model Variant {
-  id        String   @id @default(uuid())
-  productId String
-  size      String?
-  color     String?
-  price     Int?
-  sku       String   @unique
-  stock     Int      @default(0)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-
-  @@map("variants")
-}
-
 model Order {
   id             String      @id @default(uuid())
+  orderNumber    String      @unique
   userId         String
   addressId      String
   total          Int
@@ -182,4 +167,20 @@ model Review {
 
   @@unique([userId, productId])
   @@map("reviews")
+}
+
+model Variant {
+  id        String   @id @default(uuid())
+  productId String
+  size      String?
+  color     String?
+  price     Int?
+  sku       String   @unique
+  stock     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@map("variants")
 }

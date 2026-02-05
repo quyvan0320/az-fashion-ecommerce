@@ -11,6 +11,7 @@ import productRoute from "./routes/product.route";
 import uploadRoute from "./routes/upload.route";
 import cartRouter from "./routes/cart.route";
 import addressRouter from "./routes/address.route";
+import orderRouter from "./routes/order.route";
 
 // Load environment variables from .env file
 dotenv.config();
@@ -38,6 +39,7 @@ app.use("/api/categories", categoryRoute);
 app.use("/api/products", productRoute);
 app.use("/api/cart", cartRouter);
 app.use("/api/addresses", addressRouter);
+app.use("/api/orders", orderRouter);
 app.use("/api/upload", uploadRoute);
 
 // check server status

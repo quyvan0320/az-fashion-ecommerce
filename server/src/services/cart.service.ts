@@ -270,19 +270,19 @@ export const cartService = {
   },
 
   async getCartSummary(userId: string) {
-    const {items, summary} = await this.getCart(userId)
+    const { items, summary } = await this.getCart(userId);
 
     //validate cart
-   await this.validateCart(userId)
+    await this.validateCart(userId);
 
-   // calculate shipping
-   const shippingCost = summary.total > 500000 ? 0 : 30000
+    // calculate shipping
+    const shippingCost = summary.total > 500000 ? 0 : 30000;
 
-   // calculate tax
-    const tax = Math.round(summary.total * 0.1)
+    // calculate tax
+    const tax = Math.round(summary.total * 0.1);
 
-    const finalTotal = summary.total + shippingCost + tax
-    
+    const finalTotal = summary.total + shippingCost + tax;
+
     return {
       items,
       subtotal: summary.total,
@@ -290,7 +290,7 @@ export const cartService = {
       tax,
       total: finalTotal,
       itemCount: summary.itemCount,
-      totalQuantity: summary.totalQuantity
-    }
-  }
+      totalQuantity: summary.totalQuantity,
+    };
+  },
 };
