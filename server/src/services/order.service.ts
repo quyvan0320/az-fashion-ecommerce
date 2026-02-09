@@ -195,4 +195,57 @@ export const orderService = {
       },
     };
   },
+
+  async getOrderById(userId: string, orderId: string) {
+    const order = await prisma.order.findFirst({
+      where: { id: orderId, userId },
+      include: {
+        items: {
+          include: {
+            product: {
+              select: {
+                id: true,
+                name: true,
+                slug: true,
+                images: true,
+              },
+            },
+          },
+        },
+        address: true,
+      },
+    });
+
+    if (!order) {
+      throw new AppError("Đơn hàng không tồn tại", 404);
+    }
+
+    return order;
+  },
+   async getOrderByNumber(userId: string, orderNumber: string) {
+    const order = await prisma.order.findFirst({
+      where: { orderNumber, userId },
+      include: {
+        items: {
+          include: {
+            product: {
+              select: {
+                id: true,
+                name: true,
+                slug: true,
+                images: true,
+              },
+            },
+          },
+        },
+        address: true,
+      },
+    });
+
+    if (!order) {
+      throw new AppError("Đơn hàng không tồn tại", 404);
+    }
+
+    return order;
+  },
 };

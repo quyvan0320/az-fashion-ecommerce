@@ -44,4 +44,33 @@ export const orderController = {
       next(error);
     }
   },
+
+  async getOrderById(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user!.userId;
+      const { id } = req.params;
+      const order = await orderService.getOrderById(userId, id);
+
+      res.status(201).json({
+        success: true,
+        data: order,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+  async getOrderByNumber(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user!.userId;
+      const { orderNumber } = req.params;
+      const order = await orderService.getOrderByNumber(userId, orderNumber);
+
+      res.status(201).json({
+        success: true,
+        data: order,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
 };
