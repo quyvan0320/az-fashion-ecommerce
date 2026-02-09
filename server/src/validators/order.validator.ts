@@ -1,4 +1,5 @@
-import { body } from "express-validator";
+import { OrderStatus } from "@prisma/client";
+import { body, query } from "express-validator";
 
 export const createOrderValidator = [
   body("addressId")
@@ -19,3 +20,20 @@ export const createOrderValidator = [
     .isLength({ max: 500 })
     .withMessage("Ghi chú không đươc vượt quá 500 ký tự"),
 ];
+
+export const getOrdersValidator = [
+  query('page')
+  .optional()
+  .isInt({min: 1})
+  .withMessage('Trang phải là 1 số nguyên'),
+
+  query('limit')
+  .optional()
+  .isInt({min: 1, max: 100})
+  .withMessage('Giới hạn phải từ 1 đến 100'),
+
+  query('status')
+    .optional()
+    .isIn(Object.values(OrderStatus))
+    .withMessage('Trạng thái không hợp lệ') 
+]

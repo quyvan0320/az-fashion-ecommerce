@@ -1,15 +1,34 @@
 import prisma from "../config/prisma";
-import { CreateOrderInput } from "../interfaces/order.interface";
+import { CreateOrderInput, GetOrderQuery } from "../interfaces/order.interface";
 import { AppError } from "../middleware/errorHandler";
 import { generateOrderNumber } from "../utils/string.util";
 
 export const orderService = {
   async create(userId: string, data: CreateOrderInput) {
+    console.log("---------- DEBUG CHECK ----------");
+    console.log("1. UserId từ Token:", userId);
+    console.log("2. AddressId từ Body:", data.addressId);
+
+    // Thử tìm riêng lẻ để xem thằng nào sai
+    const checkUser = await prisma.user.findUnique({ where: { id: userId } });
+    const checkAddressOnly = await prisma.address.findUnique({
+      where: { id: data.addressId },
+    });
+
+    console.log("3. User này có tồn tại ko?:", !!checkUser);
+    console.log("4. AddressId này có tồn tại ko?:", !!checkAddressOnly);
+    if (checkAddressOnly) {
+      console.log(
+        "5. Address này thực tế thuộc về User nào?:",
+        checkAddressOnly.userId,
+      );
+    }
+    console.log("---------------------------------");
     // validate exist address belong user
     const address = await prisma.address.findFirst({
       where: {
-        userId,
         id: data.addressId,
+        userId,
       },
     });
 
@@ -127,5 +146,53 @@ export const orderService = {
     });
 
     return order;
+  },
+
+  async getMyOrders(userId: string, query: GetOrderQuery) {
+    const page = Number(query.page) || 1;
+    const limit = Number(query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const where: any = { userId };
+    if (query.status) {
+      where.status = query.status;
+    }
+
+    const [orders, total] = await Promise.all([
+      prisma.order.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { createdAt: "desc" },
+        include: {
+          items: {
+            include: {
+              product: {
+                select: {
+                  id: true,
+                  name: true,
+                  slug: true,
+                  images: true,
+                },
+              },
+            },
+          },
+          address: true,
+        },
+      }),
+      prisma.order.count({ where }),
+    ]);
+
+    return {
+      orders,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPage: Math.ceil(total / limit),
+        hasNext: page * limit < total,
+        hasPrev: page > 1,
+      },
+    };
   },
 };

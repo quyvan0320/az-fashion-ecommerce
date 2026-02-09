@@ -20,13 +20,26 @@ export const orderController = {
       const userId = req.user!.userId;
       const result = await orderService.create(userId, req.body);
 
-      res
-        .status(201)
-        .json({
-          success: true,
-          message: "Đơn hàng đã tạo thành công",
-          data: result,
-        });
+      res.status(201).json({
+        success: true,
+        message: "Đơn hàng đã tạo thành công",
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  async getMyOrders(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user!.userId;
+      const result = await orderService.getMyOrders(userId, req.query);
+
+      res.status(201).json({
+        success: true,
+        data: result.orders,
+        pagination: result.pagination,
+      });
     } catch (error) {
       next(error);
     }
