@@ -73,4 +73,19 @@ export const orderController = {
       next(error);
     }
   },
+   async cancelOrder(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user!.userId;
+      const { id } = req.params;
+      const order = await orderService.cancelOrder(userId, id);
+
+      res.status(201).json({
+        success: true,
+        message: "Đơn hàng đã được hủy thành công",
+        data: order,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
 };

@@ -29,4 +29,13 @@ router.get(
   orderController.getOrderByNumber,
 );
 
+
+router.get(
+  "/:id/cancel",
+  authenticate,
+  orderIdValidator,
+  orderController.cancelOrder,
+);
+
+
 export default router;

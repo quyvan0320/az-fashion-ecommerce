@@ -1,3 +1,4 @@
+import { OrderStatus } from "@prisma/client";
 import prisma from "../config/prisma";
 import { CreateOrderInput, GetOrderQuery } from "../interfaces/order.interface";
 import { AppError } from "../middleware/errorHandler";
@@ -222,7 +223,7 @@ export const orderService = {
 
     return order;
   },
-   async getOrderByNumber(userId: string, orderNumber: string) {
+  async getOrderByNumber(userId: string, orderNumber: string) {
     const order = await prisma.order.findFirst({
       where: { orderNumber, userId },
       include: {
@@ -247,5 +248,51 @@ export const orderService = {
     }
 
     return order;
+  },
+
+  async cancelOrder(userId: string, orderId: string) {
+    const order = await prisma.order.findFirst({
+      where: { id: orderId, userId },
+      include: { items: true },
+    });
+
+    if (!order) {
+      throw new AppError("Đơn hàng không tồn tại", 404);
+    }
+
+    // just cancel then PENDING or PROCESSING
+    if (!["PENDING", "PROCESSING"].includes(order.status)) {
+      throw new AppError(
+        `Không thể hủy đơn hàng với trạng thái ${order.status}`,
+        400,
+      );
+    }
+
+    // cancel order + restore stock
+    const canceledOrder = await prisma.$transaction(async (tx) => {
+      // update order status
+
+      const updated = await tx.order.update({
+        where: { id: orderId },
+        data: { status: OrderStatus.CANCELED, paymentStatus: "REFUNDED" },
+        include: {
+          items: {
+            include: {
+              product: true,
+            },
+          },
+          address: true,
+        },
+      });
+
+      for (const item of order.items) {
+        await tx.product.update({
+          where: { id: item.productId },
+          data: { stock: { increment: item.quantity } },
+        });
+      }
+      return updated;
+    });
+    return canceledOrder;
   },
 };
