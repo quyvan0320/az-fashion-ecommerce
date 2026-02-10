@@ -295,4 +295,61 @@ export const orderService = {
     });
     return canceledOrder;
   },
+
+  // get all orders from admin
+  async getAllOrders(query: GetOrderQuery) {
+    const page = Number(query.page) || 1;
+    const limit = Number(query.limit) || 20;
+    const skip = (page - 1) * limit;
+
+    const where: any = {};
+    if (query.status) {
+      where.status = query.status;
+    }
+
+    const [orders, total] = await Promise.all([
+      prisma.order.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { createdAt: "desc" },
+
+        include: {
+          user: {
+            select: {
+              id: true,
+              email: true,
+              firstName: true,
+              lastName: true,
+            },
+          },
+          items: {
+            include: {
+              product: {
+                select: {
+                  id: true,
+                  name: true,
+                  images: true,
+                },
+              },
+            },
+          },
+          address: true,
+        },
+      }),
+      prisma.order.count({ where }),
+    ]);
+
+    return {
+      orders,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPage: Math.ceil(total / limit),
+        hasNext: page * limit < total,
+        hasPrev: page > 1,
+      },
+    };
+  },
 };

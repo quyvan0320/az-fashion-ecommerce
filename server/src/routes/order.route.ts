@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { authenticate } from "../middleware/auth";
+import { authenticate, authorize } from "../middleware/auth";
 import {
   createOrderValidator,
   getOrdersValidator,
@@ -15,12 +15,19 @@ router.post("/", authenticate, createOrderValidator, orderController.create);
 router.get("/", authenticate, getOrdersValidator, orderController.getMyOrders);
 
 router.get(
+  "/admin/all",
+  authenticate,
+  authorize("ADMIN"),
+  getOrdersValidator,
+  orderController.getAllOrders,
+);
+
+router.get(
   "/:id",
   authenticate,
   orderIdValidator,
   orderController.getOrderById,
 );
-
 
 router.get(
   "/number/:orderNumber",
@@ -29,13 +36,11 @@ router.get(
   orderController.getOrderByNumber,
 );
 
-
-router.get(
+router.patch(
   "/:id/cancel",
   authenticate,
   orderIdValidator,
   orderController.cancelOrder,
 );
-
 
 export default router;

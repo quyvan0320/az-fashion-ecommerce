@@ -73,7 +73,7 @@ export const orderController = {
       next(error);
     }
   },
-   async cancelOrder(req: Request, res: Response, next: NextFunction) {
+  async cancelOrder(req: Request, res: Response, next: NextFunction) {
     try {
       const userId = req.user!.userId;
       const { id } = req.params;
@@ -83,6 +83,21 @@ export const orderController = {
         success: true,
         message: "Đơn hàng đã được hủy thành công",
         data: order,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  // get all orders from admin
+  async getAllOrders(req: Request, res: Response, next: NextFunction) {
+    try {
+      const result = await orderService.getAllOrders(req.query);
+
+      res.status(201).json({
+        success: true,
+        data: result.orders,
+        pagination: result.pagination,
       });
     } catch (error) {
       next(error);
