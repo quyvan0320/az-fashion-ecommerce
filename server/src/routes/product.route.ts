@@ -10,6 +10,7 @@ import {
   updateStockValidator,
 } from "../validators/product.validator";
 import { productController } from "../controllers/product.controller";
+import { uploadMultiple } from "../middleware/upload";
 
 const router = Router();
 
@@ -24,6 +25,7 @@ router.post(
   "/",
   authenticate,
   authorize("ADMIN"),
+  uploadMultiple as any,
   createProductValidator,
   productController.create,
 );
@@ -65,6 +67,7 @@ router.put(
   "/:id",
   authenticate,
   authorize("ADMIN"),
+  uploadMultiple as any, 
   updateProductValidator,
   productController.update,
 );
