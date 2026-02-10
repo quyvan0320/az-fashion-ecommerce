@@ -52,3 +52,12 @@ export const orderNumberParamValidator = [
       "Định dạng số đơn hàng không hợp lệ. Dự kiến: ORD-YYYYMMDD-XXXXX",
     ),
 ];
+
+export const updateOrderStatusValidator = [
+  param("id").isUUID().withMessage("ID đơn hàng không hợp lệ"),
+  body("status")
+    .notEmpty()
+    .withMessage("Trạng thái là băt buộc")
+    .isIn(Object.values(OrderStatus))
+    .withMessage("Trạng thái không hợp lệ"),
+];

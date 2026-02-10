@@ -103,4 +103,43 @@ export const orderController = {
       next(error);
     }
   },
+
+  async updateOrderStatus(req: Request, res: Response, next: NextFunction) {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        throw new AppError(
+          errors
+            .array()
+            .map((err) => err.msg)
+            .join(". "),
+          400,
+        );
+      }
+
+      const { id } = req.params;
+      const order = await orderService.updateOrderStatus(id, req.body);
+
+      res.status(201).json({
+        success: true,
+        message: "Trạng thái đơn hàng được cập nhật thành công",
+        data: order,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+   async getOrderStats(req: Request, res: Response, next: NextFunction) {
+    try {
+      const result = await orderService.getOrderStats();
+
+      res.status(201).json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
 };

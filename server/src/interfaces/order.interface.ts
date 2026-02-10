@@ -6,9 +6,12 @@ export interface CreateOrderInput {
   notes: string;
 }
 
-
 export interface GetOrderQuery {
-  page?: number
-  limit?: number
-  status?: OrderStatus 
+  page?: number;
+  limit?: number;
+  status?: OrderStatus;
+}
+
+export interface UpdateOrderStatusInput {
+  status: OrderStatus;
 }

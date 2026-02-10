@@ -1,6 +1,10 @@
 import { OrderStatus } from "@prisma/client";
 import prisma from "../config/prisma";
-import { CreateOrderInput, GetOrderQuery } from "../interfaces/order.interface";
+import {
+  CreateOrderInput,
+  GetOrderQuery,
+  UpdateOrderStatusInput,
+} from "../interfaces/order.interface";
 import { AppError } from "../middleware/errorHandler";
 import { generateOrderNumber } from "../utils/string.util";
 
@@ -350,6 +354,121 @@ export const orderService = {
         hasNext: page * limit < total,
         hasPrev: page > 1,
       },
+    };
+  },
+
+  // update status order admin
+  async updateOrderStatus(orderId: string, data: UpdateOrderStatusInput) {
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
+    });
+
+    if (!order) {
+      throw new AppError("Đơn hàng không tồn tại", 404);
+    }
+
+    // validate status transition
+    const validTransitions: Record<OrderStatus, OrderStatus[]> = {
+      PENDING: [OrderStatus.PROCESSING, OrderStatus.CANCELED],
+      PROCESSING: [OrderStatus.SHIPPED, OrderStatus.CANCELED],
+      SHIPPED: [OrderStatus.DELIVERED],
+      DELIVERED: [],
+      CANCELED: [],
+    };
+
+    const allowedStatuses = validTransitions[order.status];
+
+    if (!allowedStatuses.includes(data.status)) {
+      throw new AppError(
+        `Không thể thay đổi trạng thái từ ${order.status} thành ${data.status}`,
+        400,
+      );
+    }
+
+    // generate tracking number when SHIPPED
+    const trackingNumber =
+      data.status === OrderStatus.SHIPPED
+        ? generateOrderNumber()
+        : order.trackingNumber;
+
+    // Update payment status when DELIVERED
+    const paymentStatus =
+      data.status === OrderStatus.DELIVERED ? "PAID" : order.paymentStatus;
+
+    const updated = await prisma.order.update({
+      where: { id: orderId },
+      data: {
+        status: data.status,
+        trackingNumber,
+        paymentStatus,
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            email: true,
+            firstName: true,
+            lastName: true,
+          },
+        },
+        items: {
+          include: {
+            product: true,
+          },
+        },
+        address: true,
+      },
+    });
+
+    return updated;
+  },
+
+  // get  order stats admin
+  async getOrderStats() {
+    const [
+      totalOrders,
+      pendingOrders,
+      processingOrders,
+      shippedOrder,
+      deliveredOrder,
+      canceledOrder,
+      totalRevenue,
+    ] = await Promise.all([
+      prisma.order.count(),
+      prisma.order.count({ where: { status: OrderStatus.PENDING } }),
+      prisma.order.count({ where: { status: OrderStatus.PROCESSING } }),
+      prisma.order.count({ where: { status: OrderStatus.SHIPPED } }),
+      prisma.order.count({ where: { status: OrderStatus.DELIVERED } }),
+      prisma.order.count({ where: { status: OrderStatus.CANCELED } }),
+      prisma.order.aggregate({
+        where: { status: { not: OrderStatus.CANCELED } },
+        _sum: { total: true },
+      }),
+    ]);
+
+    // recent orders (last 7 days)
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+    const recentOrders = await prisma.order.count({
+      where: {
+        createdAt: {
+          gte: sevenDaysAgo,
+        },
+      },
+    });
+
+    return {
+      totalOrders,
+      orderByStatus: {
+        pending: pendingOrders,
+        proccessing: processingOrders,
+        shipped: shippedOrder,
+        delevered: deliveredOrder,
+        canceled: canceledOrder,
+      },
+      totalRevenue: totalRevenue._sum.total || 0,
+      recentOrders,
     };
   },
 };

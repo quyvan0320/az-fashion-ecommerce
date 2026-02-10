@@ -5,6 +5,7 @@ import {
   getOrdersValidator,
   orderIdValidator,
   orderNumberParamValidator,
+  updateOrderStatusValidator,
 } from "../validators/order.validator";
 import { orderController } from "../controllers/order.controller";
 
@@ -41,6 +42,21 @@ router.patch(
   authenticate,
   orderIdValidator,
   orderController.cancelOrder,
+);
+
+router.patch(
+  "/admin/:id/status",
+  authenticate,
+  authorize("ADMIN"),
+  updateOrderStatusValidator,
+  orderController.updateOrderStatus,
+);
+
+router.get(
+  "/admin/stats",
+  authenticate,
+  authorize("ADMIN"),
+  orderController.getOrderStats,
 );
 
 export default router;
