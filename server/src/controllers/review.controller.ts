@@ -116,4 +116,17 @@ export const reviewController = {
       next(error);
     }
   },
+  async deleteReview(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params;
+      const userId = req.user!.userId;
+      await reviewService.deleteReview(userId, id);
+      res.status(201).json({
+        success: true,
+        message: "Đánh giá đã được xóa",
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
 };

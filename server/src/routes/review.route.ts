@@ -13,7 +13,18 @@ router.get("/my", authenticate, reviewController.getUserReviews);
 
 router.get("/:id", reviewIdValidator, reviewController.getReviewById);
 
-router.put("/:id", authenticate, updateReviewValidator, reviewController.updateReview);
+router.put(
+  "/:id",
+  authenticate,
+  updateReviewValidator,
+  reviewController.updateReview,
+);
 
+router.delete(
+  "/:id",
+  authenticate,
+  reviewIdValidator,
+  reviewController.deleteReview,
+);
 
 export default router;

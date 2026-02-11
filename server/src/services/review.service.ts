@@ -293,4 +293,23 @@ export const reviewService = {
 
     return updated;
   },
+
+  async deleteReview(userId: string, reviewId: string) {
+    const review = await prisma.review.findFirst({
+      where: {
+        userId,
+        id: reviewId,
+      },
+    });
+
+    if (!review) {
+      throw new AppError("Đánh giá không tồn tại", 404);
+    }
+
+    await prisma.review.delete({
+      where: { id: reviewId },
+    });
+
+    return { message: "Đánh giá đã được xóa" };
+  },
 };
