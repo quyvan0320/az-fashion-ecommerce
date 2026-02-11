@@ -2,6 +2,7 @@ import prisma from "../config/prisma";
 import {
   CreateReviewInput,
   GetReviewsQuery,
+  UpdateReviewInput,
 } from "../interfaces/review.interface";
 import { AppError } from "../middleware/errorHandler";
 
@@ -245,5 +246,51 @@ export const reviewService = {
     }
 
     return review;
+  },
+
+  async updateReview(
+    userId: string,
+    reviewId: string,
+    data: UpdateReviewInput,
+  ) {
+    // validate rating
+    if (data.rating && (data.rating < 1 || data.rating > 5)) {
+      throw new AppError("Đánh giá nằm trong khoản 1 đến 5", 400);
+    }
+
+    const review = await prisma.review.findFirst({
+      where: {
+        userId,
+        id: reviewId,
+      },
+    });
+
+    if (!review) {
+      throw new AppError("Đánh giá không tồn tại", 404);
+    }
+
+    const updated = await prisma.review.update({
+      where: { id: reviewId },
+      data: { rating: data.rating, comment: data.comment },
+      include: {
+        user: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+          },
+        },
+        product: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            images: true,
+          },
+        },
+      },
+    });
+
+    return updated;
   },
 };

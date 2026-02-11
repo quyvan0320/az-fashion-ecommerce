@@ -9,3 +9,8 @@ export interface GetReviewsQuery {
   limit?: number;
   rating?: number;
 }
+
+export interface UpdateReviewInput {
+  rating?: number;
+  comment?: string;
+}

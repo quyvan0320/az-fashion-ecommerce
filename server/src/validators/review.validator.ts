@@ -12,8 +12,8 @@ export const createReviewValidator = [
   body("comment")
     .optional()
     .trim()
-    .isLength({ min: 10, max: 100 })
-    .withMessage("Bình luận phải nằm trong khoản 10 đến 100 ký tự"),
+    .isLength({ min: 10, max: 1000 })
+    .withMessage("Bình luận phải nằm trong khoản 10 đến 1000 ký tự"),
 ];
 
 export const getProductReviewsValidator = [
@@ -35,4 +35,19 @@ export const getProductReviewsValidator = [
 
 export const reviewIdValidator = [
   param("id").isUUID().withMessage("ID đánh giá không hợp lệ"),
+];
+
+export const updateReviewValidator = [
+  param("id").isUUID().withMessage("ID đánh giá không hợp lệ"),
+  body("rating")
+    .notEmpty()
+    .withMessage("Đánh giá là bắt buộc")
+    .isInt({ min: 1, max: 5 })
+    .withMessage("Đánh giá phải nằm trong khoản 1 đến 5"),
+
+  body("comment")
+    .optional()
+    .trim()
+    .isLength({ min: 10, max: 1000 })
+    .withMessage("Bình luận phải nằm trong khoản 10 đến 1000 ký tự"),
 ];
