@@ -205,7 +205,6 @@ export const reviewService = {
       prisma.review.count({ where: { userId } }),
     ]);
 
-
     return {
       reviews,
       pagination: {
@@ -216,7 +215,35 @@ export const reviewService = {
         hasNext: page * limit < total,
         hasPrev: page > 1,
       },
-    
     };
+  },
+
+  async getReviewById(reviewId: string) {
+    const review = await prisma.review.findUnique({
+      where: { id: reviewId },
+      include: {
+        user: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+          },
+        },
+        product: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            images: true,
+          },
+        },
+      },
+    });
+
+    if (!review) {
+      throw new AppError("Đánh giá không tồn tại", 404);
+    }
+
+    return review;
   },
 };

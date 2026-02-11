@@ -78,4 +78,17 @@ export const reviewController = {
       next(error);
     }
   },
+
+  async getReviewById(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params;
+      const review = await reviewService.getReviewById(id);
+      res.status(201).json({
+        success: true,
+        data: review,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
 };
