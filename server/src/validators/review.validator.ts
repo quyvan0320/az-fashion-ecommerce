@@ -16,15 +16,23 @@ export const createReviewValidator = [
     .withMessage("Bình luận phải nằm trong khoản 10 đến 100 ký tự"),
 ];
 
-
 export const getProductReviewsValidator = [
-    query('page')
+  query("page")
     .optional()
-    .isInt({min: 1})
-    .withMessage('Trang phải là 1 số nguyên'),
+    .isInt({ min: 1 })
+    .withMessage("Trang phải là 1 số nguyên"),
 
-    query('limit')
+  query("limit")
     .optional()
-    .isInt({min: 1, max: 100})
-    .withMessage('Trang phải là 1 số nguyên')
-]
+    .isInt({ min: 1, max: 100 })
+    .withMessage("Tối đa phải là 1 đến 100"),
+
+  query("rating")
+    .optional()
+    .isInt({ min: 1, max: 5 })
+    .withMessage("Đánh giá phải nằm trong khoản 1 đến 5"),
+];
+
+export const reviewIdValidator = [
+  param("id").isUUID().withMessage("ID đánh giá không hợp lệ"),
+];

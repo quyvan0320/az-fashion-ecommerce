@@ -137,4 +137,46 @@ export const reviewService = {
       },
     };
   },
+
+  //check user can review product
+  async canReview(userId: string, productId: string) {
+    // check already reviewed
+    const existingReview = await prisma.review.findUnique({
+      where: {
+        userId_productId: {
+          userId,
+          productId,
+        },
+      },
+    });
+
+    if (existingReview) {
+      return {
+        canReview: false,
+        reason: "Đã đánh giá",
+      };
+    }
+
+    // if purchased
+    const hasPurchased = await prisma.orderItem.findFirst({
+      where: {
+        productId,
+        order: {
+          userId,
+          status: "DELIVERED",
+        },
+      },
+    });
+
+    if (!hasPurchased) {
+      return {
+        canReview: false,
+        reason: "Phải mua sản phẩm này",
+      };
+    }
+
+    return {
+      canReview: true,
+    };
+  },
 };

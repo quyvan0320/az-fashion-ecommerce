@@ -50,4 +50,18 @@ export const reviewController = {
       next(error);
     }
   },
+
+  async canReview(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user!.userId;
+      const { productId } = req.params;
+      const result = await reviewService.canReview(userId, productId);
+      res.status(201).json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
 };

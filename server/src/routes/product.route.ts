@@ -11,7 +11,7 @@ import {
 } from "../validators/product.validator";
 import { productController } from "../controllers/product.controller";
 import { uploadMultiple } from "../middleware/upload";
-import { createReviewValidator, getProductReviewsValidator } from "../validators/review.validator";
+import { createReviewValidator, getProductReviewsValidator, reviewIdValidator } from "../validators/review.validator";
 import { reviewController } from "../controllers/review.controller";
 
 const router = Router();
@@ -108,6 +108,11 @@ router.get(
   reviewController.getProductReviews,
 );
 
-
+router.get(
+  "/:productId/reviews/can-review",
+  authenticate,
+  reviewIdValidator,
+  reviewController.canReview,
+);
 
 export default router;
