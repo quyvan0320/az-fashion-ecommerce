@@ -1,4 +1,4 @@
-import { body, param } from "express-validator";
+import { body, param, query } from "express-validator";
 
 export const createReviewValidator = [
   param("productId").isUUID().withMessage("ID sản phẩm không hợp lệ"),
@@ -15,3 +15,16 @@ export const createReviewValidator = [
     .isLength({ min: 10, max: 100 })
     .withMessage("Bình luận phải nằm trong khoản 10 đến 100 ký tự"),
 ];
+
+
+export const getProductReviewsValidator = [
+    query('page')
+    .optional()
+    .isInt({min: 1})
+    .withMessage('Trang phải là 1 số nguyên'),
+
+    query('limit')
+    .optional()
+    .isInt({min: 1, max: 100})
+    .withMessage('Trang phải là 1 số nguyên')
+]

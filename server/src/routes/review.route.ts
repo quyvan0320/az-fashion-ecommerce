@@ -5,12 +5,8 @@ import { reviewController } from "../controllers/review.controller";
 
 const router = Router();
 
-// create
-router.post(
-  "/:productId",
-  authenticate,
-  createReviewValidator,
-  reviewController.createReview,
-);
+
+
+
 
 export default router;

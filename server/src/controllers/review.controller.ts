@@ -32,4 +32,22 @@ export const reviewController = {
       next(error);
     }
   },
+
+  async getProductReviews(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { productId } = req.params;
+      const result = await reviewService.getProductReviews(
+        productId,
+        req.query,
+      );
+      res.status(201).json({
+        success: true,
+        data: result.reviews,
+        pagination: result.pagination,
+        summary: result.summary,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
 };

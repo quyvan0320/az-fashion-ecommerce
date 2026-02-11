@@ -11,6 +11,8 @@ import {
 } from "../validators/product.validator";
 import { productController } from "../controllers/product.controller";
 import { uploadMultiple } from "../middleware/upload";
+import { createReviewValidator, getProductReviewsValidator } from "../validators/review.validator";
+import { reviewController } from "../controllers/review.controller";
 
 const router = Router();
 
@@ -92,5 +94,20 @@ router.delete(
 
 // get by id
 router.get("/:id", productIdValidator, productController.getById);
+
+router.post(
+  "/:productId/reviews",
+  authenticate,
+  createReviewValidator,
+  reviewController.createReview,
+);
+
+router.get(
+  "/:productId/reviews",
+  getProductReviewsValidator,
+  reviewController.getProductReviews,
+);
+
+
 
 export default router;

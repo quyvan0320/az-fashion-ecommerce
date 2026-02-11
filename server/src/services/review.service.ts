@@ -1,5 +1,8 @@
 import prisma from "../config/prisma";
-import { CreateReviewInput } from "../interfaces/review.interface";
+import {
+  CreateReviewInput,
+  GetReviewsQuery,
+} from "../interfaces/review.interface";
 import { AppError } from "../middleware/errorHandler";
 
 export const reviewService = {
@@ -60,7 +63,7 @@ export const reviewService = {
             id: true,
             firstName: true,
             lastName: true,
-          },    
+          },
         },
         product: {
           select: {
@@ -73,6 +76,65 @@ export const reviewService = {
       },
     });
 
-    return review
+    return review;
+  },
+
+  async getProductReviews(productId: string, query: GetReviewsQuery) {
+    const page = Number(query.page) || 1;
+    const limit = Number(query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const where: any = { productId };
+
+    if (query.rating) {
+      where.rating = query.rating;
+    }
+
+    const [reviews, total, averageRating] = await Promise.all([
+      prisma.review.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { createdAt: "desc" },
+        include: {
+          user: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+            },
+          },
+        },
+      }),
+      prisma.review.count({ where }),
+      prisma.review.aggregate({ where: { productId }, _avg: { rating: true } }),
+    ]);
+
+    // count by rating 1- 5 stars
+    const ratingDistribution = await Promise.all(
+      [5, 4, 3, 2, 1].map(async (star: number) => ({
+        rating: star,
+        count: await prisma.review.count({
+          where: { productId, rating: star },
+        }),
+      })),
+    );
+
+    return {
+      reviews,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+        hasNext: page * limit < total,
+        hasPrev: page > 1,
+      },
+      summary: {
+        averageRating: averageRating._avg.rating || 0,
+        totalReviews: total,
+        ratingDistribution,
+      },
+    };
   },
 };
