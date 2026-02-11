@@ -64,4 +64,18 @@ export const reviewController = {
       next(error);
     }
   },
+
+  async getUserReviews(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user!.userId;
+      const result = await reviewService.getUserReviews(userId, req.query);
+      res.status(201).json({
+        success: true,
+        data: result.reviews,
+        pagination: result.pagination,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
 };

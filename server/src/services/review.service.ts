@@ -179,4 +179,44 @@ export const reviewService = {
       canReview: true,
     };
   },
+
+  async getUserReviews(userId: string, query: GetReviewsQuery) {
+    const page = Number(query.page) || 1;
+    const limit = Number(query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const [reviews, total] = await Promise.all([
+      prisma.review.findMany({
+        where: { userId },
+        skip,
+        take: limit,
+        orderBy: { createdAt: "desc" },
+        include: {
+          product: {
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+              images: true,
+            },
+          },
+        },
+      }),
+      prisma.review.count({ where: { userId } }),
+    ]);
+
+
+    return {
+      reviews,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+        hasNext: page * limit < total,
+        hasPrev: page > 1,
+      },
+    
+    };
+  },
 };

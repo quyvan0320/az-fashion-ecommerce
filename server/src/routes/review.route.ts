@@ -5,8 +5,6 @@ import { reviewController } from "../controllers/review.controller";
 
 const router = Router();
 
-
-
-
+router.get("/my", authenticate, reviewController.getUserReviews);
 
 export default router;
