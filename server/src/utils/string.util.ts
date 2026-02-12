@@ -33,3 +33,27 @@ export const generateOrderNumber = (): string => {
   const random = Math.floor(10000 + Math.random() * 90000);
   return `ORD-${year}${month}${day}-${random}`;
 };
+
+// generate sku variant
+export const generateVariantSKU = (
+  productSKU: string,
+  size?: string,
+  color?: string,
+): string => {
+  // Hàm phụ để dọn dẹp chuỗi: bỏ dấu, bỏ ký tự đặc biệt, thay khoảng trắng
+  const clean = (str: string) => 
+    str
+      .trim()
+      .normalize("NFD")               // Tách dấu ra khỏi chữ (Ví dụ: Đ -> D + ˆ)
+      .replace(/[\u0300-\u036f]/g, "") // Xóa các dấu vừa tách
+      .replace(/đ/g, "d").replace(/Đ/g, "D") // Xử lý riêng chữ Đ
+      .replace(/[^a-zA-Z0-9]/g, "")   // Chỉ giữ lại chữ và số (xóa ký tự đặc biệt)
+      .toUpperCase();
+
+  const parts = [productSKU.trim().toUpperCase()];
+  
+  if (size) parts.push(clean(size));
+  if (color) parts.push(clean(color));
+
+  return parts.join("-");
+};

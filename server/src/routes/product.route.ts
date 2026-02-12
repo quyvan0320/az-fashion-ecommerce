@@ -11,8 +11,14 @@ import {
 } from "../validators/product.validator";
 import { productController } from "../controllers/product.controller";
 import { uploadMultiple } from "../middleware/upload";
-import { createReviewValidator, getProductReviewsValidator, reviewIdValidator } from "../validators/review.validator";
+import {
+  createReviewValidator,
+  getProductReviewsValidator,
+  reviewIdValidator,
+} from "../validators/review.validator";
 import { reviewController } from "../controllers/review.controller";
+import { createVariantValidator } from "../validators/variant.validator";
+import { variantController } from "../controllers/variant.controller";
 
 const router = Router();
 
@@ -69,7 +75,7 @@ router.put(
   "/:id",
   authenticate,
   authorize("ADMIN"),
-  uploadMultiple as any, 
+  uploadMultiple as any,
   updateProductValidator,
   productController.update,
 );
@@ -113,6 +119,14 @@ router.get(
   authenticate,
   reviewIdValidator,
   reviewController.canReview,
+);
+
+router.post(
+  "/:productId/variants",
+  authenticate,
+  authorize("ADMIN"),
+  createVariantValidator,
+  variantController.createVariant,
 );
 
 export default router;
