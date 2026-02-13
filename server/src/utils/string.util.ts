@@ -48,7 +48,7 @@ export const generateVariantSKU = (
       .replace(/[\u0300-\u036f]/g, "") // Xóa các dấu vừa tách
       .replace(/đ/g, "d").replace(/Đ/g, "D") // Xử lý riêng chữ Đ
       .replace(/[^a-zA-Z0-9]/g, "")   // Chỉ giữ lại chữ và số (xóa ký tự đặc biệt)
-      .toUpperCase();
+      .toUpperCase(); 
 
   const parts = [productSKU.trim().toUpperCase()];
   

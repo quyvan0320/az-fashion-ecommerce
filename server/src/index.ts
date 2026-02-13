@@ -13,6 +13,7 @@ import cartRouter from "./routes/cart.route";
 import addressRouter from "./routes/address.route";
 import orderRouter from "./routes/order.route";
 import reviewRouter from "./routes/review.route";
+import variantRouter from "./routes/variant.route";
 
 // Load environment variables from .env file
 dotenv.config();
@@ -26,7 +27,7 @@ app.use(
   cors({
     origin: process.env.ALLOWED_ORIGINS?.split(",") || "http://localhost:3000",
     credentials: true,
-  })
+  }),
 ); // CORS configuration
 
 app.use(morgan("dev")); // request status log
@@ -42,6 +43,7 @@ app.use("/api/cart", cartRouter);
 app.use("/api/addresses", addressRouter);
 app.use("/api/orders", orderRouter);
 app.use("/api/reviews", reviewRouter);
+app.use("/api/variants", variantRouter);
 app.use("/api/upload", uploadRoute);
 
 // check server status
