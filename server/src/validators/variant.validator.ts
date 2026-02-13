@@ -61,3 +61,8 @@ export const updateVariantValidator = [
 export const productVariantsValidator = [
   param("productId").isUUID().withMessage("ID sản phẩm không hợp lệ"),
 ];
+
+
+export const variantIdValidator = [
+  param("id").isUUID().withMessage("ID biến thể không hợp lệ"),
+];

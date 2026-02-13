@@ -70,4 +70,20 @@ export const variantController = {
       next(error);
     }
   },
+
+   async getVariantById(req: Request, res: Response, next: NextFunction) {
+    try {
+     
+      const { id } = req.params;
+
+      const variant = await variantService.getVariantById(id);
+
+      res.status(201).json({
+        success: true,
+        data: variant,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
 };

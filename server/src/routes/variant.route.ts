@@ -1,6 +1,9 @@
 import { Router } from "express";
 import { authenticate, authorize } from "../middleware/auth";
-import { updateVariantValidator } from "../validators/variant.validator";
+import {
+  updateVariantValidator,
+  variantIdValidator,
+} from "../validators/variant.validator";
 import { variantController } from "../controllers/variant.controller";
 
 const route = Router();
@@ -12,5 +15,7 @@ route.put(
   updateVariantValidator,
   variantController.updateVariant,
 );
+
+route.get("/:id", variantIdValidator, variantController.getVariantById);
 
 export default route;

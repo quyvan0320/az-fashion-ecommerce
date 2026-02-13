@@ -134,7 +134,6 @@ router.post(
 
 router.get(
   "/:productId/variants",
-  authenticate,
   productVariantsValidator,
   variantController.getProductVariants,
 );
