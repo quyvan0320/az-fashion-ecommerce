@@ -17,7 +17,10 @@ import {
   reviewIdValidator,
 } from "../validators/review.validator";
 import { reviewController } from "../controllers/review.controller";
-import { createVariantValidator } from "../validators/variant.validator";
+import {
+  createVariantValidator,
+  productVariantsValidator,
+} from "../validators/variant.validator";
 import { variantController } from "../controllers/variant.controller";
 
 const router = Router();
@@ -127,6 +130,13 @@ router.post(
   authorize("ADMIN"),
   createVariantValidator,
   variantController.createVariant,
+);
+
+router.get(
+  "/:productId/variants",
+  authenticate,
+  productVariantsValidator,
+  variantController.getProductVariants,
 );
 
 export default router;

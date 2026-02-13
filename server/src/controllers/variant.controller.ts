@@ -54,4 +54,20 @@ export const variantController = {
       next(error);
     }
   },
+
+    async getProductVariants(req: Request, res: Response, next: NextFunction) {
+    try {
+     
+      const { productId } = req.params;
+
+      const variant = await variantService.getProductVariants(productId);
+
+      res.status(201).json({
+        success: true,
+        data: variant,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
 };

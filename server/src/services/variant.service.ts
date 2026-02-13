@@ -107,7 +107,7 @@ export const variantService = {
         );
       }
 
-      // NẾU Admin KHÔNG tự nhập SKU mới, mình tự generate lại SKU theo Size/Color mới
+      // if admin no write, auto generate  SKU by new Size/Color 
       if (!data.sku) {
         newSku = generateVariantSKU(
           variant.product.sku,
@@ -146,5 +146,31 @@ export const variantService = {
     });
 
     return updated;
+  },
+
+  async getProductVariants(productId: string) {
+    // check product exist
+    const product = await prisma.product.findUnique({
+      where: {
+        id: productId,
+      },
+      select: { id: true, name: true, sku: true },
+    });
+
+    if (!product) {
+      throw new AppError("Sản phẩm không tồn tại", 404);
+    }
+
+    const variants = await prisma.variant.findMany({
+      where: { productId },
+      orderBy: [{ size: "asc" }, { color: "asc" }],
+    });
+
+    return {
+      product,
+      variants,
+      totalVariants: variants.length,
+      totalStock: variants.reduce((sum, v) => sum + v.stock, 0),
+    };
   },
 };

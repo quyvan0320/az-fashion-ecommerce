@@ -29,8 +29,6 @@ export const createVariantValidator = [
     .withMessage("SKU chỉ được chứa chữ in hoa, số và dấu gạch nối"),
 ];
 
-
-
 export const updateVariantValidator = [
   param("id").isUUID().withMessage("ID sản phẩm không hợp lệ"),
   body("size")
@@ -58,4 +56,8 @@ export const updateVariantValidator = [
     .withMessage("SKU phải có từ 3 đến 50 ký tự")
     .matches(/^[A-Z0-9-]+$/)
     .withMessage("SKU chỉ được chứa chữ in hoa, số và dấu gạch nối"),
+];
+
+export const productVariantsValidator = [
+  param("productId").isUUID().withMessage("ID sản phẩm không hợp lệ"),
 ];
