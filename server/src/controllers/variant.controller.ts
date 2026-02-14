@@ -137,4 +137,33 @@ export const variantController = {
       next(error);
     }
   },
+  async getProductSizes(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { productId } = req.params;
+
+      const variant = await variantService.getProductSizes(productId);
+
+      res.status(201).json({
+        success: true,
+        data: variant,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+   async getProductColors(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { productId } = req.params;
+
+      const variant = await variantService.getProductColors(productId);
+
+      res.status(201).json({
+        success: true,
+        data: variant,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
 };

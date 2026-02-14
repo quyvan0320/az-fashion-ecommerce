@@ -259,4 +259,24 @@ export const variantService = {
 
     return variant;
   },
+
+  async getProductSizes(productId: string) {
+    const variants = await prisma.variant.findMany({
+      where: { productId, size: { not: null } },
+      select: { size: true },
+      distinct: ["size"],
+      orderBy: { size: "asc" },
+    });
+    return variants.map((v) => v.size).filter(Boolean);
+  },
+
+  async getProductColors(productId: string) {
+    const variants = await prisma.variant.findMany({
+      where: { productId, color: { not: null } },
+      select: { color: true },
+      distinct: ["color"],
+      orderBy: { color: "asc" },
+    });
+    return variants.map((v) => v.color).filter(Boolean);
+  },
 };

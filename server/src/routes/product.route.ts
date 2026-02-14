@@ -150,4 +150,16 @@ router.get(
   variantController.findVariant,
 );
 
+router.get(
+  "/:productId/variants/sizes",
+  productVariantsValidator,
+  variantController.getProductSizes,
+);
+
+router.get(
+  "/:productId/variants/colors",
+  productVariantsValidator,
+  variantController.getProductColors,
+);
+
 export default router;
