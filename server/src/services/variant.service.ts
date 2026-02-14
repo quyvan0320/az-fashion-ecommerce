@@ -175,7 +175,6 @@ export const variantService = {
   },
 
   async getVariantById(variantId: string) {
-    // check product exist
     const variant = await prisma.variant.findUnique({
       where: {
         id: variantId,
@@ -198,5 +197,46 @@ export const variantService = {
     }
 
     return variant;
+  },
+
+  async deleteVariant(variantId: string) {
+    const variant = await prisma.variant.findUnique({
+      where: {
+        id: variantId,
+      },
+    });
+
+    if (!variant) {
+      throw new AppError("Biến thể không tồn tại", 404);
+    }
+
+    await prisma.variant.delete({
+      where: { id: variantId },
+    });
+
+    return { message: "Biến thể đã được xóa thành công" };
+  },
+
+  async updateStock(variantId: string, quantity: number) {
+    const variant = await prisma.variant.findUnique({
+      where: { id: variantId },
+    });
+
+    if (!variant) {
+      throw new AppError("Biến thể không tồn tại", 404);
+    }
+
+    const newStock = variant.stock + quantity;
+
+    if (newStock < 0) {
+      throw new AppError("Không đủ hàng", 400);
+    }
+
+    const updated = await prisma.variant.update({
+      where: {id: variantId},
+      data: {stock: newStock}
+    })
+
+    return updated
   },
 };

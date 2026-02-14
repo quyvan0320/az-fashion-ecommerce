@@ -29,7 +29,7 @@ export const variantController = {
       next(error);
     }
   },
-    async updateVariant(req: Request, res: Response, next: NextFunction) {
+  async updateVariant(req: Request, res: Response, next: NextFunction) {
     try {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
@@ -55,9 +55,8 @@ export const variantController = {
     }
   },
 
-    async getProductVariants(req: Request, res: Response, next: NextFunction) {
+  async getProductVariants(req: Request, res: Response, next: NextFunction) {
     try {
-     
       const { productId } = req.params;
 
       const variant = await variantService.getProductVariants(productId);
@@ -71,9 +70,8 @@ export const variantController = {
     }
   },
 
-   async getVariantById(req: Request, res: Response, next: NextFunction) {
+  async getVariantById(req: Request, res: Response, next: NextFunction) {
     try {
-     
       const { id } = req.params;
 
       const variant = await variantService.getVariantById(id);
@@ -81,6 +79,40 @@ export const variantController = {
       res.status(201).json({
         success: true,
         data: variant,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  async deleteVariant(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params;
+
+      await variantService.deleteVariant(id);
+
+      res.status(201).json({
+        success: true,
+        message: "Biến thể đã được xóa thành công",
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+  async updateStock(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params;
+      const { quantity } = req.body;
+
+      if (typeof quantity !== "number") {
+        throw new AppError("Số lượng phải là 1 số nguyên", 400);
+      }
+      const variant = await variantService.updateStock(id, quantity);
+
+      res.status(201).json({
+        success: true,
+        message: "Kho hàng được câp nhật thành công",
+        data: variant
       });
     } catch (error) {
       next(error);

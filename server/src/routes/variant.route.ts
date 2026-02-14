@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { authenticate, authorize } from "../middleware/auth";
 import {
+  updateStockVariantValidator,
   updateVariantValidator,
   variantIdValidator,
 } from "../validators/variant.validator";
@@ -15,6 +16,23 @@ route.put(
   updateVariantValidator,
   variantController.updateVariant,
 );
+
+route.patch(
+  "/:id/stock",
+  authenticate,
+  authorize("ADMIN"),
+  updateStockVariantValidator,
+  variantController.updateStock,
+);
+
+route.delete(
+  "/:id",
+  authenticate,
+  authorize("ADMIN"),
+  variantIdValidator,
+  variantController.deleteVariant,
+);
+
 
 route.get("/:id", variantIdValidator, variantController.getVariantById);
 

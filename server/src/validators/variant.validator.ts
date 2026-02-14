@@ -62,7 +62,14 @@ export const productVariantsValidator = [
   param("productId").isUUID().withMessage("ID sản phẩm không hợp lệ"),
 ];
 
-
 export const variantIdValidator = [
   param("id").isUUID().withMessage("ID biến thể không hợp lệ"),
+];
+
+export const updateStockVariantValidator = [
+  param("id").isUUID().withMessage("ID biến thể không hợp lệ"),
+  body("stock")
+    .optional()
+    .isInt({ min: 0 })
+    .withMessage("Gía tiền phải là 1 số nguyên dương"),
 ];
