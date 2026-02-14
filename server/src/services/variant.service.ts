@@ -233,10 +233,30 @@ export const variantService = {
     }
 
     const updated = await prisma.variant.update({
-      where: {id: variantId},
-      data: {stock: newStock}
-    })
+      where: { id: variantId },
+      data: { stock: newStock },
+    });
 
-    return updated
+    return updated;
+  },
+
+  async findVariant(productId: string, size?: string, color?: string) {
+    if (!size && !color) {
+      throw new AppError("Phải nhập kích thước hoặc màu sắc", 400);
+    }
+
+    const variant = await prisma.variant.findFirst({
+      where: {
+        productId,
+        ...(size && { size }),
+        ...(color && { color }),
+      },
+    });
+
+    if (!variant) {
+      throw new AppError("Biến thể không tồn tại", 404);
+    }
+
+    return variant;
   },
 };

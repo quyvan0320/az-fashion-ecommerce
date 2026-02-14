@@ -138,4 +138,16 @@ router.get(
   variantController.getProductVariants,
 );
 
+router.get(
+  "/:productId/variants",
+  productVariantsValidator,
+  variantController.getProductVariants,
+);
+
+router.get(
+  "/:productId/variants/find",
+  productVariantsValidator,
+  variantController.findVariant,
+);
+
 export default router;

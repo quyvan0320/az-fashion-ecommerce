@@ -112,7 +112,26 @@ export const variantController = {
       res.status(201).json({
         success: true,
         message: "Kho hàng được câp nhật thành công",
-        data: variant
+        data: variant,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  async findVariant(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { productId } = req.params;
+      const { size, color } = req.query;
+      const variant = await variantService.findVariant(
+        productId,
+        size as string,
+        color as string,
+      );
+
+      res.status(201).json({
+        success: true,
+        data: variant,
       });
     } catch (error) {
       next(error);
