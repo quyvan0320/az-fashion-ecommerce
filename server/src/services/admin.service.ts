@@ -145,4 +145,36 @@ export const adminService = {
       revenue,
     }));
   },
+  async getTopProducts(limit: number = 10) {
+    const topProducts = await prisma.orderItem.groupBy({
+      by: ["productId"],
+      _sum: { quantity: true },
+      _count: { id: true },
+      orderBy: { _sum: { quantity: "desc" } },
+      take: limit,
+    });
+
+    const productsWithDetail = await Promise.all(
+      topProducts.map(async (item) => {
+        const product = await prisma.product.findUnique({
+          where: { id: item.productId },
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            price: true,
+            images: true,
+          },
+        });
+
+        return {
+          product,
+          totalSold: item._sum.quantity || 0,
+          orderCount: item._count.id,
+        };
+      }),
+    );
+
+    return productsWithDetail;
+  },
 };

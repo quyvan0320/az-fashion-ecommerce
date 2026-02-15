@@ -14,10 +14,23 @@ export const adminController = {
     }
   },
 
-   async getRevenueAnalytics(req: Request, res: Response, next: NextFunction) {
+  async getRevenueAnalytics(req: Request, res: Response, next: NextFunction) {
     try {
-      const days = Number(req.query.days) || 30 
+      const days = Number(req.query.days) || 30;
       const data = await adminService.getRevenueAnalytics(days);
+      res.status(201).json({
+        success: true,
+        data,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  async getTopProducts(req: Request, res: Response, next: NextFunction) {
+    try {
+      const limit = Number(req.query.limit) || 10;
+      const data = await adminService.getTopProducts(limit);
       res.status(201).json({
         success: true,
         data,

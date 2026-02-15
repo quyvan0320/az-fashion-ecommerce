@@ -19,4 +19,11 @@ router.get(
   adminController.getRevenueAnalytics,
 );
 
+router.get(
+  "/analytics/top-products",
+  anylyticsValidator,
+  adminController.getTopProducts,
+);
+
+
 export default router;
