@@ -177,4 +177,29 @@ export const adminService = {
 
     return productsWithDetail;
   },
+
+  async getLowStockProducts(threshold: number = 10) {
+    const products = await prisma.product.findMany({
+      where: {
+        stock: { lt: threshold },
+        isActive: true,
+      },
+      orderBy: { stock: "asc" },
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        stock: true,
+        sku: true,
+        images: true,
+        category: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    });
+
+    return products;
+  },
 };

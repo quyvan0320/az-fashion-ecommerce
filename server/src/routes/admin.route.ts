@@ -5,13 +5,9 @@ import { anylyticsValidator } from "../validators/admin.validator";
 
 const router = Router();
 
+router.use(authenticate, authorize("ADMIN"));
 
-router.use(authenticate, authorize('ADMIN')); 
-
-router.get(
-  "/dashboard",
-  adminController.getDashboard,
-);
+router.get("/dashboard", adminController.getDashboard);
 
 router.get(
   "/analytics/revenue",
@@ -25,5 +21,10 @@ router.get(
   adminController.getTopProducts,
 );
 
+router.get(
+  "/products/low-stock",
+  anylyticsValidator,
+  adminController.getLowStockProducts,
+);
 
 export default router;
