@@ -116,4 +116,33 @@ export const adminService = {
       })),
     };
   },
+
+  async getRevenueAnalytics(days: number = 30) {
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - days);
+
+    const orders = await prisma.order.findMany({
+      where: {
+        status: { not: OrderStatus.CANCELED },
+        createdAt: { gte: startDate },
+      },
+      select: {
+        total: true,
+        createdAt: true,
+      },
+      orderBy: { createdAt: "asc" },
+    });
+
+    const revenueByDate: Record<string, number> = {};
+
+    orders.forEach((order) => {
+      const date = order.createdAt.toISOString().split("T")[0];
+      revenueByDate[date] = (revenueByDate[date] || 0) + order.total;
+    });
+
+    return Object.entries(revenueByDate).map(([date, revenue]) => ({
+      date,
+      revenue,
+    }));
+  },
 };
