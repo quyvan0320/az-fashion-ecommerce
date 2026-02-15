@@ -1,0 +1,119 @@
+import { OrderStatus } from "@prisma/client";
+import prisma from "../config/prisma";
+
+export const adminService = {
+  async getDashboard() {
+    const now = new Date();
+    const startOfToday = new Date(now.setHours(0, 0, 0, 0));
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const startOfYear = new Date(now.getFullYear(), 0, 1);
+
+    const [
+      totalUsers,
+      totalProducts,
+      totalCategories,
+      totalOrders,
+      totalRevenue,
+      todayRevenue,
+      monthRevenue,
+      yearRevenue,
+      pendingOrders,
+      processingOrders,
+      lowStockProduct,
+      recentOrders,
+    ] = await Promise.all([
+      // total counts
+      prisma.user.count(),
+      prisma.product.count(),
+      prisma.category.count(),
+      prisma.order.count(),
+
+      // Total revenue all time
+      prisma.order.aggregate({
+        where: { status: { not: OrderStatus.CANCELED } },
+        _sum: { total: true },
+      }),
+
+      // today revenue
+      prisma.order.aggregate({
+        where: {
+          status: { not: OrderStatus.CANCELED },
+          createdAt: { gte: startOfToday },
+        },
+        _sum: { total: true },
+      }),
+
+      // month revenue
+      prisma.order.aggregate({
+        where: {
+          status: { not: OrderStatus.CANCELED },
+          createdAt: { gte: startOfMonth },
+        },
+        _sum: { total: true },
+      }),
+
+      // this year revenue
+      prisma.order.aggregate({
+        where: {
+          status: { not: OrderStatus.CANCELED },
+          createdAt: { gte: startOfYear },
+        },
+        _sum: { total: true },
+      }),
+
+      // pending orders
+      prisma.order.count({ where: { status: OrderStatus.PENDING } }),
+
+      // processing orders
+      prisma.order.count({ where: { status: OrderStatus.PROCESSING } }),
+
+      // low stock products < 10
+      prisma.product.count({ where: { stock: { lt: 10 }, isActive: true } }),
+
+      // recent orders last 10
+      prisma.order.findMany({
+        take: 10,
+        orderBy: { createdAt: "desc" },
+        include: {
+          user: {
+            select: {
+              firstName: true,
+              lastName: true,
+              email: true,
+            },
+          },
+        },
+      }),
+    ]);
+
+    return {
+      overview: {
+        totalUsers,
+        totalProducts,
+        totalCategories,
+        totalOrders,
+        totalRevenue: totalRevenue._sum.total || 0,
+        todayRevenue: todayRevenue._sum.total || 0,
+        monthRevenue: monthRevenue._sum.total || 0,
+        yearRevenue: yearRevenue._sum.total || 0,
+      },
+      orders: {
+        pending: pendingOrders,
+        processing: processingOrders,
+        total: totalOrders,
+      },
+      alerts: {
+        lowStockProduct,
+      },
+      recentOrders: recentOrders.map((order) => ({
+        id: order.id,
+        orderNumber: order.orderNumber,
+        total: order.total,
+        status: order.status,
+        customer: `${order.user.lastName} ${order.user.firstName}`,
+        email: order.user.email,
+        createdAt: order.createdAt,
+      })),
+    };
+  },
+};

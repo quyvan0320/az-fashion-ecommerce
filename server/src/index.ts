@@ -14,6 +14,7 @@ import addressRouter from "./routes/address.route";
 import orderRouter from "./routes/order.route";
 import reviewRouter from "./routes/review.route";
 import variantRouter from "./routes/variant.route";
+import adminRouter from "./routes/admin.route";
 
 // Load environment variables from .env file
 dotenv.config();
@@ -44,6 +45,7 @@ app.use("/api/addresses", addressRouter);
 app.use("/api/orders", orderRouter);
 app.use("/api/reviews", reviewRouter);
 app.use("/api/variants", variantRouter);
+app.use("/api/admin", adminRouter);
 app.use("/api/upload", uploadRoute);
 
 // check server status
