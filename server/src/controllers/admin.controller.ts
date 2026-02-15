@@ -64,4 +64,17 @@ export const adminController = {
       next(error);
     }
   },
+
+  async getAllUsers(req: Request, res: Response, next: NextFunction) {
+    try {
+      const results = await adminService.getAllUsers(req.query);
+      res.status(201).json({
+        success: true,
+        data: results.users,
+        pagination: results.pagination,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
 };

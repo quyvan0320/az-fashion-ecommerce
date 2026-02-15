@@ -1,7 +1,10 @@
 import { Router } from "express";
 import { authenticate, authorize } from "../middleware/auth";
 import { adminController } from "../controllers/admin.controller";
-import { anylyticsValidator } from "../validators/admin.validator";
+import {
+  anylyticsValidator,
+  getUsersValidator,
+} from "../validators/admin.validator";
 
 const router = Router();
 
@@ -28,5 +31,7 @@ router.get(
 );
 
 router.get("/users/stats", adminController.getUserStats);
+
+router.get("/users", getUsersValidator, adminController.getAllUsers);
 
 export default router;
