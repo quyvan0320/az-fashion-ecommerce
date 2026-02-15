@@ -1,4 +1,4 @@
-import { OrderStatus } from "@prisma/client";
+import { OrderStatus, Role } from "@prisma/client";
 import prisma from "../config/prisma";
 
 export const adminService = {
@@ -201,5 +201,46 @@ export const adminService = {
     });
 
     return products;
+  },
+  async getUserStats() {
+    const [totalUsers, totalCustomers, totalAdmins, recentUsers] =
+      await Promise.all([
+        prisma.user.count(),
+        prisma.user.count({ where: { role: Role.CUSTOMER } }),
+        prisma.user.count({ where: { role: Role.ADMIN } }),
+        prisma.user.findMany({
+          take: 10,
+          orderBy: { createdAt: "desc" },
+          select: {
+            id: true,
+            email: true,
+            firstName: true,
+            lastName: true,
+            role: true,
+            createdAt: true,
+          },
+        }),
+      ]);
+
+    // users per month (last 6 month)
+    const sixMonthsAgo = new Date();
+    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+
+    const usersByMonth = await prisma.user.groupBy({
+      by: ["createdAt"],
+      where: { createdAt: { gte: sixMonthsAgo } },
+      _count: { id: true },
+    });
+
+    return {
+      total: totalUsers,
+      customers: totalCustomers,
+      admins: totalAdmins,
+      recentUsers,
+      growthData: usersByMonth.map((item) => ({
+        month: item.createdAt.toISOString().substring(0, 7),
+        count: item._count.id,
+      })),
+    };
   },
 };

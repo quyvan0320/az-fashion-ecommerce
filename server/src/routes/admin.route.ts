@@ -27,4 +27,6 @@ router.get(
   adminController.getLowStockProducts,
 );
 
+router.get("/users/stats", adminController.getUserStats);
+
 export default router;

@@ -40,10 +40,22 @@ export const adminController = {
     }
   },
 
-   async getLowStockProducts(req: Request, res: Response, next: NextFunction) {
+  async getLowStockProducts(req: Request, res: Response, next: NextFunction) {
     try {
       const threshold = Number(req.query.threshold) || 10;
       const data = await adminService.getLowStockProducts(threshold);
+      res.status(201).json({
+        success: true,
+        data,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  async getUserStats(req: Request, res: Response, next: NextFunction) {
+    try {
+      const data = await adminService.getUserStats();
       res.status(201).json({
         success: true,
         data,
