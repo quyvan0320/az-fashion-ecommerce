@@ -1,5 +1,6 @@
 import { OrderStatus, Role } from "@prisma/client";
 import prisma from "../config/prisma";
+import { AppError } from "../middleware/errorHandler";
 
 export const adminService = {
   async getDashboard() {
@@ -303,5 +304,56 @@ export const adminService = {
         hasPrev: page > 1,
       },
     };
+  },
+
+  async updateUserRole(userId: string, role: Role) {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new AppError("Người dùng không tồn tại", 404);
+    }
+
+    const updated = await prisma.user.update({
+      where: { id: userId },
+      data: { role },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        role: true,
+      },
+    });
+
+    return updated;
+  },
+
+  async deleteUser(userId: string) {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      include: {
+        _count: {
+          select: { orders: true },
+        },
+      },
+    });
+
+    if (!user) {
+      throw new AppError("Người dùng không tồn tại", 404);
+    }
+
+    if (user._count.orders > 0) {
+      throw new AppError(
+        `Không thể xóa người dùng có ${user._count.orders} đơn hàng`,
+        400,
+      );
+    }
+
+    await prisma.user.delete({
+      where: { id: userId },
+    });
+
+    return { message: "Người dùng đã được xóa thành công" };
   },
 };

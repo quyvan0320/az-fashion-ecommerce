@@ -1,5 +1,5 @@
 import { Role } from "@prisma/client";
-import { query } from "express-validator";
+import { body, param, query } from "express-validator";
 
 export const anylyticsValidator = [
   query("days")
@@ -39,4 +39,18 @@ export const getUsersValidator = [
     .trim()
     .isLength({ max: 100 })
     .withMessage("Tìm kiếm không được vượt quá 100 ký tự"),
+];
+
+export const updateUserRoleValidator = [
+  param("id").isUUID().withMessage("ID người dùng không hợp lệ"),
+
+  body("role")
+    .notEmpty()
+    .withMessage("Vai trò phải bắt buộc")
+    .isIn(Object.values(Role))
+    .withMessage("Vai trò không hợp lệ"),
+];
+
+export const deleteUserValidator = [
+  param("id").isUUID().withMessage("ID người dùng không hợp lệ"),
 ];

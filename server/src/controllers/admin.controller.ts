@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { adminService } from "../services/admin.service";
+import prisma from "../config/prisma";
 
 export const adminController = {
   async getDashboard(req: Request, res: Response, next: NextFunction) {
@@ -72,6 +73,36 @@ export const adminController = {
         success: true,
         data: results.users,
         pagination: results.pagination,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  async updateUserRole(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params;
+      const { role } = req.body;
+      const data = await adminService.updateUserRole(id, role);
+
+      res.status(201).json({
+        success: true,
+        message: "Vai trò được cập nhật thành công",
+        data,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  async deleteUser(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params;
+      await adminService.deleteUser(id);
+
+      res.status(201).json({
+        success: true,
+        message: "Người dùng đã được xóa thành công",
       });
     } catch (error) {
       next(error);
