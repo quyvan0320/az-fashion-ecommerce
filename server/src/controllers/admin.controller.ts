@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from "express";
 import { adminService } from "../services/admin.service";
-import prisma from "../config/prisma";
 
 export const adminController = {
   async getDashboard(req: Request, res: Response, next: NextFunction) {
@@ -81,7 +80,7 @@ export const adminController = {
 
   async updateUserRole(req: Request, res: Response, next: NextFunction) {
     try {
-      const { id } = req.params;
+      const { id } = req.params as { id: string };
       const { role } = req.body;
       const data = await adminService.updateUserRole(id, role);
 
@@ -97,7 +96,7 @@ export const adminController = {
 
   async deleteUser(req: Request, res: Response, next: NextFunction) {
     try {
-      const { id } = req.params;
+      const { id } = req.params as { id: string };
       await adminService.deleteUser(id);
 
       res.status(201).json({

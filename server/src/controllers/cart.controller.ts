@@ -76,7 +76,11 @@ export const cartController = {
 
       const { quantity } = req.body;
 
-      const cartItem = await cartService.updateQuantity(userId, id, quantity);
+      const cartItem = await cartService.updateQuantity(
+        userId,
+        id as string,
+        quantity,
+      );
       res.json({
         success: true,
         message: "Giỏ hàng đã được cập nhật",
@@ -94,7 +98,7 @@ export const cartController = {
         throw new AppError("Người dùng chưa đăng nhập", 401);
       }
 
-      await cartService.removeItem(userId, id);
+      await cartService.removeItem(userId, id as string);
       res.status(201).json({
         success: true,
         message: "Sản phẩm đã được xóa khỏi giỏ hàng",

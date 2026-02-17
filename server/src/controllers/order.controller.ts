@@ -11,7 +11,7 @@ export const orderController = {
         throw new AppError(
           errors
             .array()
-            .map((err) => err.msg)
+            .map((err: any) => err.msg)
             .join(". "),
           400,
         );
@@ -49,7 +49,7 @@ export const orderController = {
     try {
       const userId = req.user!.userId;
       const { id } = req.params;
-      const order = await orderService.getOrderById(userId, id);
+      const order = await orderService.getOrderById(userId, String(id));
 
       res.status(201).json({
         success: true,
@@ -63,7 +63,7 @@ export const orderController = {
     try {
       const userId = req.user!.userId;
       const { orderNumber } = req.params;
-      const order = await orderService.getOrderByNumber(userId, orderNumber);
+      const order = await orderService.getOrderByNumber(userId, String(orderNumber));
 
       res.status(201).json({
         success: true,
@@ -77,7 +77,7 @@ export const orderController = {
     try {
       const userId = req.user!.userId;
       const { id } = req.params;
-      const order = await orderService.cancelOrder(userId, id);
+      const order = await orderService.cancelOrder(userId, String(id));
 
       res.status(201).json({
         success: true,
@@ -111,14 +111,14 @@ export const orderController = {
         throw new AppError(
           errors
             .array()
-            .map((err) => err.msg)
+            .map((err : any) => err.msg)
             .join(". "),
           400,
         );
       }
 
       const { id } = req.params;
-      const order = await orderService.updateOrderStatus(id, req.body);
+      const order = await orderService.updateOrderStatus(String(id), req.body);
 
       res.status(201).json({
         success: true,
@@ -130,7 +130,7 @@ export const orderController = {
     }
   },
 
-   async getOrderStats(req: Request, res: Response, next: NextFunction) {
+  async getOrderStats(req: Request, res: Response, next: NextFunction) {
     try {
       const result = await orderService.getOrderStats();
 

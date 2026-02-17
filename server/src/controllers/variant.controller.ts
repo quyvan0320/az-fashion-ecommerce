@@ -18,7 +18,10 @@ export const variantController = {
       }
       const { productId } = req.params;
 
-      const variant = await variantService.createVariant(productId, req.body);
+      const variant = await variantService.createVariant(
+        productId as string,
+        req.body,
+      );
 
       res.status(201).json({
         success: true,
@@ -43,7 +46,10 @@ export const variantController = {
       }
       const { id } = req.params;
 
-      const variant = await variantService.updateVariant(id, req.body);
+      const variant = await variantService.updateVariant(
+        id as string,
+        req.body,
+      );
 
       res.status(201).json({
         success: true,
@@ -59,7 +65,9 @@ export const variantController = {
     try {
       const { productId } = req.params;
 
-      const variant = await variantService.getProductVariants(productId);
+      const variant = await variantService.getProductVariants(
+        productId as string,
+      );
 
       res.status(201).json({
         success: true,
@@ -74,7 +82,7 @@ export const variantController = {
     try {
       const { id } = req.params;
 
-      const variant = await variantService.getVariantById(id);
+      const variant = await variantService.getVariantById(id as string);
 
       res.status(201).json({
         success: true,
@@ -89,7 +97,7 @@ export const variantController = {
     try {
       const { id } = req.params;
 
-      await variantService.deleteVariant(id);
+      await variantService.deleteVariant(id as string);
 
       res.status(201).json({
         success: true,
@@ -107,7 +115,7 @@ export const variantController = {
       if (typeof quantity !== "number") {
         throw new AppError("Số lượng phải là 1 số nguyên", 400);
       }
-      const variant = await variantService.updateStock(id, quantity);
+      const variant = await variantService.updateStock(id as string, quantity);
 
       res.status(201).json({
         success: true,
@@ -124,7 +132,7 @@ export const variantController = {
       const { productId } = req.params;
       const { size, color } = req.query;
       const variant = await variantService.findVariant(
-        productId,
+        productId as string,
         size as string,
         color as string,
       );
@@ -141,7 +149,7 @@ export const variantController = {
     try {
       const { productId } = req.params;
 
-      const variant = await variantService.getProductSizes(productId);
+      const variant = await variantService.getProductSizes(productId as string);
 
       res.status(201).json({
         success: true,
@@ -152,11 +160,11 @@ export const variantController = {
     }
   },
 
-   async getProductColors(req: Request, res: Response, next: NextFunction) {
+  async getProductColors(req: Request, res: Response, next: NextFunction) {
     try {
       const { productId } = req.params;
 
-      const variant = await variantService.getProductColors(productId);
+      const variant = await variantService.getProductColors(productId as string);
 
       res.status(201).json({
         success: true,

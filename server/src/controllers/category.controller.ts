@@ -49,7 +49,7 @@ export const categoryController = {
   async getById(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
-      const category = await categoryService.getById(id);
+      const category = await categoryService.getById(id as string);
       res.json({ success: true, data: category });
     } catch (error) {
       next(error);
@@ -60,7 +60,7 @@ export const categoryController = {
   async getBySlug(req: Request, res: Response, next: NextFunction) {
     try {
       const { slug } = req.params;
-      const category = await categoryService.getBySlug(slug);
+      const category = await categoryService.getBySlug(slug as string);
       res.json({ success: true, data: category });
     } catch (error) {
       next(error);
@@ -81,7 +81,7 @@ export const categoryController = {
         );
       }
       const { id } = req.params;
-      const category = await categoryService.update(id, req.body);
+      const category = await categoryService.update(id as string, req.body);
       res.json({
         success: true,
         messge: "Cập nhật danh mục thành công",
@@ -96,7 +96,7 @@ export const categoryController = {
   async delete(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
-      await categoryService.delete(id);
+      await categoryService.delete(id as string);
       res.json({ success: true, message: "Xóa danh mục thành công" });
     } catch (error) {
       next(error);

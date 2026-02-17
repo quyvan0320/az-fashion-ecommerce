@@ -47,7 +47,7 @@ export const productController = {
   async getById(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
-      const product = await productService.getById(id);
+      const product = await productService.getById(id as string);
       res.status(201).json({ success: true, data: product });
     } catch (error) {
       next(error);
@@ -58,7 +58,7 @@ export const productController = {
   async getBySlug(req: Request, res: Response, next: NextFunction) {
     try {
       const { slug } = req.params;
-      const product = await productService.getBySlug(slug);
+      const product = await productService.getBySlug(slug as string);
       res.status(201).json({ success: true, data: product });
     } catch (error) {
       next(error);
@@ -69,7 +69,7 @@ export const productController = {
   async getByCategory(req: Request, res: Response, next: NextFunction) {
     try {
       const { categoryId } = req.params;
-      const result = await productService.getByCategory(categoryId, req.query);
+      const result = await productService.getByCategory(categoryId as string, req.query);
       res.status(201).json({
         success: true,
         data: result.products,
@@ -94,7 +94,7 @@ export const productController = {
         );
       }
       const { id } = req.params;
-      const product = await productService.update(id, req.body);
+      const product = await productService.update(id as string, req.body);
       res.status(201).json({
         success: true,
         message: "Sản phẩm đã được cập nhật thành công",
@@ -107,7 +107,7 @@ export const productController = {
   async delete(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
-      await productService.delete(id);
+      await productService.delete(id as string);
       res.status(201).json({
         success: true,
         message: "Sản phẩm đã được xóa thành công",
@@ -126,7 +126,7 @@ export const productController = {
       if (typeof quantity !== "number") {
         throw new AppError("Số lượng phải là kiểu số nguyên", 400);
       }
-      const product = await productService.updateStock(id, quantity);
+      const product = await productService.updateStock(id as string, quantity);
       res.status(201).json({
         success: true,
         message: "Kho hàng đã được cập nhật",
@@ -142,7 +142,7 @@ export const productController = {
     try {
       const { id } = req.params;
 
-      const product = await productService.toggleActive(id);
+      const product = await productService.toggleActive(id as string);
       res.status(201).json({
         success: true,
         message: `Sản phẩm ${product.isActive ? "đã được kích hoạt" : "đã vô hiêu hóa"} thành công`,
@@ -173,7 +173,7 @@ export const productController = {
     try {
       const limit = Number(req.query.limit) || 4;
       const {id} = req.params
-      const product = await productService.getRelated(id,limit);
+      const product = await productService.getRelated(id as string,limit);
       res.status(201).json({
         success: true,
         data: product,

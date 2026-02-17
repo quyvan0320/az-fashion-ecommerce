@@ -56,7 +56,7 @@ export const addressController = {
       }
       const userId = req.user!.userId;
       const { id } = req.params;
-      const address = await addressService.update(userId, id, req.body);
+      const address = await addressService.update(userId, id as string, req.body);
       res.status(201).json({
         success: true,
         message: "Địa chỉ đã được cập nhật",
@@ -71,7 +71,7 @@ export const addressController = {
     try {
       const userId = req.user!.userId;
       const { id } = req.params;
-      const address = await addressService.getById(userId, id);
+      const address = await addressService.getById(userId, id as string);
       res.json({ success: true, data: address });
     } catch (error) {
       next(error);
@@ -93,7 +93,7 @@ export const addressController = {
     try {
       const userId = req.user!.userId;
       const { id } = req.params;
-      const address = await addressService.setDefault(userId, id);
+      const address = await addressService.setDefault(userId, id as string);
       res.json({ success: true, data: address });
     } catch (error) {
       next(error);
@@ -104,7 +104,7 @@ export const addressController = {
     try {
       const userId = req.user!.userId;
       const { id } = req.params;
-      await addressService.delete(userId, id);
+      await addressService.delete(userId, id as string);
       res
         .status(201)
         .json({ success: true, message: "Địa chỉ đã được xóa thành công" });

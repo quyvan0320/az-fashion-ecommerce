@@ -11,14 +11,14 @@ export const reviewController = {
         throw new AppError(
           errors
             .array()
-            .map((err) => err.msg)
+            .map((err : any) => err.msg)
             .join(","),
           400,
         );
       }
 
       const userId = req.user!.userId;
-      const { productId } = req.params;
+      const { productId } = req.params as { productId: string };
       const review = await reviewService.createReview(userId, {
         productId,
         ...req.body,
@@ -35,7 +35,7 @@ export const reviewController = {
 
   async getProductReviews(req: Request, res: Response, next: NextFunction) {
     try {
-      const { productId } = req.params;
+      const { productId } = req.params as { productId: string };
       const result = await reviewService.getProductReviews(
         productId,
         req.query,
@@ -54,7 +54,7 @@ export const reviewController = {
   async canReview(req: Request, res: Response, next: NextFunction) {
     try {
       const userId = req.user!.userId;
-      const { productId } = req.params;
+      const { productId } = req.params as { productId: string };
       const result = await reviewService.canReview(userId, productId);
       res.status(201).json({
         success: true,
@@ -81,7 +81,7 @@ export const reviewController = {
 
   async getReviewById(req: Request, res: Response, next: NextFunction) {
     try {
-      const { id } = req.params;
+      const { id } = req.params as { id: string };
       const review = await reviewService.getReviewById(id);
       res.status(201).json({
         success: true,
@@ -105,7 +105,7 @@ export const reviewController = {
       }
 
       const userId = req.user!.userId;
-      const { id } = req.params;
+      const { id } = req.params as { id: string };
       const review = await reviewService.updateReview(userId, id, req.body);
       res.status(201).json({
         success: true,
@@ -118,7 +118,7 @@ export const reviewController = {
   },
   async deleteReview(req: Request, res: Response, next: NextFunction) {
     try {
-      const { id } = req.params;
+      const { id } = req.params as { id: string };
       const userId = req.user!.userId;
       await reviewService.deleteReview(userId, id);
       res.status(201).json({
