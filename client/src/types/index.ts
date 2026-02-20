@@ -65,12 +65,34 @@ export interface Order {
   createdAt: string;
 }
 
+// review
+export interface Review {
+  id: string;
+  rating: number;
+  comment: string;
+  userId: string;
+  user: { firstName: string; lastName: string };
+  createdAt: string;
+}
+
+//cart item
+export interface CartItem {
+  productId: string;
+  name: string;
+  price: number;
+  image: string;
+  quantity: number;
+  stock: number;
+}
+
 //api response
 export interface ApiResponse<T = any> {
   success: boolean;
   data: T;
   message?: string;
 }
+
+
 
 export interface PaginationResponse<T> {
   success: boolean;
