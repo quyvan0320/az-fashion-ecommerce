@@ -26,7 +26,8 @@ const PORT = process.env.PORT || 3000;
 app.use(helmet()); // security headers http
 app.use(
   cors({
-    origin: process.env.ALLOWED_ORIGINS?.split(",") || "http://localhost:3000",
+    origin: process.env.ALLOWED_ORIGINS?.split(",") || "http://localhost:5000/",
+    methods: ['GET', 'POST', 'PUT', 'PATCH','DELETE'],
     credentials: true,
   }),
 ); // CORS configuration

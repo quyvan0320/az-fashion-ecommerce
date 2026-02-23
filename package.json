@@ -1,0 +1,30 @@
+{
+  "name": "az-fashion-ecommerce",
+  "version": "1.0.0",
+  "description": "Fashion e-commerce platform built with React, Node.js, PostgreSQL, Prisma, Typescript.",
+  "private": true,
+  "workspaces": [
+    "server",
+    "client"
+  ],
+  "scripts": {
+    "dev:server": "npm run dev -w server",
+    "dev:client": "npm run dev -w client",
+    "dev": "concurrently -n \"SERVER,CLIENT\" -c \"bgBlue,bgGreen\" \"npm run dev:server\" \"npm run dev:client\"",
+    "install:all": "npm install"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/quyvan0320/az-fashion-ecommerce.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/quyvan0320/az-fashion-ecommerce/issues"
+  },
+  "homepage": "https://github.com/quyvan0320/az-fashion-ecommerce#readme",
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
