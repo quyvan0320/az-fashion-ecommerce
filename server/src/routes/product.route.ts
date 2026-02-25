@@ -70,8 +70,6 @@ router.patch(
   productController.toggleActive,
 );
 
-// get related
-router.get("/:id/related", productIdValidator, productController.getRelated);
 
 // admin update
 router.put(
@@ -149,6 +147,8 @@ router.get(
   productVariantsValidator,
   variantController.findVariant,
 );
+// get related
+router.get("/:id/related", productIdValidator, productController.getRelated);
 
 router.get(
   "/:productId/variants/sizes",

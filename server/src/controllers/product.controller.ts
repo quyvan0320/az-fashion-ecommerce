@@ -173,7 +173,7 @@ export const productController = {
     try {
       const limit = Number(req.query.limit) || 4;
       const {id} = req.params
-      const product = await productService.getRelated(id as string,limit);
+      const product = await productService.getRelated(id as string, limit);
       res.status(201).json({
         success: true,
         data: product,

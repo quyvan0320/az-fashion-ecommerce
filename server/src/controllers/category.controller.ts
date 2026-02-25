@@ -22,7 +22,7 @@ export const categoryController = {
 
       const category = await categoryService.create(req.body);
       res.status(201).json({
-        status: true,
+        success: true,
         message: "Danh mục đã được tạo thành công",
         data: category,
       });
@@ -36,7 +36,7 @@ export const categoryController = {
     try {
       const result = await categoryService.getAll(req.query);
       res.json({
-        status: true,
+        success: true,
         data: result.categories,
         pagination: result.pagination,
       });
