@@ -1,4 +1,4 @@
-import { useLogin } from "@/hooks/useAuth";
+import { useLogin } from "@/services/queries/useAuth";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -83,7 +83,7 @@ const Login = () => {
         </form>
 
         <p className="text-center text-sm text-gray-500 ">
-          Chưa có tài khoản{" "}
+          Chưa có tài khoản?{" "}
           <Link
             to={ROUTES.REGISTER}
             className="text-black font-medium hover:underline"
