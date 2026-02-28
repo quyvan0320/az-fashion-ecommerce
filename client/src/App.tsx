@@ -12,6 +12,7 @@ import Users from "./pages/admin/Users";
 import Categories from "./pages/admin/Categories";
 import PublicLayout from "./components/layout/PublicLayout";
 import Home from "./pages/public/Home";
+import Spinner from "./components/common/Spinner";
 
 // == protected route
 const ProtectedRoute = ({
@@ -24,9 +25,7 @@ const ProtectedRoute = ({
   const { isAuthenticated, isAdmin, isLoading } = useAuth();
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary" />
-      </div>
+      <Spinner/>
     );
   }
 
