@@ -1,4 +1,4 @@
-import { ApiResponse } from "@/types";
+import { ApiResponse, PaginationResponse } from "@/types";
 import {
   AdminUser,
   AnalyticsParams,
@@ -52,7 +52,7 @@ export const adminService = {
   // list users
   getAllUsers: async (
     params?: getUserParams,
-  ): Promise<ApiResponse<AdminUser>> => {
+  ): Promise<PaginationResponse<AdminUser>> => {
     const { data } = await axiosInstance.get("/admin/users", {
       params,
     });
@@ -78,7 +78,7 @@ export const adminService = {
 
   // delete user
   deleteUser: async (id: string): Promise<ApiResponse<null>> => {
-    const { data } = await axiosInstance.patch(`/admin/users/${id}`);
+    const { data } = await axiosInstance.delete(`/admin/users/${id}`);
     return data;
   },
 };

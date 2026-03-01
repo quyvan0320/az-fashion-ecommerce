@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link } from "react-router-dom";
 import { ROUTES } from "@/config/constants";
+import Button from "@/components/common/Button";
 // define validation rules
 const loginSchema = z.object({
   email: z.string().email("Email không hợp lệ"),
@@ -73,13 +74,15 @@ const Login = () => {
           </div>
 
           {/* submit */}
-          <button
+          <Button
             type="submit"
-            disabled={isPending}
-            className="w-full bg-black text-white py-2 rounded-md text-sm font-medium hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition"
+            variant="primary"
+            fullWidth
+            isLoading={isPending}
+            className="py-2"
           >
-            {isPending ? "Đang đăng nhập..." : "Đăng nhập"}
-          </button>
+            Đăng nhập
+          </Button>
         </form>
 
         <p className="text-center text-sm text-gray-500 ">

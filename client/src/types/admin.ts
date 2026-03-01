@@ -61,16 +61,28 @@ export interface AdminUser {
   email: string;
   lastName: string;
   firstName: string;
+  phone: string | null;
   role: "ADMIN" | "CUSTOMER";
   createdAt: string;
-  _count: { orders: number };
+  _count: { orders: number; reviews: number };
 }
 
 export interface UserStats {
-  totalUsers: number;
-  totalAdmins: number;
-  totalCustomers: number;
-  newUsersThisMonth: number;
+  total: number;
+  customers: number;
+  admins: number;
+  recentUsers: {
+    id: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+    role: string;
+    createdAt: string;
+  }[];
+  growthData: {
+    month: string;
+    count: number;
+  }[];
 }
 
 export interface getUserParams {

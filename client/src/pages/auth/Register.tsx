@@ -1,5 +1,6 @@
+import Button from "@/components/common/Button";
 import { ROUTES } from "@/config/constants";
-import { useRegister } from "@/hooks/useAuth";
+import { useRegister } from "@/services/queries/useAuth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
@@ -113,7 +114,7 @@ const Register = () => {
             )}
           </div>
 
-            {/*confirm password */}
+          {/*confirm password */}
           <div className="space-y-1">
             <label className="text-sm font-medium">Xác nhận mật khẩu</label>
             <input
@@ -124,18 +125,22 @@ const Register = () => {
               disabled={isPending}
             />
             {errors.confirmPassword && (
-              <p className="text-sm text-red-500">{errors.confirmPassword.message}</p>
+              <p className="text-sm text-red-500">
+                {errors.confirmPassword.message}
+              </p>
             )}
           </div>
 
           {/* submit */}
-          <button
+          <Button
             type="submit"
-            disabled={isPending}
-            className="w-full bg-black text-white py-2 rounded-md text-sm font-medium hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition"
+            variant="primary"
+            fullWidth
+            isLoading={isPending}
+            className="py-2"
           >
-            {isPending ? "Đang đăng ký..." : "Đăng ký"}
-          </button>
+            Đăng ký
+          </Button>
         </form>
 
         <p className="text-center text-sm text-gray-500 ">
