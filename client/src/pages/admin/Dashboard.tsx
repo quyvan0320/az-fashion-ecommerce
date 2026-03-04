@@ -26,7 +26,7 @@ import {
 import StatusBadge from "@/components/admin/Dashboard/StatusBadge";
 const Dashboard = () => {
   const [dataRange, setDateRange] = useState({
-    startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 10)
+   startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
       .toISOString()
       .split("T")[0],
     endDate: new Date().toISOString().split("T")[0],
@@ -135,7 +135,7 @@ const Dashboard = () => {
             Không có dữ liệu doanh thu
           </div>
         ) : (
-          <ResponsiveContainer width="100%" height={350}>
+          <ResponsiveContainer width="100%" height={350} key={`${dataRange.startDate}-${dataRange.endDate}`}>
             <AreaChart
               data={revenue}
               margin={{ top: 10, right: 30, left: 0, bottom: 0 }}

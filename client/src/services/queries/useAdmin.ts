@@ -2,17 +2,8 @@ import { AnalyticsParams, getUserParams } from "@/types/admin";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { adminService } from "../api/admin";
 import toast from "react-hot-toast";
+import { adminKeys } from "@/config/query-keys";
 
-export const adminKeys = {
-  dashboard: ["admin", "dashboard"] as const,
-  revenue: (params?: AnalyticsParams) => ["admin", "revenue", params] as const,
-  topProducts: (params?: AnalyticsParams) =>
-    ["admin", "top-products", params] as const,
-  lowStock: (params?: AnalyticsParams) =>
-    ["admin", "low-stock", params] as const,
-  users: (params?: getUserParams) => ["admin", "users", params] as const,
-  userStats: ["admin", "top-products"] as const,
-};
 
 // dashboard
 export const useAdminDashboard = () => {
