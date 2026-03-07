@@ -49,9 +49,22 @@ export const productService = {
     //create
     return prisma.product.create({
       data: {
-        ...data,
+        name: data.name,
+        description: data.description,
+        images: data.images,
+        categoryId: data.categoryId,
+
+        price: Number(data.price),
+        salePrice: Number(data.salePrice || 0),
+        stock: Number(data.stock || 0),
+
+        isActive:
+          typeof data.isActive === "string"
+            ? data.isActive === "true"
+            : Boolean(data.isActive),
+
         slug: finalSlug,
-        sku,
+        sku: sku,
       },
       include: {
         category: {
@@ -340,7 +353,17 @@ export const productService = {
       where: { id },
       data: {
         ...data,
-        slug,
+
+        price: data.price ? Number(data.price) : undefined,
+        salePrice: data.salePrice !== undefined ? Number(data.salePrice) : 0,
+        stock: data.stock !== undefined ? Number(data.stock) : undefined,
+
+        isActive:
+          typeof data.isActive === "string"
+            ? data.isActive === "true"
+            : Boolean(data.isActive),
+
+        slug: slug,
       },
       include: {
         category: {

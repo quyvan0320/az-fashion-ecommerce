@@ -110,12 +110,13 @@ export const variantController = {
   async updateStock(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
-      const { quantity } = req.body;
+      const stock = Number(req.body.stock);
 
-      if (typeof quantity !== "number") {
-        throw new AppError("Số lượng phải là 1 số nguyên", 400);
+     
+      if (isNaN(stock) || !Number.isInteger(stock)) {
+        throw new AppError("Số lượng phải là một số nguyên hợp lệ", 400);
       }
-      const variant = await variantService.updateStock(id as string, quantity);
+      const variant = await variantService.updateStock(id as string, stock);
 
       res.status(201).json({
         success: true,
@@ -164,7 +165,9 @@ export const variantController = {
     try {
       const { productId } = req.params;
 
-      const variant = await variantService.getProductColors(productId as string);
+      const variant = await variantService.getProductColors(
+        productId as string,
+      );
 
       res.status(201).json({
         success: true,

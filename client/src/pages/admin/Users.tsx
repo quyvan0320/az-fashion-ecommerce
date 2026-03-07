@@ -80,6 +80,7 @@ const Users = () => {
           <Input
             leftIcon={Search}
             value={search}
+            placeholder="Tìm người dùng..."
             onChange={(e) => {
               setSearch(e.target.value);
               setPage(1);

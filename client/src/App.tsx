@@ -41,7 +41,10 @@ const ProtectedRoute = ({
 
 // == guest route no login
 const GuestRoute = ({ children }: { children: React.ReactNode }) => {
-  const { isAuthenticated, isAdmin } = useAuth();
+  const { isAuthenticated, isAdmin, isLoading } = useAuth(); 
+
+  if (isLoading) return <Spinner />;
+
   if (isAuthenticated) {
     return (
       <Navigate to={isAdmin ? ROUTES.ADMIN_DASHBOARD : ROUTES.HOME} replace />

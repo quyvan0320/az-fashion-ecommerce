@@ -26,14 +26,16 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
-      // unauthorized - clear token and redirect to login
+    const isLoginPage = window.location.pathname === "/login";
+
+    if (error.response?.status === 401 && !isLoginPage) {
       localStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
       localStorage.removeItem(STORAGE_KEYS.USER);
       window.location.href = "/login";
     }
+    
     return Promise.reject(error);
-  },
+  }
 );
 
 export default axiosInstance;

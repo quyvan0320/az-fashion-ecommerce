@@ -1,6 +1,7 @@
 import { AnalyticsParams, getUserParams } from "@/types/admin";
 import { GetCategoriesParams } from "@/types/category";
 import { GetOrderParams } from "@/types/order";
+import { GetProductsParams } from "@/types/product";
 
 export const orderKeys = {
   all: ["orders"] as const,
@@ -30,3 +31,14 @@ export const categoryKeys = {
   detail: (id: string) => ["categories", "detail", id] as const,
   stats: ["categories", "stats"] as const,
 };
+
+export const productKeys = {
+  all: ['products'] as const,
+  list: (params?: GetProductsParams) => ['products', 'list', params] as const,
+  detail: (id: string) => ['products', 'detail', id] as const,
+  slug: (slug: string) => ['products', 'slug', slug] as const,
+  featured: ['products', 'featured'] as const,
+  related: (id: string) => ['products', 'related', id] as const,
+  variants: (productId: string) => ['products', productId, 'variants'] as const
+
+}

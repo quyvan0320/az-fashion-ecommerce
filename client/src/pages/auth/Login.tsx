@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Link } from "react-router-dom";
 import { ROUTES } from "@/config/constants";
 import Button from "@/components/common/Button";
+import Input from "@/components/common/Input";
 // define validation rules
 const loginSchema = z.object({
   email: z.string().email("Email không hợp lệ"),
@@ -42,44 +43,34 @@ const Login = () => {
           </p>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          {/* email */}
-          <div className="space-y-1">
-            <label className="text-sm font-medium">Email</label>
-            <input
-              {...register("email")}
-              type="email"
-              placeholder="example@email.com"
-              className="w-full border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-              disabled={isPending}
-            />
-            {errors.email && (
-              <p className="text-sm text-red-500">{errors.email.message}</p>
-            )}
-          </div>
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          noValidate 
+          className="space-y-4"
+        >
+          <Input
+            label="Email"
+            type="email"
+            placeholder="example@email.com"
+            error={errors.email?.message}
+            {...register("email")}
+            disabled={isPending}
+          />
 
-          {/* password */}
-          <div className="space-y-1">
-            <label className="text-sm font-medium">Mật khẩu</label>
-            <input
-              {...register("password")}
-              type="password"
-              placeholder="......."
-              className="w-full border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-              disabled={isPending}
-            />
-            {errors.password && (
-              <p className="text-sm text-red-500">{errors.password.message}</p>
-            )}
-          </div>
+          <Input
+            label="Mật khẩu"
+            type="password"
+            placeholder="......."
+            error={errors.password?.message}
+            {...register("password")}
+            disabled={isPending}
+          />
 
-          {/* submit */}
           <Button
-            type="submit"
+            type="submit" 
             variant="primary"
             fullWidth
             isLoading={isPending}
-            className="py-2"
           >
             Đăng nhập
           </Button>
