@@ -10,11 +10,11 @@ const PAGE_TITLES: Record<string, string> = {
   "/admin/users": "Quản lý người dùng",
 };
 
-interface HeaderProps {
+interface AdminHeaderProps {
   onMenuClick: () => void;
 }
 
-const Header = ({ onMenuClick }: HeaderProps) => {
+const AdminHeader = ({ onMenuClick }: AdminHeaderProps) => {
   const { pathname } = useLocation();
   const { user } = useAuth();
 
@@ -45,4 +45,4 @@ const Header = ({ onMenuClick }: HeaderProps) => {
   );
 };
 
-export default Header;
+export default AdminHeader;

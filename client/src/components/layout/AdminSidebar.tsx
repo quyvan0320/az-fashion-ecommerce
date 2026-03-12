@@ -46,12 +46,12 @@ const NAV_ITEMS = [
   },
 ];
 
-interface SidebarProps {
+interface AdminSidebarProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
+const AdminSidebar = ({ isOpen, onClose }: AdminSidebarProps) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
@@ -124,4 +124,4 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
   );
 };
 
-export default Sidebar;
+export default AdminSidebar;

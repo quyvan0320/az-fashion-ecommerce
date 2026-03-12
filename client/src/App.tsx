@@ -29,17 +29,17 @@ const ProtectedRoute = ({
     );
   }
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated ) {
     return <Navigate to={ROUTES.LOGIN} replace />;
   }
 
-  if (!isAdmin) {
+  if (requiredAdmin && !isAdmin) {
     return <Navigate to={ROUTES.HOME} replace />;
   }
   return <>{children}</>;
 };
 
-// == guest route no login
+
 const GuestRoute = ({ children }: { children: React.ReactNode }) => {
   const { isAuthenticated, isAdmin, isLoading } = useAuth(); 
 
@@ -47,7 +47,7 @@ const GuestRoute = ({ children }: { children: React.ReactNode }) => {
 
   if (isAuthenticated) {
     return (
-      <Navigate to={isAdmin ? ROUTES.ADMIN_DASHBOARD : ROUTES.HOME} replace />
+      <Navigate to={isAdmin ? '/admin' : '/'} replace />
     );
   }
   return <>{children}</>;

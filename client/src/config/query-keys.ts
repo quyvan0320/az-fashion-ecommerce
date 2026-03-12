@@ -33,12 +33,16 @@ export const categoryKeys = {
 };
 
 export const productKeys = {
-  all: ['products'] as const,
-  list: (params?: GetProductsParams) => ['products', 'list', params] as const,
-  detail: (id: string) => ['products', 'detail', id] as const,
-  slug: (slug: string) => ['products', 'slug', slug] as const,
-  featured: ['products', 'featured'] as const,
-  related: (id: string) => ['products', 'related', id] as const,
-  variants: (productId: string) => ['products', productId, 'variants'] as const
+  all: ["products"] as const,
+  list: (params?: GetProductsParams) => ["products", "list", params] as const,
+  detail: (id: string) => ["products", "detail", id] as const,
+  slug: (slug: string) => ["products", "slug", slug] as const,
+  featured: ["products", "featured"] as const,
+  related: (id: string) => ["products", "related", id] as const,
+  variants: (productId: string) => ["products", productId, "variants"] as const,
+};
 
-}
+export const cartKeys = {
+  cart: ["cart"] as const,
+  summary: ["cart", "summary"] as const,
+};

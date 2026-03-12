@@ -1,6 +1,6 @@
 import { useState } from "react";
-import Sidebar from "./Sidebar";
-import Header from "./Header";
+import AdminSidebar from "./AdminSidebar";
+import AdminHeader from "./AdminHeader";
 import { Outlet } from "react-router-dom";
 
 const AdminLayout = () => {
@@ -18,11 +18,11 @@ const AdminLayout = () => {
       )}
 
       {/* sidebar */}
-      {<Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />}
+      {<AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />}
 
       {/* main content */}
       <div className="flex flex-col flex-1 overflow-hidden">
-        <Header onMenuClick={() => setSidebarOpen(true)} />
+        <AdminHeader onMenuClick={() => setSidebarOpen(true)} />
 
         {/* page content outlet render admin pages */}
         <main className="flex-1 overflow-y-auto">
