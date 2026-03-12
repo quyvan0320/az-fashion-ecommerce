@@ -13,6 +13,8 @@ import Categories from "./pages/admin/Categories";
 import PublicLayout from "./components/layout/PublicLayout";
 import Home from "./pages/public/Home";
 import Spinner from "./components/common/Spinner";
+import Profile from "./pages/public/Profile";
+import Product from "./pages/public/Product";
 
 // == protected route
 const ProtectedRoute = ({
@@ -24,12 +26,10 @@ const ProtectedRoute = ({
 }) => {
   const { isAuthenticated, isAdmin, isLoading } = useAuth();
   if (isLoading) {
-    return (
-      <Spinner/>
-    );
+    return <Spinner />;
   }
 
-  if (!isAuthenticated ) {
+  if (!isAuthenticated) {
     return <Navigate to={ROUTES.LOGIN} replace />;
   }
 
@@ -39,16 +39,13 @@ const ProtectedRoute = ({
   return <>{children}</>;
 };
 
-
 const GuestRoute = ({ children }: { children: React.ReactNode }) => {
-  const { isAuthenticated, isAdmin, isLoading } = useAuth(); 
+  const { isAuthenticated, isAdmin, isLoading } = useAuth();
 
   if (isLoading) return <Spinner />;
 
   if (isAuthenticated) {
-    return (
-      <Navigate to={isAdmin ? '/admin' : '/'} replace />
-    );
+    return <Navigate to={isAdmin ? ROUTES.ADMIN_DASHBOARD : ROUTES.HOME} replace />;
   }
   return <>{children}</>;
 };
@@ -77,7 +74,7 @@ const AppRoutes = () => {
 
       {/* admin routes */}
       <Route
-        path="/admin"
+        path={ROUTES.ADMIN_DASHBOARD}
         element={
           <ProtectedRoute requiredAdmin>
             <AdminLayout />
@@ -92,8 +89,17 @@ const AppRoutes = () => {
       </Route>
 
       {/* Public routes */}
-      <Route path="/" element={<PublicLayout />}>
+      <Route path={ROUTES.HOME} element={<PublicLayout />}>
         <Route index element={<Home />} />
+        <Route path={ROUTES.PRODUCTS} element={<Product />} />
+        <Route
+          path={ROUTES.PROFILE}
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
       </Route>
 
       {/* 404 fallback */}

@@ -72,38 +72,42 @@ const PublicLayout = () => {
                 </Button>
 
                 <div
-                  className="absolute right-0 top-full mt-1 w-48 bg-white border rounded-xl shadow-lg py-1 
-    invisible opacity-0 translate-y-2 group-hover:visible group-hover:opacity-100  group-hover:translate-y-0 
+                  className="absolute right-0 top-full mt-1 w-40 bg-white border rounded-xl shadow-lg  
+    invisible opacity-0 translate-y-2 group-hover:visible group-hover:opacity-100 overflow-hidden   group-hover:translate-y-0 
     transition-all duration-200 z-50"
                 >
                   <Link to={ROUTES.PROFILE}>
-                    <div className="flex items-center gap-2 px-4 py-2.5 overflow-hidden text-sm hover:bg-gray-50">
+                    <div className="flex items-center gap-2 px-4 py-2.5 text-sm  hover:bg-gray-50 transition-colors">
                       <User size={15} /> Tài khoản
                     </div>
                   </Link>
                   <Link
                     to={`${ROUTES.PROFILE}?tab=orders`}
-                    className="flex items-center gap-2 px-4 py-2.5 overflow-hidden text-sm hover:bg-gray-50"
+                    className="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors"
                   >
                     <ShoppingBag size={15} /> Đơn hàng
                   </Link>
                   {isAdmin && (
                     <Link
                       to={ROUTES.ADMIN_DASHBOARD}
-                      className="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-gray-50 text-purple-600"
+                      className="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors text-purple-600"
                     >
                       <LayoutDashboard size={15} /> Admin
                     </Link>
                   )}
                   <hr className="my-1" />
+                  <div>
+
                   <Button
                     onClick={handleLogout}
                     leftIcon={LogOut}
                     size="md"
                     variant="danger"
+                    fullWidth
                   >
                     Đăng xuất
                   </Button>
+                  </div>
                 </div>
               </div>
             ) : (
