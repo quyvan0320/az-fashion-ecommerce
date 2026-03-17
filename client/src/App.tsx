@@ -11,10 +11,10 @@ import Orders from "./pages/admin/Orders";
 import Users from "./pages/admin/Users";
 import Categories from "./pages/admin/Categories";
 import PublicLayout from "./components/layout/PublicLayout";
-import Home from "./pages/public/Home";
+import Home from "./pages/public/home";
 import Spinner from "./components/common/Spinner";
 import Profile from "./pages/public/Profile";
-import Product from "./pages/public/Product";
+import Product from "./pages/public/product";
 
 // == protected route
 const ProtectedRoute = ({

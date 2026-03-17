@@ -75,7 +75,7 @@ export interface GetProductsParams {
   categoryId?: string;
   isActive?: boolean;
   sortBy?: string;
-  sortOrder?: "asc" | "desc";
+  order?: "asc" | "desc";
 }
 
 export interface CreateVariantData {

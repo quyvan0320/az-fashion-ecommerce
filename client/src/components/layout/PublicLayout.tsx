@@ -27,7 +27,7 @@ const PublicLayout = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className=" bg-white flex flex-col">
       {/* navbar */}
       <header className="border-b sticky top-0 bg-white z-40">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
@@ -95,8 +95,6 @@ const PublicLayout = () => {
                       <LayoutDashboard size={15} /> Admin
                     </Link>
                   )}
-                  <hr className="my-1" />
-                  <div>
 
                   <Button
                     onClick={handleLogout}
@@ -104,10 +102,10 @@ const PublicLayout = () => {
                     size="md"
                     variant="danger"
                     fullWidth
+                    className="rounded-none"
                   >
                     Đăng xuất
                   </Button>
-                  </div>
                 </div>
               </div>
             ) : (
@@ -205,8 +203,10 @@ const PublicLayout = () => {
         )}
       </header>
 
-      <main><Outlet/></main>
-        <footer className="border-t py-8 mt-12">
+      <main className="min-h-screen">
+        <Outlet />
+      </main>
+      <footer className="border-t py-8 mt-12">
         <div className="max-w-6xl mx-auto px-6 text-center text-sm text-gray-400">
           © 2025 AZ Fashion. All rights reserved.
         </div>

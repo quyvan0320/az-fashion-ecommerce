@@ -9,6 +9,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   leftIcon?: LucideIcon;
   rightIcon?: LucideIcon;
   fullWidth?: boolean;
+  noHover?: boolean;
 }
 
 const Button = ({
@@ -20,6 +21,7 @@ const Button = ({
   rightIcon: RightIcon,
   fullWidth,
   className = "",
+  noHover = false,
   disabled,
   ...props
 }: ButtonProps) => {
@@ -29,12 +31,12 @@ const Button = ({
 
   // variant styles
   const variants = {
-  primary: "bg-black text-white hover:bg-gray-800 shadow-lg shadow-black/10 active:bg-black/90",
-  secondary: "bg-blue-600 text-white hover:bg-blue-700 shadow-lg shadow-blue-200", 
-  outline: "border-2 border-gray-100 text-gray-900 hover:border-black hover:bg-white transition-all",
-  danger: "bg-red-500 text-white hover:bg-red-600", 
-  ghost: "text-gray-600 hover:bg-gray-100 hover:text-black",
-};
+    primary: "bg-black text-white shadow-lg shadow-black/10 active:bg-black/90",
+    secondary: "bg-blue-600 text-white shadow-lg shadow-blue-200",
+    outline: "border-2 border-gray-100 text-gray-900 transition-all",
+    danger: "bg-red-500 text-white ",
+    ghost: "text-gray-600",
+  };
 
   // size styles
   const sizes = {
@@ -43,14 +45,26 @@ const Button = ({
     lg: "px-6 py-3 text-base gap-2.5",
   };
 
+  const hoverStyles = noHover
+    ? ""
+    : {
+        primary: "hover:bg-gray-800",
+        secondary: "hover:bg-blue-700",
+        outline: "hover:border-black hover:bg-white",
+        danger: "hover:bg-red-600",
+        ghost: "hover:bg-gray-100 hover:text-black",
+      }[variant];
+
   const widthStyle = fullWidth ? "w-full" : "";
   return (
     <button
-      className={`${baseStyles} ${variants[variant]} ${sizes[size]} ${widthStyle} ${className}`}
+      className={`${baseStyles} ${variants[variant]} ${hoverStyles} ${sizes[size]} ${widthStyle} ${className}`}
       disabled={disabled || isLoading}
       {...props}
     >
-      {isLoading && <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />}
+      {isLoading && (
+        <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+      )}
       {!isLoading && LeftIcon && <LeftIcon size={size === "sm" ? 14 : 18} />}
       <span className={isLoading ? "opacity-70" : ""}>{children}</span>
       {!isLoading && RightIcon && <RightIcon size={size === "sm" ? 14 : 18} />}
