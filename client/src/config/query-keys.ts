@@ -2,6 +2,7 @@ import { AnalyticsParams, getUserParams } from "@/types/admin";
 import { GetCategoriesParams } from "@/types/category";
 import { GetOrderParams } from "@/types/order";
 import { GetProductsParams } from "@/types/product";
+import { GetReviewsParams } from "@/types/review";
 
 export const orderKeys = {
   all: ["orders"] as const,
@@ -46,3 +47,9 @@ export const cartKeys = {
   cart: ["cart"] as const,
   summary: ["cart", "summary"] as const,
 };
+
+export const reviewKeys = {
+    product: (productId: string, params: GetReviewsParams) => ['reviews', 'product', productId, params] as const,
+    canReview: (productId: string) => ['reviews', 'can-review', productId] as const,
+    my: (params?: GetReviewsParams) => ['reviews', 'my', params] as const
+}

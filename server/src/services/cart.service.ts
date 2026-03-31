@@ -44,9 +44,16 @@ export const cartService = {
       const newQuantity = existingCart.quantity + quantity;
 
       // check new stock for new quantity
-      if (product.stock < newQuantity) {
+      if (newQuantity > product.stock) {
+        const canAddMore = product.stock - existingCart.quantity;
+        if (canAddMore <= 0) {
+          throw new AppError(
+            `Bạn đã có ${existingCart.quantity} sản phẩm trong giỏ (đạt tối đa tồn kho).`,
+            400,
+          );
+        }
         throw new AppError(
-          `Không thể thêm số lượng ${quantity} sản phẩm nữa. Chỉ còn ${product.stock - existingCart.quantity} sản phẩm trong kho`,
+          `Bạn đã có ${existingCart.quantity} sản phẩm. Kho chỉ còn ${product.stock} món, bạn chỉ có thể thêm tối đa ${canAddMore} nữa.`,
           400,
         );
       }

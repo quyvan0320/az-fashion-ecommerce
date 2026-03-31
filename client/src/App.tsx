@@ -15,6 +15,7 @@ import Home from "./pages/public/home";
 import Spinner from "./components/common/Spinner";
 import Profile from "./pages/public/Profile";
 import Product from "./pages/public/product";
+import ProductDetail from "./pages/public/product/ProductDetail";
 
 // == protected route
 const ProtectedRoute = ({
@@ -45,7 +46,9 @@ const GuestRoute = ({ children }: { children: React.ReactNode }) => {
   if (isLoading) return <Spinner />;
 
   if (isAuthenticated) {
-    return <Navigate to={isAdmin ? ROUTES.ADMIN_DASHBOARD : ROUTES.HOME} replace />;
+    return (
+      <Navigate to={isAdmin ? ROUTES.ADMIN_DASHBOARD : ROUTES.HOME} replace />
+    );
   }
   return <>{children}</>;
 };
@@ -92,6 +95,7 @@ const AppRoutes = () => {
       <Route path={ROUTES.HOME} element={<PublicLayout />}>
         <Route index element={<Home />} />
         <Route path={ROUTES.PRODUCTS} element={<Product />} />
+        <Route path={`${ROUTES.PRODUCTS}/:slug`} element={<ProductDetail />} />
         <Route
           path={ROUTES.PROFILE}
           element={
