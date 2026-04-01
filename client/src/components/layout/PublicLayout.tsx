@@ -55,7 +55,7 @@ const PublicLayout = () => {
               >
                 <ShoppingBag size={20} />{" "}
                 {cartCount > 0 && (
-                  <span className="absolute -top-0.5 -right-0.5 bg-black text-white text-xs w-4 h-4 rounded-full flex items-center justify-center">
+                  <span className="absolute -top-0.5 -right-0.5 bg-black text-white text-xs  w-4 h-4 rounded-full flex items-center justify-center">
                     {cartCount > 9 ? "9+" : cartCount}
                   </span>
                 )}

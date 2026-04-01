@@ -18,7 +18,7 @@ export const ROUTES = {
   PROFILE: "/profile",
   PRODUCTS: "/products",
   PRODUCT_DETAIL: "/products/:slug",
-  CART: "cart",
+  CART: "/cart",
   CHECKOUT: "/checkout",
 } as const;
 

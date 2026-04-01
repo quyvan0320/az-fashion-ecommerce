@@ -16,6 +16,7 @@ import Spinner from "./components/common/Spinner";
 import Profile from "./pages/public/Profile";
 import Product from "./pages/public/product";
 import ProductDetail from "./pages/public/product/ProductDetail";
+import Cart from "./pages/public/cart";
 
 // == protected route
 const ProtectedRoute = ({
@@ -96,6 +97,14 @@ const AppRoutes = () => {
         <Route index element={<Home />} />
         <Route path={ROUTES.PRODUCTS} element={<Product />} />
         <Route path={`${ROUTES.PRODUCTS}/:slug`} element={<ProductDetail />} />
+        <Route
+          path={ROUTES.CART}
+          element={
+            <ProtectedRoute>
+              <Cart />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path={ROUTES.PROFILE}
           element={

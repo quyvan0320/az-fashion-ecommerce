@@ -235,9 +235,9 @@ const ProductDetail = () => {
                   <button
                     key={color}
                     onClick={() =>
-                      setSelectedSize(selectedSize === color ? null : color)
+                      setSelectedColor(selectedColor === color ? null : color)
                     }
-                    className={`px-4 py-2 border rounded-lg text-sm font-medium ${selectedSize === color ? "bg-black text-white border-black" : "hover:border-gray-400"}`}
+                    className={`px-4 py-2 border rounded-lg text-sm font-medium ${selectedColor === color ? "bg-black text-white border-black" : "hover:border-gray-400"}`}
                   >
                     {color}
                   </button>
