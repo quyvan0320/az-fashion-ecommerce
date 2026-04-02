@@ -49,7 +49,14 @@ export const cartKeys = {
 };
 
 export const reviewKeys = {
-    product: (productId: string, params: GetReviewsParams) => ['reviews', 'product', productId, params] as const,
-    canReview: (productId: string) => ['reviews', 'can-review', productId] as const,
-    my: (params?: GetReviewsParams) => ['reviews', 'my', params] as const
-}
+  product: (productId: string, params: GetReviewsParams) =>
+    ["reviews", "product", productId, params] as const,
+  canReview: (productId: string) =>
+    ["reviews", "can-review", productId] as const,
+  my: (params?: GetReviewsParams) => ["reviews", "my", params] as const,
+};
+
+export const addressKeys = {
+  all: ["addresses"] as const,
+  default: ["addresses", "default"] as const,
+};

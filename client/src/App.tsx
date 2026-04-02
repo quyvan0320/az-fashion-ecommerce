@@ -13,7 +13,7 @@ import Categories from "./pages/admin/Categories";
 import PublicLayout from "./components/layout/PublicLayout";
 import Home from "./pages/public/home";
 import Spinner from "./components/common/Spinner";
-import Profile from "./pages/public/Profile";
+import Profile from "./pages/public/profile";
 import Product from "./pages/public/product";
 import ProductDetail from "./pages/public/product/ProductDetail";
 import Cart from "./pages/public/cart";
