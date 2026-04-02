@@ -170,7 +170,7 @@ export const variantService = {
       product,
       variants,
       totalVariants: variants.length,
-      totalStock: variants.reduce((sum, v) => sum + v.stock, 0),
+      totalStock: variants.reduce((sum: number, v: typeof variants[0]) => sum + v.stock, 0),
     };
   },
 
@@ -267,7 +267,7 @@ export const variantService = {
       distinct: ["size"],
       orderBy: { size: "asc" },
     });
-    return variants.map((v) => v.size).filter(Boolean);
+    return variants.map((v: { size: string | null }) => v.size).filter(Boolean);
   },
 
   async getProductColors(productId: string) {
@@ -277,6 +277,6 @@ export const variantService = {
       distinct: ["color"],
       orderBy: { color: "asc" },
     });
-    return variants.map((v) => v.color).filter(Boolean);
+    return variants.map((v: { color: string | null }) => v.color).filter(Boolean);
   },
 };

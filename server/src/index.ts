@@ -15,6 +15,7 @@ import orderRouter from "./routes/order.route";
 import reviewRouter from "./routes/review.route";
 import variantRouter from "./routes/variant.route";
 import adminRouter from "./routes/admin.route";
+import paymentRouter from "./routes/payment.route";
 
 // Load environment variables from .env file
 dotenv.config();
@@ -26,14 +27,15 @@ const PORT = process.env.PORT || 3000;
 app.use(helmet()); // security headers http
 app.use(
   cors({
-    origin: process.env.ALLOWED_ORIGINS?.split(",") || "http://localhost:5000/",
-    methods: ['GET', 'POST', 'PUT', 'PATCH','DELETE'],
+    origin: process.env.ALLOWED_ORIGINS?.split(",") || "http://localhost:5000",
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     credentials: true,
   }),
 ); // CORS configuration
 
 app.use(morgan("dev")); // request status log
 app.use(compression() as any);
+app.use("/api/payments/webhook", express.raw({ type: "application/json" }));
 app.use(express.json()); // parse json request body
 app.use(express.urlencoded({ extended: true })); // parse urlencoded request body
 
@@ -48,6 +50,7 @@ app.use("/api/reviews", reviewRouter);
 app.use("/api/variants", variantRouter);
 app.use("/api/admin", adminRouter);
 app.use("/api/upload", uploadRoute);
+app.use("/api/payments", paymentRouter);
 
 // check server status
 app.get("/health", (req, res) => {

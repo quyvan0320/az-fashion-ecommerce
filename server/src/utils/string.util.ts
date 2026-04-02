@@ -1,3 +1,5 @@
+import Stripe from "stripe";
+
 export const generateSlug = (name: string): string => {
   return name
     .toLowerCase()
@@ -41,19 +43,24 @@ export const generateVariantSKU = (
   color?: string,
 ): string => {
   // Hàm phụ để dọn dẹp chuỗi: bỏ dấu, bỏ ký tự đặc biệt, thay khoảng trắng
-  const clean = (str: string) => 
+  const clean = (str: string) =>
     str
       .trim()
-      .normalize("NFD")               // Tách dấu ra khỏi chữ (Ví dụ: Đ -> D + ˆ)
+      .normalize("NFD") // Tách dấu ra khỏi chữ (Ví dụ: Đ -> D + ˆ)
       .replace(/[\u0300-\u036f]/g, "") // Xóa các dấu vừa tách
-      .replace(/đ/g, "d").replace(/Đ/g, "D") // Xử lý riêng chữ Đ
-      .replace(/[^a-zA-Z0-9]/g, "")   // Chỉ giữ lại chữ và số (xóa ký tự đặc biệt)
-      .toUpperCase(); 
+      .replace(/đ/g, "d")
+      .replace(/Đ/g, "D") // Xử lý riêng chữ Đ
+      .replace(/[^a-zA-Z0-9]/g, "") // Chỉ giữ lại chữ và số (xóa ký tự đặc biệt)
+      .toUpperCase();
 
   const parts = [productSKU.trim().toUpperCase()];
-  
+
   if (size) parts.push(clean(size));
   if (color) parts.push(clean(color));
 
   return parts.join("-");
 };
+
+export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  apiVersion: "2026-03-25.dahlia",
+});

@@ -10,26 +10,6 @@ import { generateOrderNumber } from "../utils/string.util";
 
 export const orderService = {
   async create(userId: string, data: CreateOrderInput) {
-    console.log("---------- DEBUG CHECK ----------");
-    console.log("1. UserId từ Token:", userId);
-    console.log("2. AddressId từ Body:", data.addressId);
-
-    // Thử tìm riêng lẻ để xem thằng nào sai
-    const checkUser = await prisma.user.findUnique({ where: { id: userId } });
-    const checkAddressOnly = await prisma.address.findUnique({
-      where: { id: data.addressId },
-    });
-
-    console.log("3. User này có tồn tại ko?:", !!checkUser);
-    console.log("4. AddressId này có tồn tại ko?:", !!checkAddressOnly);
-    if (checkAddressOnly) {
-      console.log(
-        "5. Address này thực tế thuộc về User nào?:",
-        checkAddressOnly.userId,
-      );
-    }
-    console.log("---------------------------------");
-    // validate exist address belong user
     const address = await prisma.address.findFirst({
       where: {
         id: data.addressId,
