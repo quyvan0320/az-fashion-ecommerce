@@ -14,7 +14,7 @@ export const useCart = () => {
   });
 };
 
-export const useSummary = () => {
+export const useCartSummary = () => {
   return useQuery({
     queryKey: cartKeys.summary,
     queryFn: () => cartService.getSummary(),

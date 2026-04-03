@@ -17,6 +17,7 @@ import Profile from "./pages/public/profile";
 import Product from "./pages/public/product";
 import ProductDetail from "./pages/public/product/ProductDetail";
 import Cart from "./pages/public/cart";
+import Checkout from "./pages/public/checkout";
 
 // == protected route
 const ProtectedRoute = ({
@@ -102,6 +103,14 @@ const AppRoutes = () => {
           element={
             <ProtectedRoute>
               <Cart />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path={ROUTES.CHECKOUT}
+          element={
+            <ProtectedRoute>
+              <Checkout />
             </ProtectedRoute>
           }
         />

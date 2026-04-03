@@ -16,11 +16,11 @@ interface AddressFormProps {
 }
 
 const addressSchema = z.object({
-  street: z.string().min(1, "Bắt buộc"),
-  city: z.string().min(1, "Bắt buộc"),
-  state: z.string().min(1, "Bắt buộc"),
-  postalCode: z.string().min(1, "Bắt buộc"),
-  country: z.string().min(1, "Bắt buộc"),
+  street: z.string().min(1, 'Vui lòng nhập địa chỉ'),
+  city: z.string().min(1, 'Vui lòng nhập thành phố'),
+  state: z.string().min(1, 'Vui lòng nhập tỉnh/thành'),
+  postalCode: z.string().min(1, 'Vui lòng nhập mã bưu điện'),
+  country: z.string().min(1, 'Vui lòng nhập quốc gia'),
 });
 
 type AddressFormData = z.infer<typeof addressSchema>;

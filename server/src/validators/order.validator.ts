@@ -11,7 +11,7 @@ export const createOrderValidator = [
   body("paymentMethod")
     .notEmpty()
     .withMessage("Phương thức thanh toán không được để trống")
-    .isIn(["COD", "BANK_TRANSFER", "CREDIT_CARD", "MOMO", "ZALOPAY"])
+    .isIn(["COD", "STRIPE"])
     .withMessage("Phương thức thanh toán không hợp lệ"),
 
   body("notes")

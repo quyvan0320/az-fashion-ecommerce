@@ -43,3 +43,8 @@ export interface GetCategoriesParams {
   limit?: number;
   search?: string;
 }
+
+export interface CreateCategoryData {
+  name: string;
+  description?: string;
+}

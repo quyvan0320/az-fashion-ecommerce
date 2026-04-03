@@ -29,61 +29,6 @@ export interface AuthResponse {
   };
 }
 
-// product
-export interface Product {
-  id: string;
-  name: string;
-  slug: string;
-  description?: string;
-  price: number;
-  salePrice?: number;
-  sku: string;
-  stock: number;
-  categoryId: string;
-  images: string[];
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
-
-// category
-export interface Category {
-  id: string;
-  name: string;
-  slug: string;
-  description?: string;
-  image?: string;
-}
-
-// order
-export interface Order {
-  id: string;
-  orderNumber: string;
-  userId: string;
-  total: number;
-  status: "PENDING" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELED";
-  createdAt: string;
-}
-
-// review
-export interface Review {
-  id: string;
-  rating: number;
-  comment: string;
-  userId: string;
-  user: { firstName: string; lastName: string };
-  createdAt: string;
-}
-
-//cart item
-export interface CartItem {
-  productId: string;
-  name: string;
-  price: number;
-  image: string;
-  quantity: number;
-  stock: number;
-}
 
 //api response
 export interface ApiResponse<T = any> {
