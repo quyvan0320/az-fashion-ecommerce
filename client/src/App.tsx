@@ -59,23 +59,7 @@ const GuestRoute = ({ children }: { children: React.ReactNode }) => {
 const AppRoutes = () => {
   return (
     <Routes>
-      {/* Auth routes only guest */}
-      <Route
-        path={ROUTES.LOGIN}
-        element={
-          <GuestRoute>
-            <Login />
-          </GuestRoute>
-        }
-      />
-      <Route
-        path={ROUTES.REGISTER}
-        element={
-          <GuestRoute>
-            <Register />
-          </GuestRoute>
-        }
-      />
+     
 
       {/* admin routes */}
       <Route
@@ -95,6 +79,23 @@ const AppRoutes = () => {
 
       {/* Public routes */}
       <Route path={ROUTES.HOME} element={<PublicLayout />}>
+       {/* Auth routes only guest */}
+      <Route
+        path={ROUTES.LOGIN}
+        element={
+          <GuestRoute>
+            <Login />
+          </GuestRoute>
+        }
+      />
+      <Route
+        path={ROUTES.REGISTER}
+        element={
+          <GuestRoute>
+            <Register />
+          </GuestRoute>
+        }
+      />
         <Route index element={<Home />} />
         <Route path={ROUTES.PRODUCTS} element={<Product />} />
         <Route path={`${ROUTES.PRODUCTS}/:slug`} element={<ProductDetail />} />

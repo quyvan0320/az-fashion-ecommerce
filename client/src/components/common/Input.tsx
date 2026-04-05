@@ -16,7 +16,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       leftIcon: LeftIcon,
       rightElement,
       className = "",
-      ...props 
+      ...props
     },
     ref,
   ) => {
@@ -36,13 +36,13 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           )}
 
           <input
-           {...props}
+            {...props}
             ref={ref}
-            className={`w-full bg-gray-50 border transition-all duration-200 rounded-xl py-2.5 px-4 text-sm outline-none placeholder:text-gray-400
+            className={`w-full bg-brand-grey border text-brand-dark transition-all duration-200 rounded py-2.5 px-4 text-sm outline-none placeholder:text-brand-dark/50
             ${LeftIcon ? "pl-10" : ""} ${rightElement ? "pr-12" : ""} ${
               error
-                ? "border-red-500 focus:ring-4 focus:ring-red-100"
-                : "border-gray-200 focus:border-black focus:bg-white focus:ring-4 focus:ring-gray-100"
+                ? "border-brand-red focus:ring-1 focus:ring-brand-red"
+                : "border-gray-200 focus:border-brand-dark focus:bg-brand-light focus:ring-4 focus:ring-brand-grey"
             } ${className}`}
           />
 
@@ -54,7 +54,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         </div>
 
         {error && (
-          <p className="text-xs font-medium text-red-500 ml-1 animate-in fade-in slide-in-from-top-1">
+          <p className="text-xs font-medium text-brand-red ml-1 animate-in fade-in slide-in-from-top-1">
             {error}
           </p>
         )}

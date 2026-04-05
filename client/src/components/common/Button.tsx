@@ -25,49 +25,52 @@ const Button = ({
   disabled,
   ...props
 }: ButtonProps) => {
-  // base styles
   const baseStyles =
-    "inline-flex items-center justify-center font-medium transition-all duration-200 rounded-xl active:scale-95 disabled:opacity-50 disabled:pointer-events-none";
+    "group relative inline-flex border-brand-dark border hover:text-brand-light items-center justify-center border-brand-dark  font-heading transition-all duration-500 rounded active:scale-95 disabled:opacity-50 disabled:pointer-events-none overflow-hidden z-0"; // z-0 là bắt buộc
 
-  // variant styles
   const variants = {
-    primary: "bg-black text-white shadow-lg shadow-black/10 active:bg-black/90",
-    secondary: "bg-blue-600 text-white shadow-lg shadow-blue-200",
-    outline: "border-2 border-gray-100 text-gray-900 transition-all",
-    danger: "bg-red-500 text-white ",
-    ghost: "text-gray-600",
+    primary: "bg-brand-light text-brand-dark",
+    secondary: "bg-blue-600 text-brand-light",
+    outline: "border-2 border-brand-grey text-brand-grey",
+    danger: "bg-brand-red text-brand-light",
+    ghost: "text-brand-grey",
   };
 
-  // size styles
   const sizes = {
     sm: "px-3 py-1.5 text-xs gap-1.5",
     md: "px-5 py-2.5 text-sm gap-2",
     lg: "px-6 py-3 text-base gap-2.5",
   };
 
-  const hoverStyles = noHover
-    ? ""
-    : {
-        primary: "hover:bg-gray-800",
-        secondary: "hover:bg-blue-700",
-        outline: "hover:border-black hover:bg-white",
-        danger: "hover:bg-red-600",
-        ghost: "hover:bg-gray-100 hover:text-black",
-      }[variant];
-
-  const widthStyle = fullWidth ? "w-full" : "";
   return (
     <button
-      className={`${baseStyles} ${variants[variant]} ${hoverStyles} ${sizes[size]} ${widthStyle} ${className}`}
+      className={`${baseStyles} ${variants[variant]} ${sizes[size]} ${fullWidth ? "w-full" : ""} ${className}`}
       disabled={disabled || isLoading}
       {...props}
     >
-      {isLoading && (
-        <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+
+      {!noHover && (
+        <span className="absolute top-0 bottom-0 z-[-1] 
+                     w-[130%] h-full bg-brand-red 
+                     skew-x-[15deg]              
+                     transition-transform duration-500 ease-in-out 
+                     -left-[10%]               
+                     -translate-x-full            
+                     group-hover:translate-x-0    
+                     " />
       )}
-      {!isLoading && LeftIcon && <LeftIcon size={size === "sm" ? 14 : 18} />}
-      <span className={isLoading ? "opacity-70" : ""}>{children}</span>
-      {!isLoading && RightIcon && <RightIcon size={size === "sm" ? 14 : 18} />}
+
+     
+      <span className="relative z-10 flex items-center justify-center gap-2">
+        {isLoading && (
+          <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+        )}
+        {!isLoading && LeftIcon && <LeftIcon size={size === "sm" ? 14 : 18} />}
+        <span className={isLoading ? "opacity-70" : ""}>{children}</span>
+        {!isLoading && RightIcon && (
+          <RightIcon size={size === "sm" ? 14 : 18} />
+        )}
+      </span>
     </button>
   );
 };

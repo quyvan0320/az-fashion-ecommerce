@@ -31,9 +31,13 @@ const PublicLayout = () => {
       {/* navbar */}
       <header className="border-b sticky top-0 bg-white z-40">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link to={"/"} className="text-lg font-bold tracking-tight">
+          <Link
+            to={"/"}
+            className="font-serif text-3xl font-bold italic tracking-widest text-brand-black"
+          >
             AZ Fashion
           </Link>
+
           <nav className="hidden md:flex items-center gap-6 text-sm ">
             <Link to={"/"} className="text-gray-500 hover:text-black">
               Trang chủ
@@ -203,7 +207,7 @@ const PublicLayout = () => {
         )}
       </header>
 
-      <main className="min-h-screen">
+      <main className="min-h-[70vh]">
         <Outlet />
       </main>
       <footer className="border-t py-8 mt-12">

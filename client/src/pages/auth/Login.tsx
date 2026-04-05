@@ -34,57 +34,66 @@ const Login = () => {
     login(data);
   };
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="w-full max-w-md p-8 bg-white rounded-xl shadow-md space-y-6">
-        <div className="text-content">
-          <h1 className="text-2xl font-bold">Đăng nhập</h1>
-          <p className="text-sm text-gray-500 mt-1">
-            Chào mừng trở lại AZ Fashion
-          </p>
+    <div className=" flex items-center justify-center bg-brand-light pt-12">
+      <div className="w-full max-w-xl p-8  space-y-6">
+        <div className="flex items-center font-heading text-2xl  font-semibold gap-5 justify-center">
+          <Link to={ROUTES.LOGIN} className="">
+            Đăng nhập
+          </Link>
+          <span>|</span>
+          <Link
+            to={ROUTES.REGISTER}
+            className="text-brand-dark/50 hover:text-brand-dark transition duration-500"
+          >
+            Đăng ký
+          </Link>
         </div>
 
         <form
           onSubmit={handleSubmit(onSubmit)}
-          noValidate 
-          className="space-y-4"
+          noValidate
+          className="space-y-6"
         >
           <Input
-            label="Email"
             type="email"
-            placeholder="example@email.com"
+            placeholder="Vui lòng nhập email của bạn"
+            className="px-6 py-4 font-heading"
             error={errors.email?.message}
             {...register("email")}
             disabled={isPending}
           />
 
           <Input
-            label="Mật khẩu"
             type="password"
-            placeholder="......."
+            className="px-6 py-4 font-heading"
+            placeholder="Vui lòng nhập mật khẩu"
             error={errors.password?.message}
             {...register("password")}
             disabled={isPending}
           />
 
-          <Button
-            type="submit" 
-            variant="primary"
-            fullWidth
-            isLoading={isPending}
-          >
-            Đăng nhập
-          </Button>
-        </form>
+          <div className="flex items-center gap-8">
+            <Button
+              type="submit"
+              variant="primary"
+              className="uppercase"
+              size="lg"
+              isLoading={isPending}
+            >
+              Đăng nhập
+            </Button>
 
-        <p className="text-center text-sm text-gray-500 ">
-          Chưa có tài khoản?{" "}
-          <Link
-            to={ROUTES.REGISTER}
-            className="text-black font-medium hover:underline"
-          >
-            Đăng ký ngay
-          </Link>
-        </p>
+            <p className="text-center font-light text-sm text-brand-dark ">
+              Chưa có tài khoản?{" "}
+              <Link
+                to={ROUTES.REGISTER}
+                className="text-blue-300 hover:underline"
+              >
+                Đăng ký ngay
+              </Link>
+            </p>
+          </div>
+        </form>
       </div>
     </div>
   );
