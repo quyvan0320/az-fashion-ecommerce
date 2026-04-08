@@ -22,7 +22,7 @@ const ProductsPage = () => {
 
 const page = Number(searchParams.get("page") || 1);
 const search = searchParams.get("search") || "";
-const categoryId = searchParams.get("categoryId") || "";
+const categorySlug = searchParams.get("categorySlug") || "";
 const sortParam = searchParams.get("sort") || "createdAt_desc";
 
 
@@ -42,7 +42,7 @@ const [sortBy, order] = sortParam.split("_") as [string, "asc" | "desc"];
     page,
     limit: 12,
     search: search || undefined,
-    categoryId: categoryId || undefined,
+    categorySlug: categorySlug || undefined,
     sortBy,
     order,
     // isActive: true,
@@ -102,7 +102,7 @@ const [sortBy, order] = sortParam.split("_") as [string, "asc" | "desc"];
           className={`flex items-center gap-2 border rounded-lg px-3 py-2.5 text-sm ${showFilter ? "bg-black text-white" : "hover:bg-gray-50"}`}
         >
           <SlidersHorizontal size={15} />
-          Lọc {categoryId && "•"}
+          Lọc {categorySlug && "•"}
         </button>
       </div>
 
@@ -112,16 +112,16 @@ const [sortBy, order] = sortParam.split("_") as [string, "asc" | "desc"];
           <p className="text-sm font-medium mb-3">Danh mục</p>
           <div className="flex gap-2 flex-wrap">
             <button
-              onClick={() => updateParams({ categoryId: "", page: "1" })}
-              className={`px-3 py-1.5 rounded-lg text-sm border ${!categoryId ? "bg-black text-white border-black" : "bg-white hover:bg-gray-100"}`}
+              onClick={() => updateParams({ categorySlug: "", page: "1" })}
+              className={`px-3 py-1.5 rounded-lg text-sm border ${!categorySlug ? "bg-black text-white border-black" : "bg-white hover:bg-gray-100"}`}
             >
               Tất cả
             </button>
             {categories.map((cat) => (
               <button
                 key={cat.id}
-                onClick={() => updateParams({ categoryId: cat.id, page: "1" })}
-                className={`px-3 py-1.5 rounded-lg text-sm border ${categoryId === cat.id ? "bg-black text-white border-black" : "bg-white hover:bg-gray-100"}`}
+                onClick={() => updateParams({ categorySlug: cat.slug, page: "1" })}
+                className={`px-3 py-1.5 rounded-lg text-sm border ${categorySlug === cat.slug ? "bg-black text-white border-black" : "bg-white hover:bg-gray-100"}`}
               >
                 {cat.name} ({cat._count?.products || 0})
               </button>

@@ -22,6 +22,7 @@ interface ProductFormProps {
 const productSchema = z.object({
   name: z.string().min(1, "Tên sản phẩm không được để trống"),
   description: z.string().optional(),
+  brand: z.string().optional(),
   price: z.coerce.number().min(1000, "Giá tối thiểu 1,000đ"),
   salePrice: z.coerce.number().min(0).optional(),
   stock: z.coerce.number().min(0, "Tồn kho không được âm"),
@@ -54,6 +55,7 @@ const ProductForm = ({ product, onSuccess }: ProductFormProps) => {
       ? {
           name: product.name,
           description: product.description || "",
+          brand: product.brand || "",
           price: product.price,
           salePrice: product.salePrice || undefined,
           stock: product.stock,
@@ -108,13 +110,22 @@ const ProductForm = ({ product, onSuccess }: ProductFormProps) => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      {/* name */}
-      <Input
-        {...register("name")}
-        label="Tên sản phẩm"
-        placeholder="Quần jeans..."
-        error={errors.name?.message}
-      />
+      <div className="grid grid-cols-2 gap-4">
+        {/* name */}
+
+        <Input
+          {...register("name")}
+          label="Tên sản phẩm"
+          placeholder="Quần jeans..."
+          error={errors.name?.message}
+        />
+        <Input
+          {...register("brand")}
+          label="Thương hiệu"
+          placeholder="Az ..."
+          error={errors.brand?.message}
+        />
+      </div>
 
       {/* description */}
       <Textarea
@@ -136,7 +147,6 @@ const ProductForm = ({ product, onSuccess }: ProductFormProps) => {
           {...register("salePrice")}
           label="Giá sale"
           placeholder="99,000đ"
-
           error={errors.salePrice?.message}
         />
       </div>
@@ -230,10 +240,12 @@ const ProductForm = ({ product, onSuccess }: ProductFormProps) => {
             }
           }}
         ></Input>
-         <p className="text-xs text-gray-400 mt-1">
-              {existingImages.length + newFiles.length} ảnh 
-              {isUploading && <span className="text-blue-500 ml-1">• Đang upload...</span>}
-            </p>
+        <p className="text-xs text-gray-400 mt-1">
+          {existingImages.length + newFiles.length} ảnh
+          {isUploading && (
+            <span className="text-blue-500 ml-1">• Đang upload...</span>
+          )}
+        </p>
       </div>
 
       {/* active */}

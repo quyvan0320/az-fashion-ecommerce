@@ -20,10 +20,12 @@ export const cartService = {
 
   addItem: async (
     productId: string,
+    variantId: string,
     quantity: number,
   ): Promise<ApiResponse<any>> => {
     const { data } = await axiosInstance.post("/cart/items", {
       productId,
+      variantId,
       quantity,
     });
     return data;

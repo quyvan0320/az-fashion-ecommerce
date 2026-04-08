@@ -18,6 +18,7 @@ import Product from "./pages/public/product";
 import ProductDetail from "./pages/public/product/ProductDetail";
 import Cart from "./pages/public/cart";
 import Checkout from "./pages/public/checkout";
+import CartDrawer from "./pages/public/cart/CartDrawer";
 
 // == protected route
 const ProtectedRoute = ({
@@ -59,8 +60,6 @@ const GuestRoute = ({ children }: { children: React.ReactNode }) => {
 const AppRoutes = () => {
   return (
     <Routes>
-     
-
       {/* admin routes */}
       <Route
         path={ROUTES.ADMIN_DASHBOARD}
@@ -79,23 +78,9 @@ const AppRoutes = () => {
 
       {/* Public routes */}
       <Route path={ROUTES.HOME} element={<PublicLayout />}>
-       {/* Auth routes only guest */}
-      <Route
-        path={ROUTES.LOGIN}
-        element={
-          <GuestRoute>
-            <Login />
-          </GuestRoute>
-        }
-      />
-      <Route
-        path={ROUTES.REGISTER}
-        element={
-          <GuestRoute>
-            <Register />
-          </GuestRoute>
-        }
-      />
+        {/* Auth routes only guest */}
+        <Route path={ROUTES.LOGIN} element={<Login />} />
+        <Route path={ROUTES.REGISTER} element={<Register />} />
         <Route index element={<Home />} />
         <Route path={ROUTES.PRODUCTS} element={<Product />} />
         <Route path={`${ROUTES.PRODUCTS}/:slug`} element={<ProductDetail />} />

@@ -26,6 +26,7 @@ export const orderService = {
       where: { userId },
       include: {
         product: true,
+        variant: true,
       },
     });
 
@@ -41,9 +42,10 @@ export const orderService = {
         continue;
       }
 
-      if (item.product.stock < item.quantity) {
+      const currentStock = item.variant?.stock ?? item.product.stock;
+      if (currentStock < item.quantity) {
         issues.push(
-          `${item.product.name}: Chỉ còn ${item.product.stock} sản phẩm trong giỏ hàng (hiện bạn đang có ${item.quantity} số lượng trong giỏ hàng)`,
+          `${item.product.name} (${item.variant?.size || "Mặc định"}): Chỉ còn ${currentStock} sản phẩm.`,
         );
       }
     }
@@ -56,14 +58,17 @@ export const orderService = {
     }
 
     // calculate totals
+
     let subtotal = 0;
-    const orderItems = cartItems.map((item) => {
-      const price = item.product.salePrice || item.product.price;
+    const orderItemsData = cartItems.map((item) => {
+      const price =
+        item.variant?.price || item.product.salePrice || item.product.price;
       const itemTotal = price * item.quantity;
       subtotal += itemTotal;
 
       return {
         productId: item.productId,
+        variantId: item.variantId,
         quantity: item.quantity,
         price,
       };
@@ -92,34 +97,27 @@ export const orderService = {
           paymentStatus: "PENDING",
           notes: data.notes,
           items: {
-            create: orderItems,
+            create: orderItemsData,
           },
         },
         include: {
-          items: {
-            include: {
-              product: {
-                select: {
-                  id: true,
-                  name: true,
-                  slug: true,
-                  images: true,
-                },
-              },
-            },
-          },
+          items: { include: { product: true, variant: true } },
           address: true,
         },
       });
 
-      // decrease stock
       for (const item of cartItems) {
-        await tx.product.update({
-          where: { id: item.productId },
-          data: {
-            stock: { decrement: item.quantity },
-          },
-        });
+        if (item.variantId) {
+          await tx.variant.update({
+            where: { id: item.variantId },
+            data: { stock: { decrement: item.quantity } },
+          });
+        } else {
+          await tx.product.update({
+            where: { id: item.productId },
+            data: { stock: { decrement: item.quantity } },
+          });
+        }
       }
 
       // clear cart

@@ -2,106 +2,81 @@ import prisma from "../config/prisma";
 import { AppError } from "../middleware/errorHandler";
 
 export const cartService = {
-  async addItem(userId: string, productId: string, quantity: number = 1) {
-    // validate quantity
+  async addItem(
+    userId: string,
+    productId: string,
+    variantId: string,
+    quantity: number = 1,
+  ) {
     if (quantity < 1) {
       throw new AppError("Số lượng phải ít nhất là 1", 400);
     }
 
-    // check exist
     const product = await prisma.product.findUnique({
       where: { id: productId },
+      include: {
+        variants: {
+          where: { id: variantId },
+        },
+      },
     });
 
-    if (!product) {
-      throw new AppError("Sản phẩm không tồn tại", 400);
-    }
-
-    if (!product.isActive) {
-      throw new AppError("Sản phẩm không có sẵn", 400);
-    }
-
-    // check stock
-    if (product.stock < quantity) {
+    if (!product || !product.isActive) {
       throw new AppError(
-        `Chỉ còn ${product.stock} sản phẩm có sẵn trong kho`,
+        "Sản phẩm không tồn tại hoặc đã ngừng kinh doanh",
         400,
       );
     }
 
-    // check if item already in cart
+    const selectedVariant = product.variants[0];
+    if (!selectedVariant) {
+      throw new AppError("Biến thể (Size/Màu) này không tồn tại", 400);
+    }
+
+    const currentStock = selectedVariant.stock;
+    if (currentStock < quantity) {
+      throw new AppError(
+        `Kho chỉ còn ${currentStock} sản phẩm cho lựa chọn này`,
+        400,
+      );
+    }
+
     const existingCart = await prisma.cartItem.findUnique({
       where: {
-        userId_productId: {
-          userId,
-          productId,
-        },
+        userId_productId_variantId: { userId, productId, variantId },
       },
     });
 
     if (existingCart) {
-      // update quantity if has
       const newQuantity = existingCart.quantity + quantity;
 
-      // check new stock for new quantity
-      if (newQuantity > product.stock) {
-        const canAddMore = product.stock - existingCart.quantity;
-        if (canAddMore <= 0) {
-          throw new AppError(
-            `Bạn đã có ${existingCart.quantity} sản phẩm trong giỏ (đạt tối đa tồn kho).`,
-            400,
-          );
-        }
+      if (newQuantity > currentStock) {
+        const canAddMore = currentStock - existingCart.quantity;
         throw new AppError(
-          `Bạn đã có ${existingCart.quantity} sản phẩm. Kho chỉ còn ${product.stock} món, bạn chỉ có thể thêm tối đa ${canAddMore} nữa.`,
+          canAddMore <= 0
+            ? `Bạn đã có ${existingCart.quantity} món (đạt tối đa tồn kho của size này).`
+            : `Bạn chỉ có thể thêm tối đa ${canAddMore} sản phẩm nữa cho size này.`,
           400,
         );
       }
 
-      const updated = await prisma.cartItem.update({
+      return await prisma.cartItem.update({
         where: { id: existingCart.id },
         data: { quantity: newQuantity },
         include: {
-          product: {
-            select: {
-              id: true,
-              name: true,
-              slug: true,
-              price: true,
-              salePrice: true,
-              images: true,
-              stock: true,
-            },
-          },
+          product: { select: { id: true, name: true, images: true } },
+          variant: true,
         },
       });
-
-      return updated;
     }
 
-    //create new cart item
-    const cartItem = await prisma.cartItem.create({
-      data: {
-        userId,
-        productId,
-        quantity,
-      },
+    return await prisma.cartItem.create({
+      data: { userId, productId, variantId, quantity },
       include: {
-        product: {
-          select: {
-            id: true,
-            name: true,
-            slug: true,
-            price: true,
-            salePrice: true,
-            images: true,
-            stock: true,
-          },
-        },
+        product: { select: { id: true, name: true, images: true } },
+        variant: true,
       },
     });
-
-    return cartItem;
   },
 
   // get cart
@@ -109,6 +84,7 @@ export const cartService = {
     const cartItems = await prisma.cartItem.findMany({
       where: { userId },
       include: {
+        variant: true,
         product: {
           select: {
             id: true,
@@ -132,16 +108,17 @@ export const cartService = {
       orderBy: { createdAt: "desc" },
     });
 
-    // calculate subtotal for each item and total
     const items = cartItems.map((item) => {
-      const price = item.product.salePrice || item.product.price;
-      const subtotal = price * item.quantity;
+      const basePrice =
+        item.variant?.price || item.product.salePrice || item.product.price;
+      const subtotal = basePrice * item.quantity;
 
       return {
         id: item.id,
         quantity: item.quantity,
         product: item.product,
-        price,
+        variant: item.variant,
+        price: basePrice,
         subtotal,
       };
     });

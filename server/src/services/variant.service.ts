@@ -10,6 +10,7 @@ export const variantService = {
   async createVariant(productId: string, data: CreateVariantInput) {
     const product = await prisma.product.findUnique({
       where: { id: productId },
+      include: { variants: true },
     });
 
     if (!product) {
@@ -52,27 +53,36 @@ export const variantService = {
 
     // create variant
 
-    const variant = await prisma.variant.create({
-      data: {
-        productId,
-        size: data.size,
-        color: data.color,
-        price: data.price,
-        stock: data.stock,
-        sku,
-      },
-      include: {
-        product: {
-          select: {
-            id: true,
-            name: true,
-            price: true,
+    return await prisma.$transaction(async (tx) => {
+      const variant = await tx.variant.create({
+        data: {
+          productId,
+          size: data.size,
+          color: data.color,
+          price: Number(data.price || product.price),
+          stock: Number(data.stock || 0),
+          sku,
+        },
+        include: {
+          product: {
+            select: { id: true, name: true, price: true },
           },
         },
-      },
-    });
+      });
 
-    return variant;
+      const allVariants = await tx.variant.findMany({
+        where: { productId },
+      });
+
+      const totalStock = allVariants.reduce((sum, v) => sum + v.stock, 0);
+
+      await tx.product.update({
+        where: { id: productId },
+        data: { stock: totalStock },
+      });
+
+      return variant;
+    });
   },
 
   async updateVariant(variantId: string, data: UpdateVariantInput) {
@@ -170,7 +180,7 @@ export const variantService = {
       product,
       variants,
       totalVariants: variants.length,
-      totalStock: variants.reduce((sum: number, v: typeof variants[0]) => sum + v.stock, 0),
+      totalStock: variants.reduce((sum, v) => sum + v.stock, 0),
     };
   },
 
@@ -267,7 +277,7 @@ export const variantService = {
       distinct: ["size"],
       orderBy: { size: "asc" },
     });
-    return variants.map((v: { size: string | null }) => v.size).filter(Boolean);
+    return variants.map((v) => v.size).filter(Boolean);
   },
 
   async getProductColors(productId: string) {
@@ -277,6 +287,6 @@ export const variantService = {
       distinct: ["color"],
       orderBy: { color: "asc" },
     });
-    return variants.map((v: { color: string | null }) => v.color).filter(Boolean);
+    return variants.map((v) => v.color).filter(Boolean);
   },
 };

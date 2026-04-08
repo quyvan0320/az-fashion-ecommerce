@@ -16,6 +16,17 @@ export interface CartItemDetail {
   product: CartProduct;
   price: number;
   subtotal: number;
+  variant?: {
+    color: string;
+    createdAt: string;
+    id: string;
+    price: number;
+    productId: string;
+    size: string;
+    sku: string;
+    stock: number;
+    updatedAt: string;
+  };
 }
 
 export interface CartSummary {

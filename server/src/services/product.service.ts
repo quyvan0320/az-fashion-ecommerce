@@ -53,7 +53,7 @@ export const productService = {
         description: data.description,
         images: data.images,
         categoryId: data.categoryId,
-
+        brand: data.brand,
         price: Number(data.price),
         salePrice: Number(data.salePrice || 0),
         stock: Number(data.stock || 0),
@@ -100,8 +100,11 @@ export const productService = {
     // filter category
     if (query.categoryId) {
       where.categoryId = query.categoryId;
+    } else if (query.categorySlug) {
+      where.category = {
+        slug: query.categorySlug,
+      };
     }
-
     // filter price range
     if (query.minPrice !== undefined || query.maxPrice !== undefined) {
       where.price = {};

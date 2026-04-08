@@ -26,11 +26,13 @@ export const useAddToCart = () => {
   return useMutation({
     mutationFn: ({
       productId,
+      variantId,
       quantity,
     }: {
       productId: string;
+      variantId: string;
       quantity: number;
-    }) => cartService.addItem(productId, quantity),
+    }) => cartService.addItem(productId, variantId, quantity),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: cartKeys.cart });
       queryClient.invalidateQueries({ queryKey: cartKeys.summary });

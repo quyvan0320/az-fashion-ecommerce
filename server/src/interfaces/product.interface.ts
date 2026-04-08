@@ -5,6 +5,7 @@ export interface CreateProductInput {
   salePrice?: number;
   sku?: string;
   stock: number;
+  brand?: string;
   categoryId: string;
   images: string[];
   isActive?: boolean;
@@ -17,6 +18,7 @@ export interface UpdateProductInput {
   salePrice?: number;
   sku?: string;
   stock?: number;
+  brand?: string;
   categoryId?: string;
   images?: string[];
   isActive?: boolean;
@@ -27,6 +29,7 @@ export interface GetProductsQuery {
   limit?: number;
   search?: string;
   categoryId?: string;
+  categorySlug?: string;
   minPrice?: number;
   maxPrice?: number;
   inStock?: boolean;

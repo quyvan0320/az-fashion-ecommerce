@@ -9,6 +9,7 @@ export interface Product {
   name: string;
   slug: string;
   description?: string;
+  brand?: string;
   price: number;
   salePrice: number;
   sku: string;
@@ -73,6 +74,7 @@ export interface GetProductsParams {
   limit?: number;
   search?: string;
   categoryId?: string;
+  categorySlug?: string;
   isActive?: boolean;
   sortBy?: string;
   order?: "asc" | "desc";

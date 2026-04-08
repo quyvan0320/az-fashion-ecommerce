@@ -115,6 +115,10 @@ export const getProductsValidator = [
     .optional()
     .isIn(["asc", "desc"])
     .withMessage("Thứ tự phải là asc hoặc desc"),
+  param("categorySlug")
+        .optional()
+    .matches(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
+    .withMessage("Slug danh mục không hợp lệ"),
 ];
 
 // get id product param

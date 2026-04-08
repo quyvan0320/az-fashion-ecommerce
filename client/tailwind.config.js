@@ -4,8 +4,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["Inter", "sans-serif"],
-        heading: ["Quicksand", "sans-serif"],
+        main: ["Quicksand", "sans-serif"],
       },
       colors: {
         brand: {

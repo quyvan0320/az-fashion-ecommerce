@@ -7,6 +7,7 @@ import App from "./App";
 import "./index.css";
 import { AuthProvider } from "./store/authContext";
 import ScrollToTop from "./components/common/ScrollToTop";
+import CartDrawer from "./pages/public/cart/CartDrawer";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -23,6 +24,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <BrowserRouter>
+        <CartDrawer/>
         <ScrollToTop/>
           <App />
           <Toaster position="top-right" />

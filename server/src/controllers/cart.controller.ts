@@ -23,9 +23,14 @@ export const cartController = {
         throw new AppError("Người dùng chưa đăng nhập", 401);
       }
 
-      const { productId, quantity } = req.body;
+      const { productId, quantity, variantId } = req.body;
 
-      const cartItem = await cartService.addItem(userId, productId, quantity);
+      const cartItem = await cartService.addItem(
+        userId,
+        productId,
+        variantId,
+        quantity,
+      );
       res.status(201).json({
         success: true,
         message: "Mặt hàng đã thêm vào giỏ hàng",

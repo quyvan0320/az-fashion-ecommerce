@@ -60,10 +60,10 @@ const ProductDetail = () => {
   ] as string[];
 
   const selectedVariant = variants.find(
-    (v) =>
-      (selectedSize ? v.size === selectedSize : true) &&
-      (selectedColor ? v.color === selectedColor : true),
-  );
+  (v) =>
+    (selectedSize ? v.size === selectedSize : true) &&
+    (selectedColor ? v.color === selectedColor : true)
+);
 
   const effectiveStock = selectedVariant
     ? selectedVariant.stock
@@ -83,7 +83,16 @@ const ProductDetail = () => {
       return;
     }
     if (!product) return;
-    addToCart({ productId: product.id, quantity });
+
+    if (variants.length > 0 && !selectedVariant) {
+      alert("Vui lòng chọn Size và Màu sắc trước khi thêm vào giỏ hàng");
+      return;
+    }
+    addToCart({
+      productId: product.id,
+      variantId: selectedVariant?.id || "",
+      quantity,
+    });
   };
 
   const handleSubmitReview = () => {
