@@ -19,6 +19,7 @@ import ProductDetail from "./pages/public/product/ProductDetail";
 import Cart from "./pages/public/cart";
 import Checkout from "./pages/public/checkout";
 import CartDrawer from "./pages/public/cart/CartDrawer";
+import Search from "./pages/public/Search";
 
 // == protected route
 const ProtectedRoute = ({
@@ -84,6 +85,7 @@ const AppRoutes = () => {
         <Route index element={<Home />} />
         <Route path={ROUTES.PRODUCTS} element={<Product />} />
         <Route path={`${ROUTES.PRODUCTS}/:slug`} element={<ProductDetail />} />
+        <Route path={`${ROUTES.SEARCH}`} element={<Search />} />
         <Route
           path={ROUTES.CART}
           element={

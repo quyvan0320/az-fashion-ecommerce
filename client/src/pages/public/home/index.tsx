@@ -4,7 +4,7 @@ import { useCategories } from "@/services/queries/useCategories";
 import { useFeaturedProducts } from "@/services/queries/useProducts";
 import { ArrowRight } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import ProductCard from "./ProductCard";
+import ProductCard from "../product/ProductCard";
 
 const Home = () => {
   const { data: featuredRes, isLoading: featuredLoading } =

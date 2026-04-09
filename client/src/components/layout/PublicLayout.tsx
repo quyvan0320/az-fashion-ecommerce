@@ -152,7 +152,7 @@ const PublicLayout = () => {
 
           <div className="flex items-center gap-2">
             <Link
-              to={ROUTES.LOGIN}
+              to={ROUTES.SEARCH}
               className="relative p-2 hover:bg-brand-grey rounded-lg"
             >
               <Search size={20} />

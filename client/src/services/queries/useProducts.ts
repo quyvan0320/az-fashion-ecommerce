@@ -8,10 +8,11 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { productService, variantService } from "../api/products";
 import toast from "react-hot-toast";
 
-export const useProducts = (params?: GetProductsParams) => {
+export const useProducts = (params?: GetProductsParams, options?: any) => {
   return useQuery({
     queryKey: productKeys.list(params),
     queryFn: () => productService.getAll(params),
+    ...options
   });
 };
 

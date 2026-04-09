@@ -6,6 +6,11 @@ export default {
       fontFamily: {
         main: ["Quicksand", "sans-serif"],
       },
+      keyframes: {
+        shimmer: {
+          "100%": { transform: "translateX(100%)" },
+        },
+      },
       colors: {
         brand: {
           light: "#ffffff",

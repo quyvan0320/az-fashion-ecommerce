@@ -5,7 +5,7 @@ import { useProducts } from "@/services/queries/useProducts";
 import { Search, ShoppingBag, SlidersHorizontal } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import ProductCard from "../home/ProductCard";
+import ProductCard from "./ProductCard";
 
 const SORT_OPTIONS = [
   { value: "createdAt_desc", label: "Mới nhất" },

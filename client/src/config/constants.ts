@@ -20,6 +20,7 @@ export const ROUTES = {
   PRODUCT_DETAIL: "/products/:slug",
   CART: "/cart",
   CHECKOUT: "/checkout",
+  SEARCH: "/search",
 } as const;
 
 export const STORAGE_KEYS = {
