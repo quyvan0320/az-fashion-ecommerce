@@ -9,7 +9,7 @@ import {
   useDeleteCategory,
 } from "@/services/queries/useCategories";
 import { Category } from "@/types/category";
-import { Package, Pencil, Plus, Search, Trash, Trash2 } from "lucide-react";
+import { Package, Pencil, Plus, Search, Trash2 } from "lucide-react";
 import { useState } from "react";
 
 const Categories = () => {

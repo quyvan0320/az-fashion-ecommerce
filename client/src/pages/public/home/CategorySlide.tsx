@@ -1,9 +1,11 @@
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
-import { ChevronLeft, ChevronRight, ArrowRight, ArrowLeft } from "lucide-react";
+import { ArrowRight, ArrowLeft } from "lucide-react";
 import "swiper/css";
 import "swiper/css/navigation";
 import SkeletonProduct from "@/components/common/SkeletonProduct";
+import { Link } from "react-router-dom";
+import { ROUTES } from "@/config/constants";
 
 const CategorySlide = ({
   categories,
@@ -50,21 +52,23 @@ const CategorySlide = ({
         >
           {categories.map((cat: any) => (
             <SwiperSlide key={cat.id}>
-              <div className="group relative overflow-hidden rounded-sm cursor-pointer">
-                <img
-                  src={cat.image}
-                  className="w-full aspect-[3/4] object-cover transition-transform duration-500 group-hover:scale-110"
-                />
+              <Link to={`${ROUTES.PRODUCTS}?categorySlug=${cat.slug}`}>
+                <div className="group relative overflow-hidden rounded-sm cursor-pointer">
+                  <img
+                    src={cat.image}
+                    className="w-full aspect-[3/4] object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
 
-                <div className="absolute bottom-0 left-0 right-0 z-10 p-4  bg-brand-light/40 flex items-center justify-between ">
-                  <span className="font-medium text-lg z-50 text-brand-black">
-                    {cat.name}
-                  </span>
-                  <div className="w-10 h-10 duration-100  rounded-full z-50 bg-brand-light hover:bg-brand-black hover:text-brand-light transition-all  flex items-center justify-center">
-                    <ArrowRight size={20} />
+                  <div className="absolute bottom-0 left-0 right-0 z-10 p-4  bg-brand-light/40 flex items-center justify-between ">
+                    <span className="font-medium text-lg z-50 text-brand-black">
+                      {cat.name}
+                    </span>
+                    <div className="w-10 h-10 duration-100  rounded-full z-50 bg-brand-light hover:bg-brand-black hover:text-brand-light transition-all  flex items-center justify-center">
+                      <ArrowRight size={20} />
+                    </div>
                   </div>
                 </div>
-              </div>
+              </Link>
             </SwiperSlide>
           ))}
         </Swiper>

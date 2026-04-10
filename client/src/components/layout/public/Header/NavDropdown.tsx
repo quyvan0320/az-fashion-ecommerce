@@ -16,7 +16,6 @@ interface NavDropdownProps {
 const NavDropdown = ({ title, items }: NavDropdownProps) => {
   return (
     <div className="group relative flex items-center gap-2 cursor-pointer py-4">
-      {/* Label chính */}
       <span className="flex items-center gap-1 group-hover:text-brand-red transition-colors">
         {title}
         <ChevronDown
@@ -25,14 +24,12 @@ const NavDropdown = ({ title, items }: NavDropdownProps) => {
         />
       </span>
 
-      {/* Dropdown Box */}
       <div
         className="absolute top-full left-0 min-w-[220px] bg-brand-light shadow-2xl border border-gray-100 py-3 z-50 
           opacity-0 invisible translate-y-4
           group-hover:opacity-100 group-hover:visible group-hover:translate-y-0
           transition-all duration-300 ease-out rounded-xl"
       >
-        {/* Mũi tên nhọn phía trên box (tùy chọn) */}
         <div className="absolute -top-2 left-6 w-4 h-4 bg-brand-light rotate-45 border-l border-t border-gray-100"></div>
 
         <div className="relative bg-brand-light rounded-xl overflow-hidden">

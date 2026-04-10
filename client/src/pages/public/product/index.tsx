@@ -1,219 +1,371 @@
-import Button from "@/components/common/Button";
-import Input from "@/components/common/Input";
 import { useCategories } from "@/services/queries/useCategories";
 import { useProducts } from "@/services/queries/useProducts";
-import { Search, ShoppingBag, SlidersHorizontal } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import { Plus, Minus, X, ShoppingBag } from "lucide-react";
+import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import ProductCard from "./ProductCard";
+import Breadcrumb from "@/components/common/Breadcrumb";
+import { Pagination } from "@/components/common/Pagination";
 
 const SORT_OPTIONS = [
   { value: "createdAt_desc", label: "Mới nhất" },
   { value: "price_asc", label: "Giá: Thấp → Cao" },
   { value: "price_desc", label: "Giá: Cao → Thấp" },
-  { value: "averageRating_desc", label: "Đánh giá cao nhất" },
+  { value: "createdAt_asc", label: "Cũ Nhất" },
+];
+
+const SIZES = ["S", "M", "L", "XL", "XXL"];
+
+const COLOR_OPTIONS = [
+  { name: "Đỏ", hex: "#FF0000" },
+  { name: "Xanh", hex: "#0000FF" },
+  { name: "Vàng", hex: "#FFFF00" },
+  { name: "Đen", hex: "#000000" },
+  { name: "Trắng", hex: "#FFFFFF" },
+  { name: "Hồng", hex: "#FFC0CB" },
+  { name: "Xám", hex: "#808080" },
 ];
 
 const ProductsPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [showFilter, setShowFilter] = useState(false);
+  const [openFilters, setOpenFilters] = useState({
+    categories: true,
+    price: true,
+    size: true,
+    color: true,
+  });
 
-  // read params from url
-
-const page = Number(searchParams.get("page") || 1);
-const search = searchParams.get("search") || "";
-const categorySlug = searchParams.get("categorySlug") || "";
-const sortParam = searchParams.get("sort") || "createdAt_desc";
-
-
-const [sortBy, order] = sortParam.split("_") as [string, "asc" | "desc"];
-
-  // Search input local state để debounce
-  const [searchInput, setSearchInput] = useState(search);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      updateParams({ search: searchInput, page: "1" });
-    }, 400);
-    return () => clearTimeout(timer);
-  }, [searchInput]);
+  // URL Params
+  const page = Number(searchParams.get("page") || 1);
+  const search = searchParams.get("search") || "";
+  const categorySlug = searchParams.get("categorySlug") || "";
+  const sizeParam = searchParams.get("size") || "";
+  const colorParam = searchParams.get("color") || "";
+  const sortParam = searchParams.get("sort") || "createdAt_desc";
+  const [sortBy, order] = sortParam.split("_") as [string, "asc" | "desc"];
+  const isSaleParam = searchParams.get("isSale") === "true";
+  const minPrice = searchParams.get("minPrice") || undefined;
+  const maxPrice = searchParams.get("maxPrice") || undefined;
 
   const { data: res, isLoading } = useProducts({
     page,
     limit: 12,
     search: search || undefined,
     categorySlug: categorySlug || undefined,
+    size: sizeParam || undefined,
+    color: colorParam || undefined,
+    minPrice: minPrice ? Number(minPrice) : undefined,
+    maxPrice: maxPrice ? Number(maxPrice) : undefined,
+    isActive: true,
+    isSale: isSaleParam || undefined,
     sortBy,
     order,
-    // isActive: true,
   });
 
   const { data: categoriesRes } = useCategories({ limit: 50 });
-
   const products = res?.data?.products || [];
   const pagination = res?.data;
   const categories = categoriesRes?.data || [];
-  console.log(products)
-  const updateParams = (updates: Record<string, string>) => {
+
+  const updateParams = (updates: Record<string, string | null>) => {
     const newParams = new URLSearchParams(searchParams);
     Object.entries(updates).forEach(([key, value]) => {
-      if (value) newParams.set(key, value);
-      else newParams.delete(key);
+      if (value === null || value === "") newParams.delete(key);
+      else newParams.set(key, value);
     });
     setSearchParams(newParams);
   };
-  console.log(products)
+
+  const toggleFilter = (key: keyof typeof openFilters) => {
+    setOpenFilters((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const handlePriceChange = (value: number) => {
+    if (value >= 3000000) {
+      updateParams({ maxPrice: null });
+    } else {
+      updateParams({ maxPrice: value.toString(), page: "1" });
+    }
+  };
+
+  const currentCategory = categories.find((c) => c.slug === categorySlug);
+
+  const displayName = isSaleParam
+    ? "Sản phẩm khuyến mãi"
+    : currentCategory
+      ? currentCategory.name
+      : "Tất cả sản phẩm";
+
   return (
-    <div className="max-w-6xl mx-auto px-6 py-8">
-      <h1 className="text-2xl font-bold mb-6">Sản phẩm</h1>
+    <div className="max-w-7xl mx-auto px-4  py-6">
+      <Breadcrumb displayName={displayName} />
 
-      {/* ===== TOOLBAR ===== */}
-      <div className="flex items-center gap-3 mb-6 flex-wrap">
-        {/* Search */}
-        <div className="relative flex-1 min-w-60">
-          <Search
-            size={16}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-          />
-          <input
-            placeholder="Tìm sản phẩm..."
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-            className="w-full pl-9 pr-4 py-2.5 border rounded-lg text-sm"
-          />
-        </div>
-
-        {/* Sort */}
-        <select
-          value={sortParam}
-          onChange={(e) => updateParams({ sort: e.target.value, page: "1" })}
-          className="border rounded-lg px-3 py-2.5 text-sm"
-        >
-          {SORT_OPTIONS.map((opt) => (
-            <option key={opt.value} value={opt.value}>
-              {opt.label}
-            </option>
-          ))}
-        </select>
-
-        {/* Filter toggle */}
-        <button
-          onClick={() => setShowFilter(!showFilter)}
-          className={`flex items-center gap-2 border rounded-lg px-3 py-2.5 text-sm ${showFilter ? "bg-black text-white" : "hover:bg-gray-50"}`}
-        >
-          <SlidersHorizontal size={15} />
-          Lọc {categorySlug && "•"}
-        </button>
-      </div>
-
-      {/* ===== FILTER PANEL ===== */}
-      {showFilter && (
-        <div className="bg-gray-50 rounded-xl p-4 mb-6">
-          <p className="text-sm font-medium mb-3">Danh mục</p>
-          <div className="flex gap-2 flex-wrap">
-            <button
-              onClick={() => updateParams({ categorySlug: "", page: "1" })}
-              className={`px-3 py-1.5 rounded-lg text-sm border ${!categorySlug ? "bg-black text-white border-black" : "bg-white hover:bg-gray-100"}`}
-            >
-              Tất cả
-            </button>
-            {categories.map((cat) => (
+      <div className="flex flex-col lg:flex-row gap-10">
+        <aside className="w-full lg:w-64 flex-shrink-0">
+          {(categorySlug ||
+            sizeParam ||
+            colorParam ||
+            isSaleParam ||
+            searchParams.get("maxPrice")) && (
+            <div className="mb-8">
+              <h3 className="text-lg font-bold mb-4 uppercase tracking-wider ">
+                Bạn đang xem
+              </h3>
+              <div className="flex flex-wrap gap-2 mb-4">
+                {categorySlug && (
+                  <span className="flex items-center gap-2 px-3 py-1 bg-gray-100 text-xs rounded-full">
+                    Danh mục:{" "}
+                    {categories.find((c) => c.slug === categorySlug)?.name}
+                    <X
+                      size={12}
+                      className="cursor-pointer"
+                      onClick={() => updateParams({ categorySlug: null })}
+                    />
+                  </span>
+                )}
+                {sizeParam && (
+                  <span className="flex items-center gap-2 px-3 py-1 bg-gray-100 text-xs rounded-full">
+                    Size: {sizeParam}
+                    <X
+                      size={12}
+                      className="cursor-pointer"
+                      onClick={() => updateParams({ size: null })}
+                    />
+                  </span>
+                )}
+                {isSaleParam && (
+                  <span className="flex items-center gap-2 px-3 py-1 bg-red-100 text-red-600 text-xs rounded-full font-bold">
+                    Đang giảm giá
+                    <X
+                      size={12}
+                      className="cursor-pointer"
+                      onClick={() => updateParams({ isSale: null })}
+                    />
+                  </span>
+                )}
+                {colorParam && (
+                  <span className="flex items-center gap-2 px-3 py-1 bg-gray-100 text-xs rounded-full uppercase">
+                    Màu: {colorParam}
+                    <X
+                      size={12}
+                      className="cursor-pointer"
+                      onClick={() => updateParams({ color: null })}
+                    />
+                  </span>
+                )}
+                {searchParams.get("maxPrice") && (
+                  <span className="flex items-center gap-2 px-3 py-1 bg-gray-100 text-xs rounded-full">
+                    Dưới {Number(searchParams.get("maxPrice")).toLocaleString()}
+                    đ
+                    <X
+                      size={12}
+                      className="cursor-pointer"
+                      onClick={() => updateParams({ maxPrice: null })}
+                    />
+                  </span>
+                )}
+              </div>
               <button
-                key={cat.id}
-                onClick={() => updateParams({ categorySlug: cat.slug, page: "1" })}
-                className={`px-3 py-1.5 rounded-lg text-sm border ${categorySlug === cat.slug ? "bg-black text-white border-black" : "bg-white hover:bg-gray-100"}`}
+                onClick={() => setSearchParams({})}
+                className="text-xs text-red-500 underline underline-offset-4"
               >
-                {cat.name} ({cat._count?.products || 0})
+                Xóa hết
               </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* ===== RESULTS ===== */}
-      <div className="flex items-center justify-between mb-4">
-        <p className="text-sm text-gray-500">
-          {pagination?.total || 0} sản phẩm
-          {search && (
-            <span>
-              {" "}
-              cho "<strong>{search}</strong>"
-            </span>
-          )}
-        </p>
-      </div>
-
-      {isLoading ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
-          {Array.from({ length: 12 }).map((_, i) => (
-            <div key={i} className="animate-pulse">
-              <div className="bg-gray-200 aspect-square rounded-xl mb-3" />
-              <div className="h-4 bg-gray-200 rounded mb-2" />
-              <div className="h-4 bg-gray-200 rounded w-1/2" />
             </div>
-          ))}
-        </div>
-      ) : products.length === 0 ? (
-        <div className="text-center py-20 text-gray-400">
-          <ShoppingBag size={40} className="mx-auto mb-3 opacity-30" />
-          <p>Không tìm thấy sản phẩm nào</p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
-          {products.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
-      )}
+          )}
 
+          <h2 className="text-2xl font-bold mb-6 uppercase">Bộ lọc</h2>
 
-      {pagination && pagination.totalPages > 1 && (
-        <div className="flex items-center justify-center gap-2 mt-10">
-          <button
-            onClick={() => updateParams({ page: String(page - 1) })}
-            disabled={!pagination.hasPrev}
-            className="px-4 py-2 border rounded-lg text-sm disabled:opacity-40 hover:bg-gray-50"
-          >
-            Trước
-          </button>
-
-          {Array.from({ length: pagination.totalPages }, (_, i) => i + 1)
-            .filter(
-              (p) =>
-                p === 1 ||
-                p === pagination.totalPages ||
-                Math.abs(p - page) <= 1,
-            )
-            .reduce<(number | "...")[]>((acc, p, i, arr) => {
-              if (i > 0 && p - (arr[i - 1] as number) > 1) acc.push("...");
-              acc.push(p);
-              return acc;
-            }, [])
-            .map((p, i) =>
-              p === "..." ? (
-                <span key={`dots-${i}`} className="px-2 text-gray-400">
-                  ...
-                </span>
+          <div className="border-t py-4">
+            <button
+              onClick={() => toggleFilter("categories")}
+              className="flex justify-between items-center w-full font-bold text-sm uppercase mb-4"
+            >
+              Danh mục sản phẩm
+              {openFilters.categories ? (
+                <Minus size={16} />
               ) : (
-                <button
-                  key={p}
-                  onClick={() => updateParams({ page: String(p) })}
-                  className={`w-9 h-9 rounded-lg text-sm border ${page === p ? "bg-black text-white border-black" : "hover:bg-gray-50"}`}
-                >
-                  {p}
-                </button>
-              ),
+                <Plus size={16} />
+              )}
+            </button>
+            {openFilters.categories && (
+              <div className="space-y-3 pl-1">
+                {categories.map((cat) => (
+                  <label
+                    key={cat.id}
+                    className="flex items-center gap-3 cursor-pointer group"
+                  >
+                    <input
+                      type="radio"
+                      name="category"
+                      checked={categorySlug === cat.slug}
+                      onChange={() =>
+                        updateParams({ categorySlug: cat.slug, page: "1" })
+                      }
+                      className="w-4 h-4 accent-black"
+                    />
+                    <span
+                      className={`text-sm ${categorySlug === cat.slug ? "font-bold" : "text-gray-600 group-hover:text-black"}`}
+                    >
+                      {cat.name}
+                    </span>
+                  </label>
+                ))}
+              </div>
             )}
+          </div>
 
-          <button
-            onClick={() => updateParams({ page: String(page + 1) })}
-            disabled={!pagination.hasNext}
-            className="px-4 py-2 border rounded-lg text-sm disabled:opacity-40 hover:bg-gray-50"
-          >
-            Sau
-          </button>
-        </div>
-      )}
+          <div className="border-t py-4">
+            <button
+              onClick={() => toggleFilter("price")}
+              className="flex justify-between items-center w-full font-bold text-sm uppercase mb-4"
+            >
+              Khoảng giá
+              {openFilters.price ? <Minus size={16} /> : <Plus size={16} />}
+            </button>
+            {openFilters.price && (
+              <div className="px-2">
+                <input
+                  type="range"
+                  className="w-full accent-black mb-2"
+                  min="0"
+                  max="3000000"
+                  step="100000"
+                  value={searchParams.get("maxPrice") || "3000000"}
+                  onChange={(e) => handlePriceChange(Number(e.target.value))}
+                />
+                <div className="flex justify-between text-[10px] font-bold text-gray-500 uppercase">
+                  <span>0đ</span>
+                  <span className="text-black">
+                    Dưới{" "}
+                    {Number(
+                      searchParams.get("maxPrice") || 3000000,
+                    ).toLocaleString()}
+                    đ
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="border-t py-4">
+            <button
+              onClick={() => toggleFilter("color")}
+              className="flex justify-between items-center w-full font-bold text-sm uppercase mb-4"
+            >
+              Màu sắc
+              {openFilters.color ? <Minus size={16} /> : <Plus size={16} />}
+            </button>
+            {openFilters.color && (
+              <div className="flex flex-wrap gap-3 px-1">
+                {COLOR_OPTIONS.map((color) => (
+                  <button
+                    key={color.name}
+                    onClick={() =>
+                      updateParams({
+                        color: color.name === colorParam ? null : color.name,
+                        page: "1",
+                      })
+                    }
+                    className={`w-8 h-8 rounded-full border transition-all flex items-center justify-center ${
+                      colorParam === color.name
+                        ? "border-black scale-110 ring-2 ring-offset-1 ring-gray-300"
+                        : "border-gray-200"
+                    }`}
+                    style={{ backgroundColor: color.hex }}
+                    title={color.name}
+                  >
+                    {colorParam === color.name && (
+                      <div
+                        className={`w-1.5 h-1.5 rounded-full ${
+                          color.name === "Trắng" || color.name === "Vàng"
+                            ? "bg-black"
+                            : "bg-white"
+                        }`}
+                      />
+                    )}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="border-t py-4">
+            <button
+              onClick={() => toggleFilter("size")}
+              className="flex justify-between items-center w-full font-bold text-sm uppercase mb-4"
+            >
+              Size
+              {openFilters.size ? <Minus size={16} /> : <Plus size={16} />}
+            </button>
+            {openFilters.size && (
+              <div className="grid grid-cols-4 gap-2">
+                {SIZES.map((s) => (
+                  <button
+                    key={s}
+                    onClick={() =>
+                      updateParams({ size: s === sizeParam ? null : s })
+                    }
+                    className={`h-10 border text-xs flex items-center justify-center hover:border-black transition-all
+                      ${sizeParam === s ? "bg-black text-white border-black" : "text-gray-600"}`}
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </aside>
+
+        <main className="flex-1">
+          <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+            <div className="flex items-center gap-4">
+              <h1 className="text-2xl font-bold uppercase">{displayName}</h1>
+              <span className="text-gray-400 text-sm">
+                {pagination?.total || 0} sản phẩm
+              </span>
+            </div>
+
+            <div className="flex items-center gap-3 self-end">
+              <span className="text-sm text-gray-500">Sắp xếp theo</span>
+              <select
+                value={sortParam}
+                onChange={(e) =>
+                  updateParams({ sort: e.target.value, page: "1" })
+                }
+                className="border rounded-none px-4 py-2 text-sm font-medium focus:ring-0 outline-none min-w-[200px]"
+              >
+                {SORT_OPTIONS.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {isLoading ? (
+            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-y-10 gap-x-6"></div>
+          ) : products.length === 0 ? (
+            <div className="text-center py-20 text-gray-400 border rounded-xl">
+              <ShoppingBag size={40} className="mx-auto mb-3 opacity-30" />
+              <p>Không tìm thấy sản phẩm nào khớp với bộ lọc</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-y-10 gap-x-6">
+              {products.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          )}
+
+          <Pagination
+            pagination={pagination}
+            handleParams={updateParams}
+            page={page}
+          />
+        </main>
+      </div>
     </div>
   );
 };

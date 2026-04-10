@@ -86,10 +86,8 @@ export const productService = {
     const limit = Number(query.limit) || 20;
     const skip = (page - 1) * limit;
 
-    // build where clause
     const where: Prisma.ProductWhereInput = {};
 
-    // search name & description
     if (query.search) {
       where.OR = [
         { name: { contains: query.search, mode: "insensitive" } },
@@ -97,43 +95,60 @@ export const productService = {
       ];
     }
 
-    // filter category
     if (query.categoryId) {
       where.categoryId = query.categoryId;
     } else if (query.categorySlug) {
-      where.category = {
-        slug: query.categorySlug,
+      where.category = { slug: query.categorySlug };
+    }
+
+    if (query.minPrice !== undefined || query.maxPrice !== undefined) {
+      where.price = {
+        gte: query.minPrice ? Number(query.minPrice) : 0,
+        lte: query.maxPrice ? Number(query.maxPrice) : 3000000,
       };
     }
-    // filter price range
-    if (query.minPrice !== undefined || query.maxPrice !== undefined) {
-      where.price = {};
-      if (query.minPrice !== undefined) {
-        where.price.gte = Number(query.minPrice);
-      }
-      if (query.maxPrice !== undefined) {
-        where.price.lte = Number(query.maxPrice);
-      }
+
+    if (query.isAdmin !== 'true') {
+    where.isActive = true;
+  }
+
+    if (query.isSale === "true") {
+      where.AND = [
+        {
+          salePrice: {
+            gt: 0,
+          },
+        },
+        {
+          salePrice: {
+            lt: prisma.product.fields.price,
+          },
+        },
+      ];
     }
 
-    // filter  stock
-    if (query.inStock === true) {
-      where.stock = { gt: 0 };
+    if (query.size || query.color) {
+      where.variants = {
+        some: {
+          AND: [
+            query.size ? { size: query.size } : {},
+            query.color ? { color: query.color } : {},
+            { stock: { gt: 0 } },
+          ],
+        },
+      };
     }
 
-    // filter active status
-    if (query.isActive !== undefined) {
-      where.isActive = query.isActive === true;
-    }
-
-    // build orderby
     const sortBy = query.sortBy || "createdAt";
     const order = query.order || "desc";
+
+    const validSortFields = ["name", "price", "createdAt"];
+    const finalSortBy = validSortFields.includes(sortBy) ? sortBy : "createdAt";
+
     const orderBy: Prisma.ProductOrderByWithRelationInput = {
-      [sortBy]: order,
+      [finalSortBy]: order,
     };
 
-    // get products
     const [products, total] = await Promise.all([
       prisma.product.findMany({
         where,
@@ -142,36 +157,20 @@ export const productService = {
         orderBy,
         include: {
           variants: true,
-          category: {
-            select: {
-              id: true,
-              name: true,
-              slug: true,
-            },
-          },
-          _count: {
-            select: {
-              reviews: true,
-              variants: true,
-            },
-          },
+          category: { select: { id: true, name: true, slug: true } },
+          _count: { select: { reviews: true, variants: true } },
         },
       }),
       prisma.product.count({ where }),
     ]);
 
-    // get list id 20 products
     const productIds = products.map((p) => p.id);
-
-    // calculate avg  all  product
     const stats = await prisma.review.groupBy({
       by: ["productId"],
       where: { productId: { in: productIds } },
       _avg: { rating: true },
       _count: { rating: true },
     });
-
-    // index product
     const statsMap = new Map(stats.map((s) => [s.productId, s]));
 
     const productWithRating = products.map((product) => {

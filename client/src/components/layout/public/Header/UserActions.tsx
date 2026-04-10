@@ -54,7 +54,6 @@ export const UserActions = ({
         )}
       </div>
 
-      {/* Hamburger Menu - Chỉ hiện trên Mobile & Tablet (< 1024px) */}
       <button
         className="lg:hidden p-2 hover:bg-brand-grey rounded-lg"
         onClick={() => setMenuOpen(!menuOpen)}

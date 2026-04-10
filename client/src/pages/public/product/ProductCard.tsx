@@ -4,7 +4,7 @@ import { useAddToCart } from "@/services/queries/useCart";
 import { useAuth } from "@/store/authContext";
 import { Product } from "@/types/product";
 import { formatCurrency } from "@/utils/formatters";
-import { Eye, ShoppingBag } from "lucide-react";
+import {  ShoppingBag } from "lucide-react";
 import React from "react";
 import { Link } from "react-router-dom";
 

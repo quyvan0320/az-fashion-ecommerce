@@ -26,7 +26,7 @@ const Search = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       updateParams({ search: searchInput, page: "1" });
-    }, 400);
+    }, 600);
     return () => clearTimeout(timer);
   }, [searchInput]);
 

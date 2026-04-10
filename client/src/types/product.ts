@@ -73,11 +73,16 @@ export interface GetProductsParams {
   page?: number;
   limit?: number;
   search?: string;
-  categoryId?: string;
   categorySlug?: string;
+  size?: string;
+  color?: string;
+  minPrice?: number;
+  maxPrice?: number;
   isActive?: boolean;
+  isAdmin?: boolean;
+  isSale?: string | boolean | undefined;
   sortBy?: string;
-  order?: "asc" | "desc";
+  order?: string;
 }
 
 export interface CreateVariantData {

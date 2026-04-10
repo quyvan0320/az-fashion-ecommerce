@@ -1,12 +1,13 @@
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
-import {  ArrowRight, ArrowLeft } from "lucide-react";
+import { ArrowRight, ArrowLeft } from "lucide-react";
 import "swiper/css";
 import "swiper/css/navigation";
 import SkeletonProduct from "@/components/common/SkeletonProduct";
 import ProductCard from "../product/ProductCard";
 import Button from "@/components/common/Button";
 import { Link } from "react-router-dom";
+import { ROUTES } from "@/config/constants";
 
 const SaleProductSlide = ({
   products,
@@ -60,7 +61,7 @@ const SaleProductSlide = ({
           </Swiper>
         )}
         <div className="flex items-center justify-center mt-6">
-          <Link to={""}>
+          <Link to={`${ROUTES.PRODUCTS}?isSale=true`}>
             <Button className="font-semibold text-brand-dark">
               Xem tất cả<strong>SẢN PHẨM KHUYẾN MÃI</strong>
             </Button>

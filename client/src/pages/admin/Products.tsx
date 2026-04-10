@@ -34,6 +34,7 @@ const Products = () => {
     page,
     limit: 10,
     search: search || undefined,
+    isAdmin: true,
   });
   const { mutate: deleteProduct } = useDeleteProduct();
   const { mutate: toggleActive } = useToggleActive();
@@ -245,7 +246,7 @@ const Products = () => {
         </Modal>
       )}
 
-        {variantsProduct && (
+      {variantsProduct && (
         <Modal
           isOpen={true}
           title={
