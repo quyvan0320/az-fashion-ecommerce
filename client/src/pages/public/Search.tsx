@@ -1,5 +1,5 @@
 import { useProducts } from "@/services/queries/useProducts";
-import { ChevronLeft, ChevronRight, ShoppingBag } from "lucide-react";
+import { ShoppingBag } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import ProductCard from "./product/ProductCard";
@@ -22,7 +22,7 @@ const Search = () => {
     });
     setSearchParams(newParams);
   };
-
+  console.log("Search term:", search);
   useEffect(() => {
     const timer = setTimeout(() => {
       updateParams({ search: searchInput, page: "1" });
@@ -35,16 +35,13 @@ const Search = () => {
       page,
       limit: 10,
       search: search || undefined,
-      isActive: true,
     },
-    {
-      // Chỉ khi có chữ trong ô search thì mới cho phép fetch data
-      enabled: search.trim().length > 0,
-    },
+    { enabled: search.trim().length > 0 },
   );
 
   const products = res?.data?.products || [];
   const pagination = res?.data;
+
   return (
     <div className="max-w-7xl mx-auto px-6 py-8">
       <div className="flex flex-col items-center justify-center">

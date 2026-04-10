@@ -35,6 +35,7 @@ const Categories = () => {
       deleteCategory(id);
     }
   };
+  console.log(categories)
   return (
     <>
       <div className="space-y-4">
@@ -91,7 +92,7 @@ const Categories = () => {
               </div>
             ) : (
               categories.map((category) => (
-                <div className="bg-white rounded-xl p-5 shadow-sm border hover:shadow-md transition-shadow">
+                <div key={category.id} className="bg-white rounded-xl p-5 shadow-sm border hover:shadow-md transition-shadow">
                   <div className="flex items-start justify-between">
                     <div className="flex-1 min-w-0">
                       <h3 className=" font-semibold truncate">

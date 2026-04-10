@@ -5,7 +5,7 @@ export const cartService = {
   async addItem(
     userId: string,
     productId: string,
-    variantId: string,
+    variantId?: string,
     quantity: number = 1,
   ) {
     if (quantity < 1) {
@@ -14,11 +14,7 @@ export const cartService = {
 
     const product = await prisma.product.findUnique({
       where: { id: productId },
-      include: {
-        variants: {
-          where: { id: variantId },
-        },
-      },
+      include: { variants: true },
     });
 
     if (!product || !product.isActive) {
@@ -28,10 +24,18 @@ export const cartService = {
       );
     }
 
-    const selectedVariant = product.variants[0];
-    if (!selectedVariant) {
-      throw new AppError("Biến thể (Size/Màu) này không tồn tại", 400);
+    let selectedVariant;
+    if (!variantId) {
+      selectedVariant =
+        product.variants.find((v) => v.stock > 0) || product.variants[0];
+    } else {
+      selectedVariant = product.variants.find((v) => v.id === variantId);
     }
+
+    if (!selectedVariant) {
+      throw new AppError("Không tìm thấy biến thể phù hợp", 400);
+    }
+    const finalVariantId = selectedVariant.id;
 
     const currentStock = selectedVariant.stock;
     if (currentStock < quantity) {
@@ -43,7 +47,11 @@ export const cartService = {
 
     const existingCart = await prisma.cartItem.findUnique({
       where: {
-        userId_productId_variantId: { userId, productId, variantId },
+        userId_productId_variantId: {
+          userId,
+          productId,
+          variantId: finalVariantId,
+        },
       },
     });
 
@@ -71,7 +79,7 @@ export const cartService = {
     }
 
     return await prisma.cartItem.create({
-      data: { userId, productId, variantId, quantity },
+      data: { userId, productId, variantId: finalVariantId, quantity },
       include: {
         product: { select: { id: true, name: true, images: true } },
         variant: true,

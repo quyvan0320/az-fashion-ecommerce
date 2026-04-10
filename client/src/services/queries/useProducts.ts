@@ -2,6 +2,7 @@ import { productKeys } from "@/config/query-keys";
 import {
   CreateVariantData,
   GetProductsParams,
+  ProductListResponse,
   UpdateVariantData,
 } from "@/types/product";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -9,7 +10,7 @@ import { productService, variantService } from "../api/products";
 import toast from "react-hot-toast";
 
 export const useProducts = (params?: GetProductsParams, options?: any) => {
-  return useQuery({
+  return useQuery<ProductListResponse>({
     queryKey: productKeys.list(params),
     queryFn: () => productService.getAll(params),
     ...options

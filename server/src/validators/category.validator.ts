@@ -16,7 +16,7 @@ export const createCategoryValidator = [
     .withMessage("Mô tả danh mục không được vượt quá 500 ký tự"),
 
   body("image")
-    .optional()
+    .optional({ nullable: true, checkFalsy: true })
     .isURL()
     .withMessage("Hình ảnh phải là một URL hợp lệ"),
 ];
@@ -74,8 +74,7 @@ export const updateCategoryValidator = [
     .withMessage("Mô tả danh mục không được vượt quá 500 ký tự"),
 
   body("image")
-    .optional()
-    .trim()
+    .optional({ checkFalsy: true, nullable: true })
     .isURL()
     .withMessage("Hình ảnh phải là một URL hợp lệ"),
 ];

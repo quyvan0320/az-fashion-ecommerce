@@ -38,14 +38,15 @@ export const productService = {
       throw new AppError("Mã sản phẩm đã tồn tại", 400);
     }
 
-    // validate sale price
-    if (data.salePrice && data.salePrice >= data.price) {
+    const price = Number(data.price);
+    const salePrice = data.salePrice ? Number(data.salePrice) : 0;
+
+    if (salePrice > 0 && salePrice >= price) {
       throw new AppError(
         "Mức giảm giá phải thấp hơn mức giá thông thường",
         400,
       );
     }
-
     //create
     return prisma.product.create({
       data: {
@@ -67,6 +68,7 @@ export const productService = {
         sku: sku,
       },
       include: {
+        variants: true,
         category: {
           select: {
             id: true,
@@ -90,10 +92,8 @@ export const productService = {
     // search name & description
     if (query.search) {
       where.OR = [
-        {
-          name: { contains: query.search, mode: "insensitive" },
-          description: { contains: query.search, mode: "insensitive" },
-        },
+        { name: { contains: query.search, mode: "insensitive" } },
+        { brand: { contains: query.search, mode: "insensitive" } },
       ];
     }
 
@@ -141,6 +141,7 @@ export const productService = {
         take: limit,
         orderBy,
         include: {
+          variants: true,
           category: {
             select: {
               id: true,
@@ -369,6 +370,8 @@ export const productService = {
         slug: slug,
       },
       include: {
+        variants: true,
+
         category: {
           select: {
             id: true,
@@ -451,6 +454,7 @@ export const productService = {
       take: limit,
       orderBy: { createdAt: "desc" },
       include: {
+        variants: true,
         category: {
           select: {
             id: true,
@@ -482,6 +486,7 @@ export const productService = {
       take: limit,
       orderBy: { createdAt: "desc" },
       include: {
+        variants: true,
         category: {
           select: {
             id: true,

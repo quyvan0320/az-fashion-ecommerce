@@ -3,7 +3,7 @@ export interface Category {
   name: string;
   slug: string;
   description: string | null;
-  image: string | null;
+  image?: string | null;
   createdAt: string;
   updatedAt: string;
   _count?: { products: number };

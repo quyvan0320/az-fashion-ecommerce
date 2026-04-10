@@ -3,11 +3,11 @@
 import prisma from "../config/prisma";
 import { AppError } from "../middleware/errorHandler";
 import { generateSlug } from "../utils/string.util";
-import { CreateCategoryInput, UpdateCategoryInput, GetCategoriesInput } from "../interfaces/category.interface";
-
-
-
-
+import {
+  CreateCategoryInput,
+  UpdateCategoryInput,
+  GetCategoriesInput,
+} from "../interfaces/category.interface";
 
 export const categoryService = {
   // create new category
@@ -183,6 +183,7 @@ export const categoryService = {
       where: { id },
       data: {
         ...data,
+        image: data.image !== undefined ? data.image : category.image,
         slug,
       },
     });

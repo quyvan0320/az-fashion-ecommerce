@@ -62,7 +62,7 @@ const [sortBy, order] = sortParam.split("_") as [string, "asc" | "desc"];
     });
     setSearchParams(newParams);
   };
-
+  console.log(products)
   return (
     <div className="max-w-6xl mx-auto px-6 py-8">
       <h1 className="text-2xl font-bold mb-6">Sản phẩm</h1>

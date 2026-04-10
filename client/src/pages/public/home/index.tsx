@@ -1,86 +1,84 @@
-import Button from "@/components/common/Button";
-import { ROUTES } from "@/config/constants";
 import { useCategories } from "@/services/queries/useCategories";
-import { useFeaturedProducts } from "@/services/queries/useProducts";
-import { ArrowRight } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
-import ProductCard from "../product/ProductCard";
+import { useProducts } from "@/services/queries/useProducts";
+import HeroSlide from "./HeroSlide";
+import CategorySlide from "./CategorySlide";
+import SaleProductSlide from "./SaleProductSlide";
+import ProductTabs from "./ProductTabs";
 
 const Home = () => {
-  const { data: featuredRes, isLoading: featuredLoading } =
-    useFeaturedProducts();
-  const { data: categoriesRes } = useCategories({ limit: 8 });
-  const navigate = useNavigate();
-  const featuredProducts = featuredRes?.data || [];
+  const { data: productsRes, isLoading: productLoading } = useProducts({
+    limit: 17,
+  });
+  const { data: categoriesRes, isLoading: categoriesLoading } = useCategories();
+  const products = productsRes?.data?.products || [];
   const categories = categoriesRes?.data || [];
+  const categoriesWithImg = categories.filter(
+    (ci) => ci.image !== null && ci.image !== "",
+  );
+  const saleProducts = products.filter((p: any) => p.salePrice > 0);
+  console.log(saleProducts);
   return (
     <div className="min-h-screen">
-      <section className="bg-black text-white py-24 px-6">
-        <div className="max-w-6xl mx-auto">
-          <h1 className="text-5xl font-bold mb-4">AZ Fashion</h1>
-          <p className="text-gray-400 text-lg mb-8">
-            Thời trang nam cao cấp — Phong cách, lịch lãm, hiện đại
-          </p>
-          <Link
-            to={ROUTES.PRODUCTS}
-            className="inline-flex items-center gap-2 bg-white text-black px-6 py-3 rounded-lg font-medium hover:bg-gray-100 transition"
-          >
-            Mua sắm ngay <ArrowRight size={16} />
-          </Link>
-        </div>
-      </section>
+      <HeroSlide />
 
       {/* categories */}
-      {categories.length > 0 && (
-        <section className="max-w-6xl mx-auto px-6 py-12">
-          <h2 className="text-2xl font-bold mb-6">Danh mục</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-            {categories.map((cat) => (
-              <Link
-                key={cat.id}
-                to={`${ROUTES.PRODUCTS}?categoryId=${cat.id}`}
-                className="group bg-gray-50 rounded-xl p-5 hover:bg-black hover:text-white transition-colors"
-              >
-                <p className="font-semibold">{cat.name}</p>
-                <p className="text-sm text-gray-500 group-hover:text-gray-300 mt-1">
-                  {cat._count?.products || 0} sản phẩm
-                </p>
-              </Link>
-            ))}
-          </div>
-        </section>
-      )}
+      <CategorySlide
+        categories={categoriesWithImg}
+        isLoading={categoriesLoading}
+      />
 
-      {/* featured products */}
-      <section className="max-w-6xl mx-auto px-6 py-12">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold">Sản phẩm nổi bật</h2>
-          <Link
-            to={ROUTES.PRODUCTS}
-            className="text-sm text-gray-500 hover:text-black flex items-center gap-1"
-          >
-            Xem tất cả <ArrowRight size={14} />
-          </Link>
-        </div>
+      {/* sale products */}
+      <SaleProductSlide products={saleProducts} isLoading={productLoading} />
 
-        {featuredLoading ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="animate-pulse">
-                <div className="bg-gray-200 aspect-square rounded-xl mb-3" />
-                <div className="h-4 bg-gray-200 rounded mb-2" />
-                <div className="h-4 bg-gray-200 rounded w-1/2" />
+      {/* tabs product */}
+      <ProductTabs />
+
+      <div className="border-t-2 pt-8 border-brand-grey">
+        <div className="px-8 lg:max-w-7xl mx-auto ">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-4">
+            <div className="flex items-center gap-4 grid-cols-1">
+              <img
+                src="home_policy_icon_1.png"
+                className="w-10 h-10 object-cover"
+              />
+              <div className="flex-1 flex-col text-brand-dark">
+                <p className="font-semibold text-md">Miễn phí vận chuyển</p>
+                <p className="text-sm">Áp dụng cho mọi đơn hàng từ 500k</p>
               </div>
-            ))}
+            </div>
+            <div className="flex items-center gap-4 grid-cols-1">
+              <img
+                src="home_policy_icon_2.png"
+                className="w-12 h-12 object-cover"
+              />
+              <div className="flex-1 flex-col text-brand-dark">
+                <p className="font-semibold text-md">Đổi hàng dễ dàng</p>
+                <p className="text-sm">7 ngày đổi hàng vì bất kì lí do gì</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-4 grid-cols-1">
+              <img
+                src="home_policy_icon_3.png"
+                className="w-12 h-12 object-cover"
+              />
+              <div className="flex-1 flex-col text-brand-dark">
+                <p className="font-semibold text-md">Hỗ trợ nhanh chóng</p>
+                <p className="text-sm">HOTLINE 24/7 : 0999777788</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-4 grid-cols-1">
+              <img
+                src="home_policy_icon_4.png"
+                className="w-12 h-12 object-cover"
+              />
+              <div className="flex-1 flex-col text-brand-dark">
+                <p className="font-semibold text-md">Thanh toán đa dạng</p>
+                <p className="text-sm">Thanh toán khi nhận hàng, Stripe</p>
+              </div>
+            </div>
           </div>
-        ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
-            {featuredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-        )}
-      </section>
+        </div>
+      </div>
     </div>
   );
 };
