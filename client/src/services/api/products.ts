@@ -40,21 +40,16 @@ export const productService = {
     );
     return data;
   },
-
-  create: async (formData: FormData): Promise<ApiResponse<Product>> => {
-    const { data } = await axiosInstance.post("/products", formData, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
+create: async (payload: any): Promise<ApiResponse<Product>> => {
+    const { data } = await axiosInstance.post("/products", payload);
     return data;
   },
 
   update: async (
     id: string,
-    formData: FormData,
+    payload: any,
   ): Promise<ApiResponse<Product>> => {
-    const { data } = await axiosInstance.put(`/products/${id}`, formData, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
+    const { data } = await axiosInstance.put(`/products/${id}`, payload);
     return data;
   },
   delete: async (id: string): Promise<ApiResponse<null>> => {

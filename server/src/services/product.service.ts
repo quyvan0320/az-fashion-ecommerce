@@ -59,10 +59,7 @@ export const productService = {
         salePrice: Number(data.salePrice || 0),
         stock: Number(data.stock || 0),
 
-        isActive:
-          typeof data.isActive === "string"
-            ? data.isActive === "true"
-            : Boolean(data.isActive),
+        isActive: Boolean(data.isActive),
 
         slug: finalSlug,
         sku: sku,
@@ -297,90 +294,74 @@ export const productService = {
     return this.getAll({ ...query, categoryId });
   },
 
-  async update(id: string, data: UpdateProductInput) {
-    // check product exist
-    const product = await prisma.product.findUnique({
-      where: { id },
+ async update(id: string, data: UpdateProductInput) {
+  const product = await prisma.product.findUnique({
+    where: { id },
+  });
+
+  if (!product) {
+    throw new AppError("Sản phẩm không tồn tại", 404);
+  }
+
+  if (data.categoryId) {
+    const category = await prisma.category.findUnique({
+      where: { id: data.categoryId },
     });
-
-    if (!product) {
-      throw new AppError("Sản phẩm không tồn tại", 404);
+    if (!category) {
+      throw new AppError("Danh mục không tồn tại", 404);
     }
+  }
 
-    // validate category
-    if (data.categoryId) {
-      const category = await prisma.category.findUnique({
-        where: { id: data.categoryId },
-      });
-
-      if (!category) {
-        throw new AppError("Danh mục không tồn tại", 404);
-      }
-    }
-
-    // new slug if name changed
-    let slug = product.slug;
-    if (data.name && data.name !== product.name) {
-      slug = generateSlug(data.name);
-
-      const existingSlug = await prisma.product.findFirst({
-        where: { slug, NOT: { id } },
-      });
-
-      if (existingSlug) {
-        slug = `${slug}-${Date.now()}`;
-      }
-    }
-
-    // check SKU unique changed
-    if (data.sku && data.sku !== product.sku) {
-      const existingSKU = await prisma.product.findUnique({
-        where: { sku: data.sku, NOT: { id } },
-      });
-
-      if (existingSKU) {
-        throw new AppError("SKU đã tồn tại", 400);
-      }
-    }
-
-    // validate price
-    const price = data.price ?? product.price;
-    const salePrice = data.salePrice ?? product.salePrice;
-
-    if (salePrice && salePrice >= price) {
-      throw new AppError("Mức giảm giá phải thấp hơn giá mặc định", 400);
-    }
-
-    // update
-    return prisma.product.update({
-      where: { id },
-      data: {
-        ...data,
-
-        price: data.price ? Number(data.price) : undefined,
-        salePrice: data.salePrice !== undefined ? Number(data.salePrice) : 0,
-        stock: data.stock !== undefined ? Number(data.stock) : undefined,
-
-        isActive:
-          typeof data.isActive === "string"
-            ? data.isActive === "true"
-            : Boolean(data.isActive),
-
-        slug: slug,
-      },
-      include: {
-        variants: true,
-
-        category: {
-          select: {
-            id: true,
-            name: true,
-            slug: true,
-          },
-        },
-      },
+  let slug = product.slug;
+  if (data.name && data.name !== product.name) {
+    slug = generateSlug(data.name);
+    const existingSlug = await prisma.product.findFirst({
+      where: { slug, NOT: { id } },
     });
-  },
+    if (existingSlug) {
+      slug = `${slug}-${Date.now()}`;
+    }
+  }
+
+  if (data.sku && data.sku !== product.sku) {
+    const existingSKU = await prisma.product.findUnique({
+      where: { sku: data.sku, NOT: { id } },
+    });
+    if (existingSKU) {
+      throw new AppError("SKU đã tồn tại", 400);
+    }
+  }
+
+const currentPrice = data.price !== undefined ? Number(data.price) : (product.price ?? 0);
+
+
+const currentSalePrice = data.salePrice !== undefined ? Number(data.salePrice) : (product.salePrice ?? 0);
+
+if (currentSalePrice > 0 && currentSalePrice >= currentPrice) {
+  throw new AppError("Mức giảm giá phải thấp hơn giá mặc định", 400);
+}
+
+  return prisma.product.update({
+    where: { id },
+    data: {
+      ...data, 
+      
+      price: data.price !== undefined ? Number(data.price) : undefined,
+  salePrice: data.salePrice !== undefined ? Number(data.salePrice) : undefined, 
+  stock: data.stock !== undefined ? Number(data.stock) : undefined,
+
+      isActive: data.isActive !== undefined ? Boolean(data.isActive) : undefined,
+
+      slug: slug,
+    },
+    include: {
+      variants: true,
+      category: {
+        select: { id: true, name: true, slug: true },
+      },
+    },
+  });
+},
 
   // delete product
   async delete(id: string) {

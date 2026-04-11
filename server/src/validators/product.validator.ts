@@ -30,7 +30,7 @@ export const createProductValidator = [
     .optional()
     .trim()
     .isLength({ min: 3, max: 50 })
-    .withMessage("SKU không vượt quá 2000 ký tự")
+    .withMessage("SKU không vượt quá 50 ký tự")
     .matches(/^[A-Z0-9-]+$/)
     .withMessage("SKU chỉ chưa ký tự in hoa, số và gạch nối"),
 
@@ -47,10 +47,14 @@ export const createProductValidator = [
     .withMessage("ID danh mục không hợp lệ"),
 
   body("images")
-    .notEmpty()
-    .withMessage("Cần có ít nhất 1 hình ảnh")
-    .isArray({ min: 1, max: 10 })
-    .withMessage("Phải cung cấp 1 đến 10 hình ảnh"),
+  .customSanitizer((value) => {
+    if (typeof value === "string") return [value];
+    return value;
+  })
+  .notEmpty()
+  .withMessage("Cần có ít nhất 1 hình ảnh")
+  .isArray({ min: 1, max: 10 })
+  .withMessage("Phải cung cấp 1 đến 10 hình ảnh"),
 
   body("images.*")
     .trim()
@@ -163,15 +167,15 @@ export const updateProductValidator = [
     .withMessage("Giá phải là số nguyên dương"),
 
   body("salePrice")
-    .optional()
-    .isInt({ min: 0 })
-    .withMessage("Giá phải là số nguyên dương"),
+  .optional({ nullable: true, checkFalsy: true }) 
+  .isInt({ min: 0 })
+  .withMessage("Giá giảm phải là số nguyên dương"),
 
   body("sku")
     .optional()
     .trim()
     .isLength({ min: 3, max: 50 })
-    .withMessage("SKU không vượt quá 2000 ký tự")
+    .withMessage("SKU không vượt quá 50 ký tự")
     .matches(/^[A-Z0-9-]+$/)
     .withMessage("SKU chỉ chưa ký tự in hoa, số và gạch nối"),
 
@@ -188,10 +192,15 @@ export const updateProductValidator = [
     .withMessage("ID danh mục không hợp lệ"),
 
   body("images")
-    .notEmpty()
-    .withMessage("Cần có ít nhất 1 hình ảnh")
-    .isArray({ min: 1, max: 10 })
-    .withMessage("Phải cung cấp 1 đến 10 hình ảnh"),
+  .customSanitizer((value) => {
+    // Nếu gửi lên là chuỗi đơn lẻ, biến nó thành mảng 1 phần tử
+    if (typeof value === "string") return [value];
+    return value;
+  })
+  .notEmpty()
+  .withMessage("Cần có ít nhất 1 hình ảnh")
+  .isArray({ min: 1, max: 10 })
+  .withMessage("Phải cung cấp 1 đến 10 hình ảnh"),
 
   body("images.*")
     .trim()

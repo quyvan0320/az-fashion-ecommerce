@@ -36,7 +36,6 @@ router.post(
   "/",
   authenticate,
   authorize("ADMIN"),
-  uploadMultiple as any,
   createProductValidator,
   productController.create,
 );
@@ -76,7 +75,6 @@ router.put(
   "/:id",
   authenticate,
   authorize("ADMIN"),
-  uploadMultiple as any,
   updateProductValidator,
   productController.update,
 );

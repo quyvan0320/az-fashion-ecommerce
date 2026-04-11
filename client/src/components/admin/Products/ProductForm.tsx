@@ -10,9 +10,11 @@ import {
 import { Product } from "@/types/product";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { X } from "lucide-react";
-import React, { useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
 interface ProductFormProps {
   product?: Product | null | undefined;
@@ -48,6 +50,8 @@ const ProductForm = ({ product, onSuccess }: ProductFormProps) => {
   const {
     register,
     handleSubmit,
+    watch,
+    setValue,
     formState: { errors },
   } = useForm<ProductFormData>({
     resolver: zodResolver(productSchema) as any,
@@ -74,14 +78,20 @@ const ProductForm = ({ product, onSuccess }: ProductFormProps) => {
   };
 
   const onSubmit = async (data: ProductFormData) => {
-    if (existingImages.length === 0 && newFiles.length === 0) {
+    const totalImages = existingImages.length + newFiles.length;
+    if (totalImages === 0) {
       alert("Vui lòng chọn ít nhất 1 ảnh sản phẩm");
+      return;
+    }
+    if (totalImages > 10) {
+      alert("Chỉ được phép tối đa 10 ảnh");
       return;
     }
 
     try {
       setIsUploading(true);
       let uploadedUrls: string[] = [];
+
       if (newFiles.length > 0) {
         const res = await uploadService.uploadMutiple(newFiles);
         uploadedUrls = res.data.map((img) => img.url);
@@ -90,21 +100,21 @@ const ProductForm = ({ product, onSuccess }: ProductFormProps) => {
 
       const finalImages = [...existingImages, ...uploadedUrls];
 
-      const formData = new FormData();
-      Object.entries(data).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-          formData.append(key, String(value));
-        }
-      });
-      finalImages.forEach((url) => formData.append("images", url));
+      const payload = {
+        ...data,
+        images: finalImages,
+      };
+
+      console.log("Dữ liệu sắp gửi đi:", payload);
       if (product) {
-        updateProduct({ id: product.id, formData }, { onSuccess });
+        updateProduct({ id: product.id, data: payload }, { onSuccess });
       } else {
-        createProduct(formData, { onSuccess });
+        // createProduct nhận payload
+        createProduct(payload, { onSuccess });
       }
     } catch (error) {
       setIsUploading(false);
-      alert("Upload ảnh thất bại, hãy thử lại");
+      alert("Có lỗi xảy ra, hãy thử lại");
     }
   };
 
@@ -128,12 +138,16 @@ const ProductForm = ({ product, onSuccess }: ProductFormProps) => {
       </div>
 
       {/* description */}
-      <Textarea
-        {...register("description")}
-        label="Mô tả"
-        placeholder="Đây là sản phẩm..."
-        error={errors.description?.message}
-      />
+      <div className="space-y-1.5 col-span-2">
+        <label className="text-sm font-semibold text-gray-700">
+          Mô tả sản phẩm
+        </label>
+
+        <ReactQuill
+          value={watch("description")}
+          onChange={(val) => setValue("description", val)}
+        />
+      </div>
       {/* price and sale price */}
       <div className="grid grid-cols-2 gap-4">
         <Input

@@ -13,7 +13,7 @@ export const useProducts = (params?: GetProductsParams, options?: any) => {
   return useQuery<ProductListResponse>({
     queryKey: productKeys.list(params),
     queryFn: () => productService.getAll(params),
-    ...options
+    ...options,
   });
 };
 
@@ -51,13 +51,13 @@ export const useRelatedProducts = (id: string) => {
 export const useCreateProduct = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (formData: FormData) => productService.create(formData),
+    mutationFn: (data: any) => productService.create(data), 
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: productKeys.all });
       toast.success("Tạo sản phẩm thành công");
     },
-    onError: (erorr: any) => {
-      toast.error(erorr.response?.data?.message || "Tạo sản phẩm thất bại");
+    onError: (error: any) => { 
+      toast.error(error.response?.data?.message || "Tạo sản phẩm thất bại");
     },
   });
 };
@@ -65,8 +65,8 @@ export const useCreateProduct = () => {
 export const useUpdateProduct = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, formData }: { id: string; formData: FormData }) =>
-      productService.update(id, formData),
+    mutationFn: ({ id, data }: { id: string; data: any }) =>
+      productService.update(id, data),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: productKeys.all });
       queryClient.invalidateQueries({
@@ -74,8 +74,8 @@ export const useUpdateProduct = () => {
       });
       toast.success("Cập nhật sản phẩm thành công");
     },
-    onError: (erorr: any) => {
-      toast.error(erorr.response?.data?.message || "Cập nhật thất bại");
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || "Cập nhật thất bại");
     },
   });
 };
@@ -131,6 +131,7 @@ export const useCreateVariant = () => {
         queryKey: productKeys.variants(variables.productId),
       });
       queryClient.invalidateQueries({ queryKey: productKeys.all });
+
       toast.success("Tạo biến thể thành công");
     },
     onError: (error: any) => {

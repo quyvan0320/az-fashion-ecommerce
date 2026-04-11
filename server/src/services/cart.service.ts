@@ -227,62 +227,59 @@ export const cartService = {
   async validateCart(userId: string) {
     const cartItems = await prisma.cartItem.findMany({
       where: { userId },
-      include: {
-        product: true,
-      },
+      include: { product: true },
     });
 
-    if (cartItems.length === 0) {
-      throw new AppError("Giỏ hàng trống", 400);
+    if (!cartItems || cartItems.length === 0) {
+      return { valid: true, items: [] };
     }
 
     const issues: string[] = [];
+
     for (const item of cartItems) {
-      // Check product still active
-      if (!item.product.isActive) {
-        issues.push(`Sản phẩm ${item.product.name} hiện không có sẵn`);
+      const { product, quantity } = item;
+
+      if (!product.isActive) {
+        issues.push(`Sản string phẩm "${product.name}" đã ngừng kinh doanh.`);
         continue;
       }
 
-      // check stock
-      if (item.product.stock < item.quantity) {
-        issues.push(
-          `${item.product.name}: Chỉ còn ${item.product.stock} sản phẩm trong giỏ hàng (hiện bạn đang có ${item.quantity} số lượng trong giỏ hàng)`,
-        );
+      if (product.stock < quantity) {
+        if (product.stock <= 0) {
+          issues.push(`Sản phẩm "${product.name}" đã hết hàng.`);
+        } else {
+          issues.push(
+            `Sản phẩm "${product.name}" chỉ còn ${product.stock} món trong kho (bạn chọn ${quantity}).`,
+          );
+        }
       }
     }
+
     if (issues.length > 0) {
-      throw new AppError(
-        "Giỏ hàng không đủ điều kiện thanh toán: " + issues.join("; "),
-        400,
-      );
+      throw new AppError("Giỏ hàng không hợp lệ: " + issues.join(" | "), 400);
     }
 
     return { valid: true };
   },
 
   async getCartSummary(userId: string) {
-    const { items, summary } = await this.getCart(userId);
+  const { items, summary } = await this.getCart(userId);
 
-    //validate cart
-    await this.validateCart(userId);
 
-    // calculate shipping
-    const shippingCost = summary.total > 500000 ? 0 : 30000;
+  const shippingCost = (summary.total > 500000 || summary.total === 0) ? 0 : 30000;
 
-    // calculate tax
-    const tax = Math.round(summary.total * 0.1);
+  const tax = Math.round(summary.total * 0.1);
 
-    const finalTotal = summary.total + shippingCost + tax;
+  const finalTotal = summary.total + shippingCost + tax;
 
-    return {
-      items,
-      subtotal: summary.total,
-      shippingCost,
-      tax,
-      total: finalTotal,
-      itemCount: summary.itemCount,
-      totalQuantity: summary.totalQuantity,
-    };
-  },
+  return {
+    items,
+    subtotal: summary.total,
+    shippingCost,
+    tax,
+    total: finalTotal,
+    itemCount: summary.itemCount,
+    totalQuantity: summary.totalQuantity,
+  };
+}
 };
