@@ -6,6 +6,7 @@ import { useSearchParams } from "react-router-dom";
 import ProductCard from "./ProductCard";
 import Breadcrumb from "@/components/common/Breadcrumb";
 import { Pagination } from "@/components/common/Pagination";
+import SkeletonProduct from "@/components/common/SkeletonProduct";
 
 const SORT_OPTIONS = [
   { value: "createdAt_desc", label: "Mới nhất" },
@@ -345,7 +346,11 @@ const ProductsPage = () => {
           </div>
 
           {isLoading ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-y-10 gap-x-6"></div>
+            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-y-10 gap-x-6">
+               {Array.from({ length: 12 }).map((_, i) => (
+              <SkeletonProduct key={i} />
+            ))}
+            </div>
           ) : products.length === 0 ? (
             <div className="text-center py-20 text-gray-400 border rounded-xl">
               <ShoppingBag size={40} className="mx-auto mb-3 opacity-30" />

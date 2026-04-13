@@ -34,8 +34,8 @@ const SaleProductSlide = ({
           </div>
         </div>
         {isLoading ? (
-          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 md:gap-6">
-            {Array.from({ length: 4 }).map((_, i) => (
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 md:gap-6">
+            {Array.from({ length: 5 }).map((_, i) => (
               <SkeletonProduct key={i} />
             ))}
           </div>

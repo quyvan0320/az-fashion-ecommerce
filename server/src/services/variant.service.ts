@@ -6,8 +6,6 @@ import {
 import { AppError } from "../middleware/errorHandler";
 import { generateVariantSKU } from "../utils/string.util";
 
-
-
 export const variantService = {
   async syncProductStock(tx: any, productId: string) {
     const allVariants = await tx.variant.findMany({
@@ -67,15 +65,21 @@ export const variantService = {
       throw new AppError("SKU đã tồn tại", 400);
     }
 
-    // create variant
+    const sPrice = product.salePrice ?? 0;
+    const variantPrice = data.price
+      ? Number(data.price)
+      : sPrice > 0
+        ? sPrice
+        : product.price;
 
+    // create variant
     return await prisma.$transaction(async (tx) => {
       const variant = await tx.variant.create({
         data: {
           productId,
           size: data.size,
           color: data.color,
-          price: Number(data.price || product.price),
+          price: Number(variantPrice),
           stock: Number(data.stock || 0),
           sku,
         },
@@ -155,18 +159,18 @@ export const variantService = {
     }
 
     return await prisma.$transaction(async (tx) => {
-    const updated = await tx.variant.update({
-      where: { id: variantId },
-      data: { ...data, sku: newSku },
-      include: { product: { select: { id: true, name: true, price: true } } },
+      const updated = await tx.variant.update({
+        where: { id: variantId },
+        data: { ...data, sku: newSku },
+        include: { product: { select: { id: true, name: true, price: true } } },
+      });
+
+      if (data.stock !== undefined) {
+        await this.syncProductStock(tx, updated.productId);
+      }
+
+      return updated;
     });
-
-    if (data.stock !== undefined) {
-      await this.syncProductStock(tx, updated.productId);
-    }
-
-    return updated;
-  });
   },
 
   async getProductVariants(productId: string) {
@@ -220,40 +224,40 @@ export const variantService = {
     return variant;
   },
 
- async deleteVariant(variantId: string) {
-  const variant = await prisma.variant.findUnique({
-    where: { id: variantId },
-  });
+  async deleteVariant(variantId: string) {
+    const variant = await prisma.variant.findUnique({
+      where: { id: variantId },
+    });
 
-  if (!variant) throw new AppError("Biến thể không tồn tại", 404);
+    if (!variant) throw new AppError("Biến thể không tồn tại", 404);
 
-  return await prisma.$transaction(async (tx) => {
-    await tx.variant.delete({ where: { id: variantId } });
-    await this.syncProductStock(tx, variant.productId);
-    return { message: "Biến thể đã được xóa thành công" };
-  });
-},
+    return await prisma.$transaction(async (tx) => {
+      await tx.variant.delete({ where: { id: variantId } });
+      await this.syncProductStock(tx, variant.productId);
+      return { message: "Biến thể đã được xóa thành công" };
+    });
+  },
 
   async updateStock(variantId: string, quantity: number) {
-  const variant = await prisma.variant.findUnique({
-    where: { id: variantId },
-  });
-
-  if (!variant) throw new AppError("Biến thể không tồn tại", 404);
-
-  const newStock = variant.stock + quantity;
-  if (newStock < 0) throw new AppError("Không đủ hàng", 400);
-
-  return await prisma.$transaction(async (tx) => {
-    const updated = await tx.variant.update({
+    const variant = await prisma.variant.findUnique({
       where: { id: variantId },
-      data: { stock: newStock },
     });
-   
-    await this.syncProductStock(tx, variant.productId);
-    return updated;
-  });
-},
+
+    if (!variant) throw new AppError("Biến thể không tồn tại", 404);
+
+    const newStock = variant.stock + quantity;
+    if (newStock < 0) throw new AppError("Không đủ hàng", 400);
+
+    return await prisma.$transaction(async (tx) => {
+      const updated = await tx.variant.update({
+        where: { id: variantId },
+        data: { stock: newStock },
+      });
+
+      await this.syncProductStock(tx, variant.productId);
+      return updated;
+    });
+  },
 
   async findVariant(productId: string, size?: string, color?: string) {
     if (!size && !color) {

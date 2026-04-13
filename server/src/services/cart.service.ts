@@ -117,16 +117,24 @@ export const cartService = {
     });
 
     const items = cartItems.map((item) => {
-      const basePrice =
-        item.variant?.price || item.product.salePrice || item.product.price;
-      const subtotal = basePrice * item.quantity;
+      let unitPrice = item.product.price;
+
+      if (item.product.salePrice && item.product.salePrice > 0) {
+        unitPrice = item.product.salePrice;
+      }
+
+      if (item.variant?.price && item.variant.price > 0) {
+        unitPrice = item.variant.price;
+      }
+
+      const subtotal = unitPrice * item.quantity;
 
       return {
         id: item.id,
         quantity: item.quantity,
         product: item.product,
         variant: item.variant,
-        price: basePrice,
+        price: unitPrice,
         subtotal,
       };
     });
@@ -139,6 +147,7 @@ export const cartService = {
       items,
       summary: {
         total,
+        subtotal: total,
         itemCount,
         totalQuantity,
       },
@@ -263,23 +272,28 @@ export const cartService = {
   },
 
   async getCartSummary(userId: string) {
-  const { items, summary } = await this.getCart(userId);
+    const { items, summary } = await this.getCart(userId);
 
+    const FREE_SHIPPING_THRESHOLD = 500000;
+    const SHIPPING_FEE = 30000;
 
-  const shippingCost = (summary.total > 500000 || summary.total === 0) ? 0 : 30000;
+    const shippingCost =
+      summary.total >= FREE_SHIPPING_THRESHOLD || summary.total === 0
+        ? 0
+        : SHIPPING_FEE;
 
-  const tax = Math.round(summary.total * 0.1);
+    const tax = Math.round(summary.total * 0.1);
 
-  const finalTotal = summary.total + shippingCost + tax;
+    const finalTotal = summary.total + shippingCost + tax;
 
-  return {
-    items,
-    subtotal: summary.total,
-    shippingCost,
-    tax,
-    total: finalTotal,
-    itemCount: summary.itemCount,
-    totalQuantity: summary.totalQuantity,
-  };
-}
+    return {
+      items,
+      subtotal: summary.total,
+      shippingCost,
+      tax,
+      total: finalTotal,
+      itemCount: summary.itemCount,
+      totalQuantity: summary.totalQuantity,
+    };
+  },
 };

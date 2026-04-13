@@ -32,27 +32,30 @@ const ProductCard = ({ product }: { product: Product }) => {
     (sum, v) => sum + (v.stock || 0),
     0,
   );
+  
 
   const handleAddToCart = (e: React.MouseEvent) => {
-    e.preventDefault();
-    if (!isAuthenticated) {
-      window.location.href = ROUTES.LOGIN;
-      return;
-    }
+  e.preventDefault();
+  e.stopPropagation(); 
 
-    const firstAvailableVariant =
-      product.variants?.find((v) => v.stock > 0) || product.variants?.[0];
+  if (!isAuthenticated) {
+    window.location.href = ROUTES.LOGIN;
+    return;
+  }
 
-    if (!firstAvailableVariant) {
-      return;
-    }
+  const variantToAddToCart = product.variants?.find((v) => v.stock > 0);
 
-    AddToCart({
-      productId: product.id,
-      variantId: firstAvailableVariant.id,
-      quantity: 1,
-    });
-  };
+  if (!variantToAddToCart) {
+    alert("Sản phẩm đã hết hàng!");
+    return;
+  }
+
+  AddToCart({
+    productId: product.id,
+    variantId: variantToAddToCart.id,
+    quantity: 1,
+  });
+};
 
   return (
     <Link

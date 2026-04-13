@@ -47,7 +47,7 @@ export const productService = {
         400,
       );
     }
-    //create
+
     return prisma.product.create({
       data: {
         name: data.name,
@@ -55,24 +55,16 @@ export const productService = {
         images: data.images,
         categoryId: data.categoryId,
         brand: data.brand,
-        price: Number(data.price),
-        salePrice: Number(data.salePrice || 0),
+        price: price,
+        salePrice: salePrice,
         stock: Number(data.stock || 0),
-
         isActive: Boolean(data.isActive),
-
         slug: finalSlug,
         sku: sku,
       },
       include: {
         variants: true,
-        category: {
-          select: {
-            id: true,
-            name: true,
-            slug: true,
-          },
-        },
+        category: { select: { id: true, name: true, slug: true } },
       },
     });
   },
@@ -105,9 +97,9 @@ export const productService = {
       };
     }
 
-    if (query.isAdmin !== 'true') {
-    where.isActive = true;
-  }
+    if (query.isAdmin !== "true") {
+      where.isActive = true;
+    }
 
     if (query.isSale === "true") {
       where.AND = [
@@ -294,74 +286,88 @@ export const productService = {
     return this.getAll({ ...query, categoryId });
   },
 
- async update(id: string, data: UpdateProductInput) {
-  const product = await prisma.product.findUnique({
-    where: { id },
-  });
-
-  if (!product) {
-    throw new AppError("Sản phẩm không tồn tại", 404);
-  }
-
-  if (data.categoryId) {
-    const category = await prisma.category.findUnique({
-      where: { id: data.categoryId },
+  async update(id: string, data: UpdateProductInput) {
+    const product = await prisma.product.findUnique({
+      where: { id },
     });
-    if (!category) {
-      throw new AppError("Danh mục không tồn tại", 404);
-    }
-  }
 
-  let slug = product.slug;
-  if (data.name && data.name !== product.name) {
-    slug = generateSlug(data.name);
-    const existingSlug = await prisma.product.findFirst({
-      where: { slug, NOT: { id } },
+    if (!product) {
+      throw new AppError("Sản phẩm không tồn tại", 404);
+    }
+
+    if (data.categoryId) {
+      const category = await prisma.category.findUnique({
+        where: { id: data.categoryId },
+      });
+      if (!category) {
+        throw new AppError("Danh mục không tồn tại", 404);
+      }
+    }
+
+    let slug = product.slug;
+    if (data.name && data.name !== product.name) {
+      slug = generateSlug(data.name);
+      const existingSlug = await prisma.product.findFirst({
+        where: { slug, NOT: { id } },
+      });
+      if (existingSlug) {
+        slug = `${slug}-${Date.now()}`;
+      }
+    }
+
+    if (data.sku && data.sku !== product.sku) {
+      const existingSKU = await prisma.product.findUnique({
+        where: { sku: data.sku, NOT: { id } },
+      });
+      if (existingSKU) {
+        throw new AppError("SKU đã tồn tại", 400);
+      }
+    }
+
+    const currentPrice =
+      data.price !== undefined ? Number(data.price) : (product.price ?? 0);
+    const currentSalePrice =
+      data.salePrice !== undefined
+        ? Number(data.salePrice)
+        : (product.salePrice ?? 0);
+
+    if (currentSalePrice > 0 && currentSalePrice >= currentPrice) {
+      throw new AppError("Mức giảm giá phải thấp hơn giá mặc định", 400);
+    }
+
+    return await prisma.$transaction(async (tx) => {
+      const updatedProduct = await tx.product.update({
+        where: { id },
+        data: {
+          ...data,
+          price: data.price !== undefined ? Number(data.price) : undefined,
+          salePrice:
+            data.salePrice !== undefined ? Number(data.salePrice) : undefined,
+          stock: data.stock !== undefined ? Number(data.stock) : undefined,
+          isActive:
+            data.isActive !== undefined ? Boolean(data.isActive) : undefined,
+          slug: slug,
+        },
+        include: {
+          variants: true,
+          category: { select: { id: true, name: true, slug: true } },
+        },
+      });
+
+      if (data.price !== undefined || data.salePrice !== undefined) {
+        const sPrice = updatedProduct.salePrice ?? 0;
+        const pPrice = updatedProduct.price;
+        const newEffectivePrice = sPrice > 0 ? sPrice : pPrice;
+
+        await tx.variant.updateMany({
+          where: { productId: id },
+          data: { price: newEffectivePrice },
+        });
+      }
+
+      return updatedProduct;
     });
-    if (existingSlug) {
-      slug = `${slug}-${Date.now()}`;
-    }
-  }
-
-  if (data.sku && data.sku !== product.sku) {
-    const existingSKU = await prisma.product.findUnique({
-      where: { sku: data.sku, NOT: { id } },
-    });
-    if (existingSKU) {
-      throw new AppError("SKU đã tồn tại", 400);
-    }
-  }
-
-const currentPrice = data.price !== undefined ? Number(data.price) : (product.price ?? 0);
-
-
-const currentSalePrice = data.salePrice !== undefined ? Number(data.salePrice) : (product.salePrice ?? 0);
-
-if (currentSalePrice > 0 && currentSalePrice >= currentPrice) {
-  throw new AppError("Mức giảm giá phải thấp hơn giá mặc định", 400);
-}
-
-  return prisma.product.update({
-    where: { id },
-    data: {
-      ...data, 
-      
-      price: data.price !== undefined ? Number(data.price) : undefined,
-  salePrice: data.salePrice !== undefined ? Number(data.salePrice) : undefined, 
-  stock: data.stock !== undefined ? Number(data.stock) : undefined,
-
-      isActive: data.isActive !== undefined ? Boolean(data.isActive) : undefined,
-
-      slug: slug,
-    },
-    include: {
-      variants: true,
-      category: {
-        select: { id: true, name: true, slug: true },
-      },
-    },
-  });
-},
+  },
 
   // delete product
   async delete(id: string) {

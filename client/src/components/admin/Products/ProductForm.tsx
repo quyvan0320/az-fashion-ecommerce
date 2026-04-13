@@ -1,6 +1,5 @@
 import Button from "@/components/common/Button";
 import Input from "@/components/common/Input";
-import Textarea from "@/components/common/Textarea";
 import { uploadService } from "@/services/api/upload";
 import { useCategories } from "@/services/queries/useCategories";
 import {

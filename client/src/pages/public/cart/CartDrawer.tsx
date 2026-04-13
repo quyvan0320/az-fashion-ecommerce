@@ -1,4 +1,3 @@
-import Button from "@/components/common/Button";
 import { ROUTES } from "@/config/constants";
 import {
   useCart,
@@ -9,7 +8,7 @@ import {
 import { useCartStore } from "@/store/useCartStore";
 import { formatCurrency } from "@/utils/formatters";
 import { AnimatePresence, motion } from "framer-motion";
-import { Minus, Plus, ShoppingBasket, Truck, X } from "lucide-react";
+import { Minus, Plus, Truck, X } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const CartDrawer = () => {
@@ -25,7 +24,7 @@ const CartDrawer = () => {
   const limit = 500000;
   const progress = Math.min((total / limit) * 100, 100);
   const isFreeShipping = total >= limit;
-
+  console.log(summaryRes);
   return (
     <AnimatePresence>
       {isCartOpen && (
