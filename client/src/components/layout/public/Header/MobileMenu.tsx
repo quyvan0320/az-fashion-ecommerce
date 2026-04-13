@@ -87,7 +87,7 @@ export const MobileMenu = ({
           onClick={handleLinkClick}
           className="py-3 border-b border-gray-50 text-brand-dark"
         >
-          Sản phẩm mới
+          Sản phẩm
         </Link>
 
         <div className="border-b border-gray-50">

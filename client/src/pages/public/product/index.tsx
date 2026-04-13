@@ -25,6 +25,8 @@ const COLOR_OPTIONS = [
   { name: "Trắng", hex: "#FFFFFF" },
   { name: "Hồng", hex: "#FFC0CB" },
   { name: "Xám", hex: "#808080" },
+  { name: "Nâu", hex: "#733414" },
+
 ];
 
 const ProductsPage = () => {
@@ -95,7 +97,7 @@ const ProductsPage = () => {
     ? "Sản phẩm khuyến mãi"
     : currentCategory
       ? currentCategory.name
-      : "Tất cả sản phẩm";
+      : "Sản phẩm";
 
   return (
     <div className="max-w-7xl mx-auto px-4  py-6">

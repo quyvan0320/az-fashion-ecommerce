@@ -5,6 +5,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import ProductCard from "./ProductCard";
+import SkeletonProduct from "@/components/common/SkeletonProduct";
 
 interface RelatedProductsProps {
   categorySlug: string;
@@ -17,7 +18,7 @@ const RelatedProducts = ({
 }: RelatedProductsProps) => {
   const { data: productsRes, isLoading } = useProducts({
     categorySlug,
-    limit: 11, 
+    limit: 11,
   });
 
   const products: any = productsRes?.data?.products || [];
@@ -28,8 +29,10 @@ const RelatedProducts = ({
 
   if (isLoading)
     return (
-      <div className="h-40 flex items-center justify-center text-gray-400 italic">
-        Đang tải sản phẩm liên quan...
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 md:gap-6">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <SkeletonProduct key={i} />
+        ))}
       </div>
     );
 

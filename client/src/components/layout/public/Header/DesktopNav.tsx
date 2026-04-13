@@ -10,7 +10,7 @@ const DesktopNav = ({
   return (
     <nav className="hidden lg:flex items-center gap-6 font-semibold">
       <Link to={ROUTES.PRODUCTS} className="hover:text-brand-red transition-colors">
-        Sản phẩm mới
+        Sản phẩm
       </Link>
 
       {/* Reusable Dropdown Component */}

@@ -14,7 +14,6 @@ const Breadcrumb = ({
 }: BreadcrumbProps) => {
  return (
     <nav className="flex items-center gap-2 text-sm text-gray-500 mb-6 
-      /* Thêm dòng này để xử lý mobile */
       overflow-x-auto whitespace-nowrap scrollbar-hide pb-2">
       
       <Link to="/" className="hover:text-black transition-colors shrink-0">

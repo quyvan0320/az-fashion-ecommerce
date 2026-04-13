@@ -131,7 +131,7 @@ const CartDrawer = () => {
                         <img
                           src={item.product.images?.[0]}
                           alt={item.product.name}
-                          className="w-22 h-24 rounded object-cover bg-brand-light border"
+                          className="w-24 h-24 rounded object-cover bg-brand-light border"
                         />
                       </Link>
                       <div className="flex-1 items-center flex-col">
