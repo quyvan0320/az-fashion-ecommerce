@@ -11,12 +11,10 @@ import { useAuth } from "@/store/authContext";
 import { Address } from "@/types/address";
 import { formatCurrency, formatDate, formatDateTime } from "@/utils/formatters";
 import {
-  Icon,
   MapPin,
   Pencil,
   Plus,
   ShoppingBag,
-  Space,
   Star,
   Trash2,
   User,
@@ -24,6 +22,8 @@ import {
 import React, { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import AddressForm from "./AddressForm";
+import Breadcrumb from "@/components/common/Breadcrumb";
+import { Pagination } from "@/components/common/Pagination";
 
 const TABS = [
   { key: "info", label: "Thông tin", icon: User },
@@ -60,12 +60,12 @@ const Profile = () => {
   const { data: addressesRes } = useAddresses();
   const { mutate: deleteAddress } = useDeleteAddress();
   const { mutate: setDefault } = useSetDefaultAddress();
-
+  const [reviewPage, setReviewPage] = useState(1);
   const { data: ordersRes, isLoading: ordersLoading } = useMyOrders({
     page: orderPage,
     limit: 5,
   });
-  const { data: reviewsRes } = useMyReviews({ limit: 10 });
+  const { data: reviewsRes } = useMyReviews({ limit: 10, page: reviewPage});
 
   const addresses = addressesRes?.data || [];
   const orders = ordersRes?.data || [];
@@ -75,217 +75,306 @@ const Profile = () => {
   const setTab = (tab: string) => setSearchParams({ tab });
 
   return (
-    <div className="max-w-6xl mx-auto px-6 p-8">
-      <h1 className="text-2xl font-bold mb-6">Tài khoản của tôi</h1>
+    <div className="max-w-7xl mx-auto px-4 py-6">
+      <Breadcrumb displayName="Hồ sơ" />
+      <header className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900">Cài đặt tài khoản</h1>
+        <p className="text-gray-500 mt-1">
+          Quản lý thông tin cá nhân và theo dõi đơn hàng của bạn.
+        </p>
+      </header>
 
-      {/* tabs */}
-      <div className="flex gap-1 border-b mb-6">
+      {/* Tabs  */}
+      <div className="flex gap-1 border-b mb-8 overflow-x-auto no-scrollbar scroll-smooth">
         {TABS.map(({ key, label, icon: Icon }) => (
           <button
             key={key}
             onClick={() => setTab(key)}
-            className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 -mb-px transition ${
+            className={`flex items-center gap-2 px-6 py-3 text-sm font-semibold whitespace-nowrap border-b-2 transition-all duration-200 ${
               activeTab === key
-                ? "border-black  text-black"
-                : "border-transparent text-gray-400 hover:text-gray-600"
+                ? "border-black text-black"
+                : "border-transparent text-gray-400 hover:text-gray-600 hover:border-gray-200"
             }`}
           >
-            <Icon size={15} /> {label}
+            <Icon size={18} /> {label}
           </button>
         ))}
       </div>
 
-      {/* info tab */}
-      {activeTab === "info" && user && (
-        <div className="bg-white border rounded-xl p-6">
-          <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center text-2xl font-bold mb-4">
-            {user.firstName?.charAt(0).toLocaleUpperCase()}
-          </div>
-          <div className="grid grid-cols-2 gap-4 text-sm">
-            <div>
-              <p className="text-gray-400">Họ</p>
-              <p className="font-medium mt-0.5">{user.lastName}</p>
-            </div>
-            <div>
-              <p className="text-gray-400">Tên</p>
-              <p className="font-medium mt-0.5">{user.firstName}</p>
-            </div>
-            <div>
-              <p className="text-gray-400">Email</p>
-              <p className="font-medium mt-0.5">{user.email}</p>
-            </div>
-            <div>
-              <p className="text-gray-400">Role</p>
-              <p className="font-medium mt-0.5">{user.role}</p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* order tab */}
-      {activeTab === "orders" && (
-        <div className="space-y-3">
-          {ordersLoading ? (
-            <div className="animate-pulse space-y-3">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="h-20 bg-gray-200 rounded-xl" />
-              ))}
-            </div>
-          ) : orders.length === 0 ? (
-            <p className="text-center py-12 text-gray-400">
-              Bạn chưa có đơn hàng nào
-            </p>
-          ) : (
-            orders.map((order) => (
-              <div key={order.id} className="bg-white border rounded-xl p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <div>
-                    <p className="font-medium">#{order.orderNumber}</p>
-                    <p className="text-xs text-gray-400">
-                      {formatDateTime(order.createdAt)}
-                    </p>
-                  </div>
-                  <span
-                    className={`px-2 py-1 rounded-full text-xs  font-medium ${STATUS_STYLES[order.status]}`}
-                  >
-                    {STATUS_LABELS[order.status]}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-gray-500 mb-2">
-                  {order.items.slice(0, 3).map((item) => (
-                    <img
-                      key={item.id}
-                      src={item.product.images?.[0]}
-                      alt={item.product.name}
-                      className="w-10 h-10 rounded object-cover bg-gray-100"
-                    />
-                  ))}
-                  {order.items.length > 3 && (
-                    <span className="text-xs text-gray-500">
-                      +{order.items.length - 3}
-                    </span>
-                  )}
-                </div>
-                <div className="flex items-center justify-between">
-                  <p className="text-sm text-gray-500">
-                    {order.items.length} sản phẩm
-                  </p>
-                  <p className="font-semibold">{formatCurrency(order.total)}</p>
-                </div>
+      <main className="min-h-[400px]">
+        {/* Info Tab */}
+        {activeTab === "info" && user && (
+          <div className="bg-white border border-gray-100 rounded-2xl p-6 md:p-8 shadow-sm">
+            <div className="flex flex-col md:flex-row items-center gap-6 mb-8">
+              <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-gray-100 to-gray-200 flex items-center justify-center text-3xl font-bold text-gray-700 shadow-inner">
+                {user.firstName?.charAt(0).toLocaleUpperCase()}
               </div>
-            ))
-          )}
-
-          {orderPagination && orderPagination.totalPages > 1 && (
-            <div className="flex gap-2 justify-center pt-2">
-              <Button
-                onClick={() => setOrderPage((p) => p - 1)}
-                disabled={!orderPagination.hasPrev}
-              >
-                Trước
-              </Button>
-              <span className="px-3 py-1.5 text-sm">
-                {orderPagination.page} / {orderPagination.totalPages}
-              </span>
-              <Button
-                onClick={() => setOrderPage((p) => p + 1)}
-                disabled={!orderPagination.hasNext}
-              >
-                Sau
-              </Button>
+              <div className="text-center md:text-left">
+                <h2 className="text-xl font-bold">
+                  {user.lastName} {user.firstName}
+                </h2>
+                <p className="text-gray-500">{user.email}</p>
+                <span className="inline-block mt-2 px-3 py-1 bg-gray-100 text-[10px] font-bold uppercase tracking-wider rounded-full">
+                  {user.role}
+                </span>
+              </div>
             </div>
-          )}
-        </div>
-      )}
 
-      {/* address tab */}
-      {activeTab === "addresses" && (
-        <div className="space-y-3">
-          {addresses &&
-            Array.isArray(addresses) &&
-            addresses.map((addr: Address) => (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-6 border-t border-gray-50">
+              <div className="space-y-1">
+                <p className="text-xs font-bold text-gray-400 uppercase">
+                  Họ và tên đệm
+                </p>
+                <p className="text-gray-900 font-medium">{user.lastName}</p>
+              </div>
+              <div className="space-y-1">
+                <p className="text-xs font-bold text-gray-400 uppercase">Tên</p>
+                <p className="text-gray-900 font-medium">{user.firstName}</p>
+              </div>
+              <div className="space-y-1 sm:col-span-2">
+                <p className="text-xs font-bold text-gray-400 uppercase">
+                  Địa chỉ Email
+                </p>
+                <p className="text-gray-900 font-medium">{user.email}</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Orders Tab */}
+        {activeTab === "orders" && (
+          <div id="orders" className="space-y-4">
+            {ordersLoading ? (
+              <div className="space-y-4">
+                {[1, 2, 3].map((i) => (
+                  <div
+                    key={i}
+                    className="h-32 bg-gray-50 animate-pulse rounded-2xl"
+                  />
+                ))}
+              </div>
+            ) : orders.length === 0 ? (
+              <div className="text-center py-20 bg-gray-50 rounded-2xl border border-dashed">
+                <ShoppingBag className="mx-auto text-gray-300 mb-3" size={40} />
+                <p className="text-gray-500">Bạn chưa có đơn hàng nào</p>
+              </div>
+            ) : (
+              orders.map((order) => (
+                <div
+                  key={order.id}
+                  className="bg-white border border-gray-100 rounded-2xl p-5 hover:shadow-md transition-shadow"
+                >
+                  {/* Header */}
+                  <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
+                    <div>
+                      <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded">
+                        #{order.orderNumber}
+                      </span>
+                      <p className="text-[11px] text-gray-400 mt-1 uppercase tracking-tight">
+                        {formatDateTime(order.createdAt)}
+                      </p>
+                    </div>
+                    <div className="flex flex-col items-end gap-1">
+                      <span
+                        className={`px-3 py-1 rounded-lg text-xs font-bold ${STATUS_STYLES[order.status]}`}
+                      >
+                        {STATUS_LABELS[order.status]}
+                      </span>
+                      <span className="text-[10px] font-medium text-gray-500 bg-gray-100 px-2 py-0.5 rounded">
+                        {order.paymentMethod}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Body */}
+                  <div className="space-y-3 mb-4">
+                    {order.items.map((item) => (
+                      <div
+                        key={item.id}
+                        className="flex items-center gap-3 py-2 border-b border-gray-50 last:border-0"
+                      >
+                        <img
+                          src={item.product.images?.[0]}
+                          alt={item.product.name}
+                          className="w-14 h-14 rounded-lg object-cover bg-gray-50 border border-gray-100"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <h4 className="text-sm font-bold text-gray-800 truncate">
+                            {item.product.name}
+                          </h4>
+                          <div className="flex items-center gap-2 mt-1">
+                            {/* variant */}
+                            {item?.variant && (
+                              <span className="text-[11px] text-gray-500 bg-gray-50 px-1.5 py-0.5 rounded border border-gray-100">
+                                {item?.variant?.color} / {item?.variant?.size}
+                              </span>
+                            )}
+                            <span className="text-[11px] font-bold text-brand-dark">
+                              x{item.quantity}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-sm font-bold text-gray-900">
+                            {formatCurrency(item.price)}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* notes */}
+                  {order.notes && (
+                    <div className="mb-4 p-3 bg-orange-50/50 rounded-xl border border-orange-100">
+                      <p className="text-[10px] font-bold text-orange-600 uppercase mb-1">
+                        Ghi chú từ bạn:
+                      </p>
+                      <p className="text-xs text-gray-600 italic">
+                        "{order.notes}"
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Footer */}
+                  <div className="flex items-center justify-between border-t border-gray-50 pt-4 mt-2">
+                    <div className="flex flex-col gap-1">
+                      <p className="text-[10px] text-gray-400 font-medium">
+                        Phương thức:{" "}
+                        <span className="text-gray-600">
+                          {order.paymentMethod}
+                        </span>
+                      </p>
+                      <p className="text-[10px] text-gray-400 font-medium">
+                        Trạng thái thanh toán:{" "}
+                        <span className="text-gray-600">
+                          {order.paymentStatus}
+                        </span>
+                      </p>
+                      <p className="text-[10px] text-gray-400 font-medium">
+                        Thuế:{" "}
+                        <span className="text-gray-600">
+                          {formatCurrency(order.tax)}
+                        </span>
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-[10px] text-gray-400 uppercase font-bold tracking-wider">
+                        Tổng thanh toán
+                      </p>
+                      <p className="text-xl font-black text-brand-red">
+                        {formatCurrency(order.total)}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+            <Pagination
+              pagination={orderPagination}
+              page={orderPage}
+              handleParams={(updates) => {
+                if (updates.page) {
+                  setOrderPage(Number(updates.page));
+                  document
+                    .getElementById("orders")
+                    ?.scrollIntoView({ behavior: "smooth" });
+                }
+              }}
+            />
+          </div>
+        )}
+
+        {/* Addresses Tab */}
+        {activeTab === "addresses" && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {addresses.map((addr: Address) => (
               <div
                 key={addr.id}
-                className="bg-white border rounded-xl p-4 flex items-center justify-between"
+                className={`relative p-5 rounded-2xl border transition-all ${addr.isDefault ? "border-black ring-1 ring-black" : "border-gray-100 bg-white"}`}
               >
-                <div className="text-sm">
-                  <p>{addr.street}</p>
-                  <p className="text-gray-500">
+                {addr.isDefault && (
+                  <span className="absolute -top-2.5 left-4 px-2 py-0.5 bg-black text-white text-[10px] font-bold rounded uppercase">
+                    Mặc định
+                  </span>
+                )}
+                <div className="mb-6">
+                  <p className="font-bold text-gray-900">{addr.street}</p>
+                  <p className="text-sm text-gray-500 mt-1">
                     {addr.city}, {addr.state}, {addr.country}
                   </p>
-                  <p className="text-gray-40">{addr.postalCode}</p>
-                  {addr.isDefault && (
-                    <span className="inline-block mt-1 text-xs text-blue-500 font-medium bg-blue-50 px-2 py-0.5 rounded">
-                      Mặc định
-                    </span>
-                  )}
+                  <p className="text-xs text-gray-400 mt-1">
+                    Zip: {addr.postalCode}
+                  </p>
                 </div>
-                <div className="flex gap-1">
+
+                <div className="flex gap-2">
                   {!addr.isDefault && (
                     <Button
-                      size="sm"
                       variant="secondary"
+                      size="sm"
+                      noHover
+                      className="text-[11px] h-8"
                       onClick={() => setDefault(addr.id)}
                     >
                       Đặt mặc định
                     </Button>
                   )}
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setAddressModal(addr)}
-                  >
-                    <Pencil size={14} />
-                  </Button>
-                  <Button
-                    variant="danger"
-                    size="sm"
-                    onClick={() => {
-                      if (window.confirm("Xóa địa chỉ này"))
-                        deleteAddress(addr.id);
-                    }}
-                  >
-                    <Trash2 size={14} />
-                  </Button>
+                  <div className="flex gap-2 ml-auto">
+                    <button
+                      onClick={() => setAddressModal(addr)}
+                      className="p-2 hover:bg-gray-100 rounded-lg text-gray-600 transition"
+                    >
+                      <Pencil size={16} />
+                    </button>
+                    <button
+                      onClick={() => deleteAddress(addr.id)}
+                      className="p-2 hover:bg-red-50 rounded-lg text-red-500 transition"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
-          <Button
-            variant="primary"
-            size="sm"
-            leftIcon={Plus}
-            onClick={() => setAddressModal(null)}
-          >
-            Thêm địa chỉ mới
-          </Button>
-        </div>
-      )}
+            <button
+              onClick={() => setAddressModal(null)}
+              className="border-2 border-dashed border-gray-200 rounded-2xl p-6 flex flex-col items-center justify-center gap-2 hover:border-gray-400 hover:bg-gray-50 transition-all text-gray-500"
+            >
+              <Plus size={24} />
+              <span className="text-sm font-semibold">Thêm địa chỉ mới</span>
+            </button>
+          </div>
+        )}
 
-      {/* review tab */}
-      {activeTab === "reviews" && (
-        <div className="space-y-3">
-          {reviews.length === 0 ? (
-            <p className="text-center py-12 text-gray-400">
-              Bạn chưa có đánh giá nào
-            </p>
-          ) : (
-            reviews.map((review) => (
-              <div key={review.id} className="bg-white border rounded-xl p-4">
-                <div className="flex items-center gap-3 mb-2">
+        {/* Reviews Tab */}
+        {activeTab === "reviews" && (
+          <div className="grid grid-cols-1 gap-4">
+            {/* Review */}
+            {reviews.map((review) => (
+              <div
+                key={review.id}
+                className="bg-white border border-gray-100 rounded-2xl p-5"
+              >
+                <div className="flex gap-4">
                   <img
                     src={review.product?.images?.[0]}
-                    alt={review.product?.name}
-                    className="w-12 h-12 rounded-lg object-cover bg-gray-100"
+                    className="w-16 h-16 rounded-xl object-cover"
+                    alt=""
                   />
-                  <div>
-                    <p className="text-sm font-medium">
-                      {review.product?.name}
-                    </p>
-                    <div className="flex gap-0.5 mt-0.5">
+                  <div className="flex-1">
+                    <div className="flex justify-between items-start">
+                      <h4 className="text-sm font-bold">
+                        {review.product?.name}
+                      </h4>
+                      <span className="text-[10px] text-gray-400">
+                        {formatDate(review.createdAt)}
+                      </span>
+                    </div>
+                    <div className="flex gap-0.5 my-1">
                       {[1, 2, 3, 4, 5].map((s) => (
                         <Star
                           key={s}
-                          size={12}
+                          size={10}
                           className={
                             s <= review.rating
                               ? "fill-yellow-400 text-yellow-400"
@@ -294,19 +383,28 @@ const Profile = () => {
                         />
                       ))}
                     </div>
+                    <p className="text-sm text-gray-600 mt-2 line-clamp-2 italic">
+                      "{review.comment}"
+                    </p>
                   </div>
-                  <span className="ml-auto text-xs text-gray-400">
-                    {formatDate(review.createdAt)}
-                  </span>
                 </div>
-                {review.comment && (
-                  <p className="text-sm text-gray-600">{review.comment}</p>
-                )}
               </div>
-            ))
-          )}
-        </div>
-      )}
+            ))}
+            <Pagination
+              pagination={reviewsRes}
+              page={reviewPage}
+              handleParams={(updates) => {
+                if (updates.page) {
+                  setReviewPage(Number(updates.page));
+                  document
+                    .getElementById("product-tabs")
+                    ?.scrollIntoView({ behavior: "smooth" });
+                }
+              }}
+            />
+          </div>
+        )}
+      </main>
 
       {/* address modal */}
 

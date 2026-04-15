@@ -38,7 +38,7 @@ export const Pagination = ({
               p === "..." ? (
                 <span
                   key={`dots-${i}`}
-                  className="w-10 h-10 flex items-center justify-center text-brand-grey"
+                  className="w-10 h-10 flex items-center justify-center text-brand-black"
                 >
                   ...
                 </span>

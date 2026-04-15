@@ -6,7 +6,6 @@ import {
 } from "@/services/queries/useAddresses";
 import { Address } from "@/types/address";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
 
@@ -94,6 +93,7 @@ const AddressForm = ({
           disabled={isCreating || isUpdating}
           variant="secondary"
           size="md"
+          noHover
         >
           {isCreating || isUpdating
             ? "Đang lưu..."

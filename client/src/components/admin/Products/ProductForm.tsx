@@ -8,12 +8,13 @@ import {
 } from "@/services/queries/useProducts";
 import { Product } from "@/types/product";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { X } from "lucide-react";
+import { AlertCircle, Save, Upload, X } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
+import { cn } from "@/utils/cn";
 
 interface ProductFormProps {
   product?: Product | null | undefined;
@@ -34,9 +35,7 @@ const productSchema = z.object({
 type ProductFormData = z.infer<typeof productSchema>;
 
 const ProductForm = ({ product, onSuccess }: ProductFormProps) => {
-  const [existingImages, setExistingImages] = useState<string[]>(
-    product?.images || [],
-  );
+  const [existingImages, setExistingImages] = useState<string[]>(product?.images || []);
   const [newFiles, setNewFiles] = useState<File[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const { data: categoriesRes } = useCategories({ limit: 100 });
@@ -118,169 +117,179 @@ const ProductForm = ({ product, onSuccess }: ProductFormProps) => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      <div className="grid grid-cols-2 gap-4">
-        {/* name */}
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6 max-h-[80vh] overflow-y-auto px-1">
+      {/* Grid chính: 1 cột trên mobile, 2 cột trên md */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
+        
+        {/* Basic Info */}
+        <div className="space-y-4">
+          <Input
+            {...register("name")}
+            label="Tên sản phẩm"
+            placeholder="Ví dụ: Áo Hoodie Unisex"
+            error={errors.name?.message}
+            className="focus:ring-brand-red"
+          />
+          <Input
+            {...register("brand")}
+            label="Thương hiệu"
+            placeholder="Az Fashion"
+            error={errors.brand?.message}
+          />
+          
+          <div className="grid grid-cols-2 gap-4">
+            <Input
+              {...register("price")}
+              type="number"
+              label="Giá gốc (đ)"
+              placeholder="0"
+              error={errors.price?.message}
+            />
+            <Input
+              {...register("salePrice")}
+              type="number"
+              label="Giá sale (đ)"
+              placeholder="0"
+              error={errors.salePrice?.message}
+            />
+          </div>
 
-        <Input
-          {...register("name")}
-          label="Tên sản phẩm"
-          placeholder="Quần jeans..."
-          error={errors.name?.message}
-        />
-        <Input
-          {...register("brand")}
-          label="Thương hiệu"
-          placeholder="Az ..."
-          error={errors.brand?.message}
-        />
-      </div>
+          <div className="grid grid-cols-2 gap-4">
+            <Input
+              {...register("stock")}
+              type="number"
+              label="Tồn kho"
+              error={errors.stock?.message}
+            />
+            <div className="space-y-1.5">
+              <label className="text-sm font-bold text-gray-700 ml-1">Danh mục</label>
+              <select
+                {...register("categoryId")}
+                className={cn(
+                  "w-full bg-gray-50 border border-gray-200 transition-all rounded-xl py-2.5 px-4 text-sm outline-none focus:border-brand-red focus:bg-white",
+                  errors.categoryId && "border-red-500 bg-red-50"
+                )}
+              >
+                <option value="">-- Chọn --</option>
+                {categories.map((cat) => (
+                  <option key={cat.id} value={cat.id}>{cat.name}</option>
+                ))}
+              </select>
+              {errors.categoryId && (
+                <p className="text-[11px] font-medium text-red-500 ml-1 mt-1">{errors.categoryId.message}</p>
+              )}
+            </div>
+          </div>
+        </div>
 
-      {/* description */}
-      <div className="space-y-1.5 col-span-2">
-        <label className="text-sm font-semibold text-gray-700">
-          Mô tả sản phẩm
-        </label>
+        {/* Image Upload Section */}
+        <div className="space-y-3">
+          <label className="text-sm font-bold text-gray-700 ml-1">Hình ảnh sản phẩm</label>
+          
+          <div className="border-2 border-dashed border-gray-200 rounded-2xl p-4 bg-gray-50/50">
+            <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 mb-4">
+              {/* Existing Images */}
+              {existingImages.map((url, i) => (
+                <div key={`old-${i}`} className="relative aspect-square group">
+                  <img src={url} className="w-full h-full rounded-xl object-cover border bg-white" />
+                  <button
+                    type="button"
+                    onClick={() => setExistingImages(prev => prev.filter(img => img !== url))}
+                    className="absolute -top-2 -right-2 bg-white text-red-500 rounded-full p-1 shadow-md hover:scale-110 transition-transform"
+                  >
+                    <X size={14} strokeWidth={3} />
+                  </button>
+                </div>
+              ))}
 
-        <ReactQuill
-          value={watch("description")}
-          onChange={(val) => setValue("description", val)}
-        />
-      </div>
-      {/* price and sale price */}
-      <div className="grid grid-cols-2 gap-4">
-        <Input
-          {...register("price")}
-          label="Giá gốc"
-          placeholder="199,000đ"
-          error={errors.price?.message}
-        />
+              {/* New Files Preview */}
+              {newFiles.map((file, i) => (
+                <div key={`new-${i}`} className="relative aspect-square group">
+                  <img src={URL.createObjectURL(file)} className="w-full h-full rounded-xl object-cover border border-brand-red/30 bg-white" />
+                  <div className="absolute top-1 left-1 bg-brand-red text-white text-[8px] px-1 rounded uppercase font-bold">New</div>
+                  <button
+                    type="button"
+                    onClick={() => setNewFiles(prev => prev.filter((_, idx) => idx !== i))}
+                    className="absolute -top-2 -right-2 bg-white text-red-500 rounded-full p-1 shadow-md"
+                  >
+                    <X size={14} strokeWidth={3} />
+                  </button>
+                </div>
+              ))}
 
-        <Input
-          {...register("salePrice")}
-          label="Giá sale"
-          placeholder="99,000đ"
-          error={errors.salePrice?.message}
-        />
-      </div>
-
-      {/* stock and categories */}
-      <div className="grid grid-cols-2 gap-4">
-        <Input
-          {...register("stock")}
-          label="Tồn kho"
-          error={errors.stock?.message}
-        />
-
-        <div className="space-y-1.5">
-          <label className="text-sm font-semibold text-gray-700 ml-1">
-            Danh mục
-          </label>
-          <select
-            {...register("categoryId")}
-            className="w-full bg-gray-50 border transition-all duration-200 rounded-xl py-2.5 px-4 text-sm outline-none placeholder:text-gray-400"
-          >
-            <option value="">-- Chọn danh mục --</option>
-            {categories.map((cat) => (
-              <option key={cat.id} value={cat.id}>
-                {cat.name}
-              </option>
-            ))}
-          </select>
-          {errors.categoryId && (
-            <p className="text-xs font-medium text-red-500 ml-1 animate-in fade-in slide-in-from-top-1">
-              {errors.categoryId.message}
+              {/* Upload Trigger Button */}
+              {existingImages.length + newFiles.length < 10 && (
+                <label className="flex flex-col items-center justify-center aspect-square rounded-xl border-2 border-dashed border-brand-red/20 bg-red-50/30 text-brand-red cursor-pointer hover:bg-red-50 transition-colors">
+                  <Upload size={20} />
+                  <span className="text-[10px] font-bold mt-1">Thêm</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    className="hidden"
+                    onChange={(e) => {
+                      if (e.target.files) {
+                        setNewFiles((prev) => [...prev, ...Array.from(e.target.files!)]);
+                      }
+                    }}
+                  />
+                </label>
+              )}
+            </div>
+            
+            <p className="text-[11px] text-gray-400 flex items-center gap-1">
+              <AlertCircle size={12} /> Tối đa 10 ảnh. Định dạng: JPG, PNG, WEBP.
             </p>
-          )}
+          </div>
+        </div>
+
+        {/* Description: Full width on all screens */}
+        <div className="md:col-span-2 space-y-2">
+          <label className="text-sm font-bold text-gray-700 ml-1">Mô tả chi tiết</label>
+          <div className="rounded-xl overflow-hidden border border-gray-200">
+            <ReactQuill
+              theme="snow"
+              value={watch("description")}
+              onChange={(val) => setValue("description", val)}
+              className="bg-white min-h-[200px]"
+            />
+          </div>
         </div>
       </div>
-      {/* images */}
-      <div className="space-y-1.5">
-        {/* has image edit mode can delete single */}
-        {existingImages.length > 0 && (
-          <div className="flex gap-2 mt-2 flex-wrap">
-            {existingImages.map((url, i) => (
-              <div key={i} className="relative group">
-                <img
-                  src={url}
-                  className="w-16 h-16 rounded object-cover border"
-                />
-                <Button
-                  type="button"
-                  variant="danger"
-                  size="sm"
-                  onClick={() => removeExistingImage(url)}
-                  className="absolute -top-1 -right-1"
-                >
-                  <X size={10} />
-                </Button>
-              </div>
-            ))}
+
+      {/* Settings & Actions */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-4 border-t sticky bottom-0 bg-white mt-auto">
+        <div className="flex items-center gap-3 bg-gray-50 px-4 py-2 rounded-xl border border-gray-100">
+          <div className="relative inline-flex items-center cursor-pointer">
+            <input
+              {...register("isActive")}
+              type="checkbox"
+              id="isActive"
+              className="sr-only peer"
+            />
+            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-red"></div>
           </div>
-        )}
+          <label htmlFor="isActive" className="text-sm font-bold text-gray-700">Hiển thị công khai</label>
+        </div>
 
-        {/* preview images */}
-        {newFiles.length > 0 && (
-          <div className="flex gap-2 mt-2 flex-wrap">
-            {newFiles.map((file, i) => (
-              <div key={i} className="relative group">
-                <img
-                  src={URL.createObjectURL(file)}
-                  className="w-16 h-16 rounded object-cover border"
-                />
-                <Button
-                  type="button"
-                  variant="danger"
-                  size="sm"
-                  onClick={() => removeNewFile(i)}
-                  className="absolute -top-1 -right-1"
-                >
-                  <X size={10} />
-                </Button>
-              </div>
-            ))}
-          </div>
-        )}
-
-        <Input
-          type="file"
-          accept="image/*"
-          label="Hình ảnh"
-          multiple
-          onChange={(e) => {
-            if (e.target.files) {
-              setNewFiles((prev) => [...prev, ...Array.from(e.target.files!)]);
-            }
-          }}
-        ></Input>
-        <p className="text-xs text-gray-400 mt-1">
-          {existingImages.length + newFiles.length} ảnh
-          {isUploading && (
-            <span className="text-blue-500 ml-1">• Đang upload...</span>
-          )}
-        </p>
-      </div>
-
-      {/* active */}
-      <div className="flex items-center  gap-2 space-y-1.5">
-        <input
-          {...register("isActive")}
-          type="checkbox"
-          id="isActive"
-          className="w-4 h-4"
-        />
-        <label htmlFor="isActive" className="text-sm font-medium">
-          Hiển thị sản phẩm
-        </label>
-      </div>
-
-      <div className="flex gap-3">
-        <Button disabled={isPending} variant="secondary">
-          {isPending ? "Đang lưu" : product ? "Cập nhật" : "Tạo sản phẩm"}
-        </Button>
-        <Button onClick={onSuccess} variant="danger">
-          Hủy
-        </Button>
+        <div className="flex gap-2">
+          <Button 
+            onClick={onSuccess} 
+            variant="ghost" 
+            type="button" 
+            className="flex-1 sm:flex-none border border-gray-200"
+          >
+            Hủy bỏ
+          </Button>
+          <Button 
+            disabled={isPending || isUploading} 
+            variant="primary" 
+            className="flex-1 sm:flex-none bg-brand-red hover:bg-red-700 min-w-[140px] shadow-lg shadow-red-100"
+            leftIcon={isPending ? undefined : Save}
+          >
+            {isPending ? "Đang xử lý..." : product ? "Cập nhật ngay" : "Tạo sản phẩm"}
+          </Button>
+        </div>
       </div>
     </form>
   );

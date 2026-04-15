@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { Navigate, NavLink, useNavigate } from "react-router-dom";
+import Logo from "./public/Header/Logo";
 // define nav items
 const NAV_ITEMS = [
   {
@@ -61,62 +62,60 @@ const AdminSidebar = ({ isOpen, onClose }: AdminSidebarProps) => {
     navigate(ROUTES.LOGIN);
   };
   return (
-    <aside
+   <aside
       className={cn(
-        "fixed top-0 left-0 h-full w-64 bg-white border-r z-30 flex flex-col transition-transform duration-300",
-        "lg:relative lg:translate-x-0",
+        "fixed top-0 left-0 h-full w-72 bg-white border-r z-50 flex flex-col transition-transform duration-300 shadow-xl lg:shadow-none",
+        "lg:relative lg:translate-x-0 lg:w-64",
         isOpen ? "translate-x-0" : "-translate-x-full",
       )}
     >
-      {/* logo and close btn */}
+      {/* Logo Section */}
       <div className="flex items-center justify-between p-5 border-b">
-        <h1 className="text-xl font-bold">AZ Fashion</h1>
-        <button onClick={onClose} className="lg:hidden">
-          <X size={20} />
+        <Logo/>
+        <button onClick={onClose} className="lg:hidden p-2 hover:bg-gray-100 rounded-full">
+          <X size={20} className="text-gray-500" />
         </button>
       </div>
 
-      {/* nav links */}
-      <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+      {/* Navigation */}
+      <nav className="flex-1 p-4 space-y-1.5 overflow-y-auto">
         {NAV_ITEMS.map((item) => (
           <NavLink
             key={item.href}
             to={item.href}
             end={item.end}
-            onClick={onClose}
+            onClick={() => { if(window.innerWidth < 1024) onClose(); }}
             className={({ isActive }) =>
               cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
+                "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-200",
                 isActive
-                  ? "bg-black text-white"
-                  : "text-gray-600 hover:bg-gray-100",
+                  ? "bg-brand-red text-white shadow-md shadow-red-200"
+                  : "text-gray-500 hover:bg-red-50 hover:text-brand-red",
               )
             }
           >
-            <item.icon size={18} />
+            <item.icon size={20} />
             {item.label}
           </NavLink>
         ))}
       </nav>
 
-      {/* user info and logout */}
-      <div className="p-4 border-t">
-        <div className="flex items-center gap-3 mb-3">
-          <div className="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center font-medium text-sm">
+      {/* User & Logout Section */}
+      <div className="p-4 border-t bg-gray-50/50">
+        <div className="flex items-center gap-3 p-2 mb-2 bg-white rounded-xl border border-gray-100 shadow-sm">
+          <div className="w-10 h-10 rounded-full bg-brand-red text-white flex items-center justify-center font-black text-sm ring-4 ring-red-50">
             {user?.firstName?.charAt(0).toUpperCase()}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium truncate">
-              {user?.lastName} {user?.firstName}
-            </p>
-            <p className="text-xs text-gray-500 truncate">{user?.email}</p>
+            <p className="text-sm font-bold text-gray-900 truncate">{user?.lastName} {user?.firstName}</p>
+            <p className="text-[11px] text-gray-400 truncate">{user?.email}</p>
           </div>
         </div>
         <button
           onClick={handleLogout}
-          className="flex items-center gap-2 w-full px-3 py-2 text-red-500 text-sm hover:bg-red-50 rounded-lg transition-colors"
+          className="flex items-center gap-2 w-full px-4 py-3 text-red-600 text-sm font-bold hover:bg-red-100 rounded-xl transition-colors"
         >
-          <LogOut size={16} />
+          <LogOut size={18} />
           Đăng xuất
         </button>
       </div>

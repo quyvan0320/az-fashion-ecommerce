@@ -10,9 +10,12 @@ import {
   useToggleActive,
 } from "@/services/queries/useProducts";
 import { Product } from "@/types/product";
+import { cn } from "@/utils/cn";
 import { formatCurrency } from "@/utils/formatters";
 import {
+  Filter,
   Layers,
+  Package,
   Pencil,
   Plus,
   Search,
@@ -25,9 +28,7 @@ import { useState } from "react";
 const Products = () => {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
-  const [selectedProduct, setSelectedProduct] = useState<
-    Product | null | undefined
-  >(undefined);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null | undefined>(undefined);
   const [variantsProduct, setVariantsProduct] = useState<Product | null>(null);
 
   const { data: res, isLoading } = useProducts({
@@ -43,186 +44,237 @@ const Products = () => {
   const pagination = res?.data;
 
   const handleDelete = (id: string) => {
-    if (window.confirm("Bạn có chắc muốn xóa sản phẩm này")) deleteProduct(id);
+    if (window.confirm("Bạn có chắc muốn xóa sản phẩm này?")) deleteProduct(id);
   };
+
   return (
     <>
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h1 className="text-xl font-semibold">
-            Sản phẩm ({pagination?.total || 0})
-          </h1>
+      <div className="space-y-6 pb-10">
+        {/* Header Section */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-black text-gray-900 flex items-center gap-2">
+              <Package className="text-brand-red" />
+              Sản phẩm 
+              <span className="text-sm font-medium text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">
+                {pagination?.total || 0}
+              </span>
+            </h1>
+          </div>
           <Button
             onClick={() => setSelectedProduct(null)}
-            variant="primary"
+            className="bg-brand-red hover:bg-red-700 text-white w-full sm:w-auto shadow-lg shadow-red-100"
             leftIcon={Plus}
           >
             Thêm sản phẩm
           </Button>
         </div>
 
-        <div className="relative flex-1">
-          <Input
-            leftIcon={Search}
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-            }}
-            placeholder="Tìm sản phẩm..."
-          />
+        {/* Search & Filter Bar */}
+        <div className="flex flex-col md:flex-row gap-3 bg-white p-3 rounded-xl border shadow-sm">
+          <div className="relative flex-1">
+            <Input
+              leftIcon={Search}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Tìm tên, SKU, danh mục..."
+              className="border-none bg-gray-50 focus:bg-white transition-all"
+            />
+          </div>
+          <Button variant="outline" leftIcon={Filter} className="hidden md:flex">
+            Lọc
+          </Button>
         </div>
 
-        <div className="bg-white shadow-sm rounded-xl border overflow-hidden">
+        {/* Table / Card View Area */}
+        <div className="bg-white shadow-sm rounded-2xl border border-gray-100 overflow-hidden">
           {isLoading ? (
-            <Spinner />
+            <div className="py-20"><Spinner /></div>
+          ) : products.length === 0 ? (
+            <div className="text-center py-20">
+              <Package size={48} className="mx-auto text-gray-200 mb-4" />
+              <p className="text-gray-500 font-medium">Không tìm thấy sản phẩm nào</p>
+            </div>
           ) : (
-            <table className="w-full text-sm">
-              <thead className="bg-gray-50 border-b">
-                <tr>
-                  <th className="text-left px-4 py-3 font-medium text-gray-500">
-                    Sản phẩm
-                  </th>
-                  <th className="text-left px-4 py-3 font-medium text-gray-500">
-                    Danh mục
-                  </th>
-                  <th className="text-left px-4 py-3 font-medium text-gray-500">
-                    Giá
-                  </th>
-                  <th className="text-left px-4 py-3 font-medium text-gray-500">
-                    Kho
-                  </th>
-                  <th className="text-left px-4 py-3 font-medium text-gray-500">
-                    Biến thể
-                  </th>
-                  <th className="text-left px-4 py-3 font-medium text-gray-500">
-                    Hiển thị
-                  </th>
-                  <th className="text-left px-4 py-3 font-medium text-gray-500">
-                    Thao tác
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y">
-                {products.length === 0 ? (
-                  <tr>
-                    <td colSpan={7} className="text-center py-12 text-gray-500">
-                      Không có sản phẩm nào
-                    </td>
-                  </tr>
-                ) : (
-                  products.map((product) => (
-                    <tr key={product.id} className="hover:bg-gray-50">
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-3">
-                          <img
-                            src={product.images?.[0]}
-                            alt={product.name}
-                            className="w-10 h-10 rounded-lg object-cover bg-gray-100"
-                          />
-                          <div>
-                            <p className="font-medium">{product.name}</p>
-                            <p className="text-xs text-gray-400">
-                              {product.sku}
-                            </p>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-4 py-3 text-gray-500">
-                        {product.category?.name || "-"}
-                      </td>
-                      <td className="px-4 py-3">
-                        <p
-                          className={`font-medium ${product.salePrice > 0 ? "line-through" : ""}`}
-                        >
-                          {formatCurrency(product.price)}
-                        </p>
-                        {product.salePrice > 0 && (
-                          <p className="text-xs text-red-500">
-                            {formatCurrency(product.salePrice)}
-                          </p>
-                        )}
-                      </td>
-                      <td className="px-4 py-3">
-                        <span
-                          className={
-                            product.stock < 5 ? "text-red-500 font-medium" : ""
-                          }
-                        >
-                          {product.stock}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3">
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          leftIcon={Layers}
-                          onClick={() => setVariantsProduct(product)}
-                        >
-                          {product._count?.variants || 0} Biến thể
-                        </Button>
-                      </td>
-                      <td className="px-4 py-3">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => toggleActive(product.id)}
-                        >
-                          {product.isActive ? (
-                            <div className="flex items-center gap-1">
-                              <ToggleRight
-                                size={18}
-                                className="text-green-500"
-                              />
-                              <span className="text-green-500">Hiện</span>
-                            </div>
-                          ) : (
-                            <div className="flex items-center gap-1">
-                              <ToggleLeft size={18} className="text-gray-400" />
-                              <span className="text-gray-400">Ẩn</span>
-                            </div>
-                          )}
-                        </Button>
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-2">
-                          <Button
-                            variant="secondary"
-                            onClick={() => setSelectedProduct(product)}
-                          >
-                            <Pencil size={14} />
-                          </Button>
-                          <Button
-                            variant="danger"
-                            onClick={() => handleDelete(product.id)}
-                          >
-                            <Trash2 size={14} />
-                          </Button>
-                        </div>
-                      </td>
+            <>
+              {/* Desktop Table View */}
+              <div className="hidden lg:block overflow-x-auto">
+                <table className="w-full text-sm text-left">
+                  <thead className="bg-gray-50/50 border-b border-gray-100">
+                    <tr>
+                      <th className="px-6 py-4 font-bold text-gray-600">Sản phẩm</th>
+                      <th className="px-6 py-4 font-bold text-gray-600">Danh mục</th>
+                      <th className="px-6 py-4 font-bold text-gray-600">Giá bán</th>
+                      <th className="px-6 py-4 font-bold text-gray-600 text-center">Kho</th>
+                      <th className="px-6 py-4 font-bold text-gray-600">Biến thể</th>
+                      <th className="px-6 py-4 font-bold text-gray-600">Hiển thị</th>
+                      <th className="px-6 py-4 font-bold text-gray-600 text-right">Thao tác</th>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+                  </thead>
+                  <tbody className="divide-y divide-gray-50">
+                    {products.map((product) => (
+                      <tr key={product.id} className="hover:bg-red-50/30 transition-colors group">
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-3">
+                            <img
+                              src={product.images?.[0]}
+                              alt={product.name}
+                              className="w-12 h-12 rounded-xl object-cover bg-gray-100 border border-gray-100 shadow-sm"
+                            />
+                            <div className="max-w-[200px]">
+                              <p className="font-bold text-gray-900 truncate">{product.name}</p>
+                              <p className="text-[11px] font-mono text-gray-400 uppercase tracking-wider">{product.sku}</p>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className="px-2.5 py-1 rounded-lg bg-gray-100 text-gray-600 text-xs font-bold">
+                            {product.category?.name || "N/A"}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex flex-col">
+                            <span className={`font-bold ${product.salePrice > 0 ? "text-xs text-gray-400 line-through" : "text-gray-900"}`}>
+                              {formatCurrency(product.price)}
+                            </span>
+                            {product.salePrice > 0 && (
+                              <span className="text-sm font-black text-brand-red">
+                                {formatCurrency(product.salePrice)}
+                              </span>
+                            )}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 text-center">
+                          <span className={cn(
+                            "inline-flex items-center justify-center w-10 h-10 rounded-xl font-bold text-xs",
+                            product.stock < 5 ? "bg-red-100 text-red-600" : "bg-green-50 text-green-600"
+                          )}>
+                            {product.stock}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <button 
+                            onClick={() => setVariantsProduct(product)}
+                            className="flex items-center gap-2 text-gray-500 hover:text-brand-red font-bold transition-colors"
+                          >
+                            <Layers size={16} />
+                            <span>{product._count?.variants || 0}</span>
+                          </button>
+                        </td>
+                        <td className="px-6 py-4">
+                          <button 
+                            onClick={() => toggleActive(product.id)}
+                            className="transition-transform active:scale-90"
+                          >
+                            {product.isActive ? (
+                              <ToggleRight size={32} className="text-brand-red" strokeWidth={1.5} />
+                            ) : (
+                              <ToggleLeft size={32} className="text-gray-300" strokeWidth={1.5} />
+                            )}
+                          </button>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="h-8 w-8 p-0 rounded-lg hover:bg-gray-100 text-gray-600"
+                              onClick={() => setSelectedProduct(product)}
+                            >
+                              <Pencil size={14} />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="h-8 w-8 p-0 rounded-lg hover:bg-red-50 text-brand-red"
+                              onClick={() => handleDelete(product.id)}
+                            >
+                              <Trash2 size={14} />
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile Card View */}
+              <div className="lg:hidden divide-y divide-gray-100">
+                {products.map((product) => (
+                  <div key={product.id} className="p-4 space-y-4">
+                    <div className="flex items-start gap-4">
+                      <img
+                        src={product.images?.[0]}
+                        alt={product.name}
+                        className="w-20 h-20 rounded-2xl object-cover bg-gray-50 border"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex justify-between items-start">
+                          <p className="font-black text-gray-900 truncate pr-2">{product.name}</p>
+                          <button onClick={() => toggleActive(product.id)}>
+                            {product.isActive ? <ToggleRight className="text-brand-red" /> : <ToggleLeft className="text-gray-300" />}
+                          </button>
+                        </div>
+                        <p className="text-xs text-gray-400 mb-2">{product.sku}</p>
+                        <div className="flex items-center gap-2">
+                           <span className="text-sm font-black text-brand-red">{formatCurrency(product.salePrice || product.price)}</span>
+                           <span className="text-xs text-gray-400 font-bold bg-gray-100 px-2 py-0.5 rounded">Kho: {product.stock}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 pt-2 border-t border-dashed">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="flex-1 text-xs font-bold" 
+                        leftIcon={Layers}
+                        onClick={() => setVariantsProduct(product)}
+                      >
+                        {product._count?.variants || 0} Biến thể
+                      </Button>
+                      <Button 
+                        variant="secondary" 
+                        size="sm" 
+                        className="h-9 w-9 p-0"
+                        onClick={() => setSelectedProduct(product)}
+                      >
+                        <Pencil size={14} />
+                      </Button>
+                      <Button 
+                        variant="danger" 
+                        size="sm" 
+                        className="h-9 w-9 p-0 bg-red-50 text-red-600 border-none"
+                        onClick={() => handleDelete(product.id)}
+                      >
+                        <Trash2 size={14} />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
           )}
         </div>
+
+        {/* Pagination - Responsive */}
         {pagination && pagination.totalPages > 1 && (
-          <div className="flex items-center justify-between px-4 py-3 border-t">
-            <p className="text-sm text-gray-500">
-              Trang {pagination.page} / {pagination.totalPages}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-2">
+            <p className="text-sm font-medium text-gray-500 order-2 sm:order-1">
+              Trang <span className="text-gray-900 font-bold">{pagination.page}</span> / {pagination.totalPages}
             </p>
-            <div className="flex gap-2">
+            <div className="flex gap-2 w-full sm:w-auto order-1 sm:order-2">
               <button
-                onClick={() => setPage((p) => p - 1)}
+                onClick={() => { setPage((p) => p - 1); window.scrollTo(0,0); }}
                 disabled={!pagination.hasPrev}
-                className="px-3 py-1 border rounded text-sm disabled:opacity-40 hover:bg-gray-50"
+                className="flex-1 sm:flex-none px-4 py-2 border rounded-xl text-sm font-bold disabled:opacity-40 hover:bg-white shadow-sm transition-all"
               >
                 Trước
               </button>
               <button
-                onClick={() => setPage((p) => p + 1)}
+                onClick={() => { setPage((p) => p + 1); window.scrollTo(0,0); }}
                 disabled={!pagination.hasNext}
-                className="px-3 py-1 border rounded text-sm disabled:opacity-40 hover:bg-gray-50"
+                className="flex-1 sm:flex-none px-4 py-2 bg-white border rounded-xl text-sm font-bold disabled:opacity-40 hover:border-brand-red hover:text-brand-red shadow-sm transition-all"
               >
                 Sau
               </button>
@@ -231,12 +283,11 @@ const Products = () => {
         )}
       </div>
 
+      {/* Modals giữ nguyên logic nhưng có thể thêm style cho đồng bộ */}
       {selectedProduct !== undefined && (
         <Modal
           isOpen={true}
-          title={
-            selectedProduct === null ? "Thêm sản phẩm mới" : "Câp nhật sản phẩm"
-          }
+          title={selectedProduct === null ? "Thêm sản phẩm mới" : "Cập nhật sản phẩm"}
           onClose={() => setSelectedProduct(undefined)}
         >
           <ProductForm
@@ -249,9 +300,7 @@ const Products = () => {
       {variantsProduct && (
         <Modal
           isOpen={true}
-          title={
-            variantsProduct === null ? "Thêm biến thể mới" : "Câp nhật biến thể"
-          }
+          title="Quản lý biến thể sản phẩm"
           onClose={() => setVariantsProduct(null)}
         >
           <VariantContentDetail

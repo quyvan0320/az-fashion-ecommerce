@@ -4,29 +4,27 @@ import AdminHeader from "./AdminHeader";
 import { Outlet } from "react-router-dom";
 
 const AdminLayout = () => {
-  // toggle sidebar on mobile
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="flex h-screen bg-gray-100 overflow-hidden">
-      {/* overlay when mobile open sidebar */}
+    <div className="flex h-screen bg-[#F8F9FA] overflow-hidden font-sans">
+      {/* Overlay: Mượt mà hơn với fade effect */}
       {sidebarOpen && (
         <div
-          className="fix inset-0 bg-black/50 z-20 lg:hidden"
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[45] lg:hidden transition-opacity duration-300"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
-      {/* sidebar */}
-      {<AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />}
+      {/* Sidebar */}
+      <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-      {/* main content */}
-      <div className="flex flex-col flex-1 overflow-hidden">
+      {/* Main Content Area */}
+      <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
         <AdminHeader onMenuClick={() => setSidebarOpen(true)} />
 
-        {/* page content outlet render admin pages */}
-        <main className="flex-1 overflow-y-auto">
-          <div className="p-6">
+        <main className="flex-1 overflow-y-auto overflow-x-hidden relative">
+          <div className="p-4 lg:p-8 max-w-[1600px] mx-auto">
             <Outlet />
           </div>
         </main>

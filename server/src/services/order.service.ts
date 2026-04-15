@@ -150,6 +150,7 @@ export const orderService = {
         include: {
           items: {
             include: {
+              variant: true,
               product: {
                 select: {
                   id: true,
