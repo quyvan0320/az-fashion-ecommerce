@@ -11,6 +11,7 @@ import RelatedProducts from "./RelatedProducts";
 import ProductInfo from "./ProductInfo";
 import ProductDescription from "./ProductDescription";
 import ProductReviews from "./ProductReviews";
+import { Helmet } from "react-helmet-async";
 const TABS = ["Mô tả sản phẩm", "Đánh Giá - Nhận Xét Từ Khách Hàng"];
 
 const ProductDetail = () => {
@@ -25,6 +26,7 @@ const ProductDetail = () => {
   if (isLoading) {
     return (
       <div className="max-w-7xl mx-auto py-6">
+      
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 animate-pulse">
           <div className="bg-gray-200 col-span-1 aspect-square rounded-md"></div>
           <div className="space-y-8 col-span-2">
@@ -35,9 +37,7 @@ const ProductDetail = () => {
             <div className="h-10 bg-gray-200 rounded " />
           </div>
         </div>
-          <div className="bg-gray-100 w-full aspect-square rounded-md mt-20"></div>
-
-
+        <div className="bg-gray-100 w-full aspect-square rounded-md mt-20"></div>
       </div>
     );
   }

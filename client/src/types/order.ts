@@ -5,6 +5,13 @@ export interface OrderItem {
   quantity: number;
   price: number;
   createdAt: string;
+  variant?: {
+    id: string;
+    color: string;
+    size: string;
+    stock: number;
+    price: number;
+  };
   product: {
     id: string;
     name: string;
@@ -47,6 +54,7 @@ export interface OrderDetail {
     email: string;
     lastName: string;
     firstName: string;
+    phone: string;
   };
   items: OrderItem[];
   address: OrderAddress;
@@ -85,6 +93,7 @@ export interface GetOrderParams {
   limit?: number;
   status?: string;
   search?: string;
+  searchType?: string;
 }
 
 export interface CreateOrderData {

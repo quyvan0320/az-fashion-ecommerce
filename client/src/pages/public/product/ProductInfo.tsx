@@ -6,6 +6,8 @@ import { useEffect, useState } from "react";
 import StarDisplay from "./StarDisplay";
 import { Minus, Plus } from "lucide-react";
 import Button from "@/components/common/Button";
+import { useLocation, useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 
 const ProductInfo = ({ product, ...props }: { product: any }) => {
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
@@ -72,17 +74,20 @@ const ProductInfo = ({ product, ...props }: { product: any }) => {
     }
     return !variants.some((v: any) => v.size === size && v.stock > 0);
   };
-
+  const navigate = useNavigate();
+  const location = useLocation();
   const handleAddToCart = () => {
     if (!isAuthenticated) {
-      window.location.href = ROUTES.LOGIN;
+      navigate(ROUTES.LOGIN, {
+        state: { from: location.pathname },
+      });
       return;
     }
 
     if (!product) return;
 
     if (variants.length > 0 && !selectedVariant) {
-      alert("Vui lòng chọn Size và Màu sắc khacs");
+      alert("Vui lòng chọn Size và Màu sắc khác");
       return;
     }
 
@@ -99,6 +104,9 @@ const ProductInfo = ({ product, ...props }: { product: any }) => {
   };
   return (
     <div className="space-y-5 col-span-2 md:mt-8 lg:mt-0">
+      <Helmet>
+        <title>Az Fashion - {product.name}</title>
+      </Helmet>
       {/* name */}
       <div className="mb-5">
         <h1 className="text-2xl font-bold mb-2">{product.name}</h1>
@@ -121,7 +129,9 @@ const ProductInfo = ({ product, ...props }: { product: any }) => {
       {/* price */}
       <div className="bg-brand-grey p-4  rounded-sm">
         <div className="flex items-center">
-          <span className="text-sm font-bold text-brand-black w-36 hidden md:block">Giá:</span>
+          <span className="text-sm font-bold text-brand-black w-36 hidden md:block">
+            Giá:
+          </span>
           <div className="flex items-center gap-4 ">
             <span className="text-lg font-bold text-brand-red">
               {formatCurrency(effectivePrice)}
@@ -199,7 +209,7 @@ const ProductInfo = ({ product, ...props }: { product: any }) => {
       {/* size */}
       {availableSizes.length > 0 && (
         <div className="px-0 md:px-4 rounded-sm">
-              <div className=" flex flex-col gap-4 md:gap-0 md:flex-row  md:items-center ">
+          <div className=" flex flex-col gap-4 md:gap-0 md:flex-row  md:items-center ">
             <div className="flex flex-col md:w-36 ">
               <span className="text-sm font-bold text-brand-black">Size:</span>
               <span className="text-emerald-600 text-xs font-semibold">

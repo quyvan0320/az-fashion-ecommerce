@@ -7,7 +7,6 @@ import { CreditCard, Lock, X } from "lucide-react";
 import { useState } from "react";
 
 interface StripeModalProps {
-  // Không nhận orderId nữa - tạo order bên trong modal
   addressId: string;
   notes?: string;
   total: number;
@@ -25,60 +24,56 @@ const StripeModal = ({ addressId, notes, total, onSuccess, onClose }: StripeModa
   const { mutateAsync: cancelOrder } = useCancelOrder();
  
   const handlePay = async () => {
-    if (!stripe || !elements) return;
-    const cardElement = elements.getElement(CardElement);
-    if (!cardElement) return;
- 
-    setIsProcessing(true);
-    setError(null);
- 
-    let createdOrderId: string | null = null;
- 
-    try {
-      const { error: cardError, paymentMethod: validatedPM } =
-        await stripe.createPaymentMethod({
-          type: "card",
-          card: cardElement,
-        });
- 
-      if (cardError) {
-        setError(cardError.message || "Thông tin thẻ không hợp lệ");
-        return; 
-      }
- 
-      const orderRes = await createOrder({
-        addressId,
-        paymentMethod: "STRIPE",
-        notes,
-      });
-      createdOrderId = orderRes.data.id;
- 
-      const intentRes = await paymentService.createPaymentIntent(createdOrderId);
-      const { clientSecret } = intentRes.data;
- 
-      const { error: stripeError, paymentIntent } =
-        await stripe.confirmCardPayment(clientSecret, {
-          payment_method: validatedPM.id,
-        });
- 
-      if (stripeError) {
-        await cancelOrder(createdOrderId).catch(() => {});
-        setError(stripeError.message || "Thanh toán thất bại");
-        return;
-      }
- 
-      if (paymentIntent?.status === "succeeded") {
-        onSuccess();
-      }
-    } catch (err: any) {
-      if (createdOrderId) {
-        await cancelOrder(createdOrderId).catch(() => {});
-      }
-      setError(err.response?.data?.message || "Có lỗi xảy ra, vui lòng thử lại");
-    } finally {
-      setIsProcessing(false);
+  if (!stripe || !elements || isProcessing) return; 
+  const cardElement = elements.getElement(CardElement);
+  if (!cardElement) return;
+
+  setIsProcessing(true);
+  setError(null);
+
+  let createdOrderId: string | null = null;
+
+  try {
+    const { error: cardError, paymentMethod: validatedPM } = await stripe.createPaymentMethod({
+      type: "card",
+      card: cardElement,
+    });
+
+    if (cardError) {
+      setError(cardError.message || "Thông tin thẻ không hợp lệ");
+      setIsProcessing(false); 
+      return; 
     }
-  };
+
+    const orderRes = await createOrder({
+      addressId,
+      paymentMethod: "STRIPE",
+      notes,
+    });
+    createdOrderId = orderRes.data.id;
+
+    const intentRes = await paymentService.createPaymentIntent(createdOrderId);
+    const { clientSecret } = intentRes.data;
+
+    const { error: stripeError, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+      payment_method: validatedPM.id,
+    });
+
+    if (stripeError) {
+      await cancelOrder(createdOrderId).catch(() => {});
+      setError(stripeError.message || "Thanh toán thất bại");
+    } else if (paymentIntent?.status === "succeeded") {
+      onSuccess(); 
+    }
+  } catch (err: any) {
+    if (createdOrderId) {
+      await cancelOrder(createdOrderId).catch(() => {});
+    }
+    setError(err.response?.data?.message || "Có lỗi xảy ra, vui lòng thử lại");
+  } finally {
+    setIsProcessing(false);
+  }
+};
  
   return (
     <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">

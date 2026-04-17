@@ -6,6 +6,9 @@ import { Link } from "react-router-dom";
 import { ROUTES } from "@/config/constants";
 import Button from "@/components/common/Button";
 import Input from "@/components/common/Input";
+import { Home } from "lucide-react";
+import Logo from "@/components/layout/public/Header/Logo";
+import { Helmet } from "react-helmet-async";
 // define validation rules
 const loginSchema = z.object({
   email: z.string().email("Email không hợp lệ"),
@@ -35,7 +38,13 @@ const Login = () => {
   };
   return (
     <div className=" flex items-center justify-center bg-brand-light pt-12">
+      <Helmet>
+        <title>Az Fashion - Đăng nhập</title>
+      </Helmet>
       <div className="w-full max-w-xl p-8  space-y-6">
+        <div className="flex items-center justify-center">
+          <Logo />
+        </div>
         <div className="flex items-center font-heading text-2xl  font-semibold gap-5 justify-center">
           <Link to={ROUTES.LOGIN} className="">
             Đăng nhập
@@ -82,7 +91,7 @@ const Login = () => {
             >
               Đăng nhập
             </Button>
-
+            <div className=""></div>
             <p className="text-center font-light text-sm text-brand-dark ">
               Chưa có tài khoản?{" "}
               <Link

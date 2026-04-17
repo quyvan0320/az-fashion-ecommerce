@@ -80,6 +80,7 @@ export interface GetProductsParams {
   maxPrice?: number;
   isActive?: boolean;
   isAdmin?: boolean;
+  searchType?: string;
   isSale?: string | boolean | undefined;
   sortBy?: string;
   order?: string;

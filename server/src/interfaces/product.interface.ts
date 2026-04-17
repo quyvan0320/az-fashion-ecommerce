@@ -33,6 +33,7 @@ export interface GetProductsQuery {
   size?: string;
   color?: string;
   minPrice?: number;
+  searchType?: string
   maxPrice?: number;
   inStock?: boolean;
   isSale?: boolean | string | undefined;

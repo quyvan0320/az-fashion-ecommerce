@@ -15,9 +15,11 @@ export const useCart = () => {
 };
 
 export const useCartSummary = () => {
+  const token = localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
   return useQuery({
     queryKey: cartKeys.summary,
     queryFn: () => cartService.getSummary(),
+    enabled: !!token,
   });
 };
 

@@ -7,11 +7,10 @@ const AdminLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="flex h-screen bg-[#F8F9FA] overflow-hidden font-sans">
-      {/* Overlay: Mượt mà hơn với fade effect */}
+    <div className="flex h-screen bg-brand-light overflow-hidden font-sans">
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[45] lg:hidden transition-opacity duration-300"
+          className="fixed inset-0 bg-brand-black/60 backdrop-blur-sm z-[45] lg:hidden transition-opacity duration-300"
           onClick={() => setSidebarOpen(false)}
         />
       )}
@@ -24,7 +23,7 @@ const AdminLayout = () => {
         <AdminHeader onMenuClick={() => setSidebarOpen(true)} />
 
         <main className="flex-1 overflow-y-auto overflow-x-hidden relative">
-          <div className="p-4 lg:p-8 max-w-[1600px] mx-auto">
+          <div className="max-w-7xl mx-auto px-4 py-6 md:px-6">
             <Outlet />
           </div>
         </main>

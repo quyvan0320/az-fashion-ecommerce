@@ -14,11 +14,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   AlertTriangle,
   Box,
+  BoxesIcon,
   Database,
   Pencil,
   Plus,
   Save,
   Trash2,
+  UploadCloudIcon,
   X,
 } from "lucide-react";
 import React, { useState } from "react";
@@ -133,7 +135,6 @@ const VariantContentDetail = ({
 
   return (
     <div className="space-y-5">
-      {/* Header Info: Responsive Grid */}
       {variantsData && (
         <div className="flex flex-wrap gap-3">
           <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 px-3 py-2 rounded-xl text-sm font-semibold text-slate-600">
@@ -163,7 +164,7 @@ const VariantContentDetail = ({
             variants.map((variant) => (
               <div
                 key={variant.id}
-                className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 border border-gray-100 rounded-2xl bg-white hover:border-brand-red/30 hover:shadow-sm transition-all"
+                className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 border border-gray-100 rounded-2xl bg-brltext-brand-light hover:border-brand-red/30 hover:shadow-sm transition-all"
               >
                 {/* Variant Info */}
                 <div className="flex-1 space-y-3">
@@ -222,25 +223,25 @@ const VariantContentDetail = ({
                 <div className="flex items-center gap-2 pt-3 sm:pt-0 border-t sm:border-t-0 border-gray-50">
                   <Button
                     size="sm"
-                    variant="outline"
+                    variant="primary"
                     onClick={() => handleUpdateStock(variant.id)}
-                    className="flex-1 sm:flex-none h-9 text-xs font-bold"
+                    className="h-8 w-8 bg-brand-red p-0 rounded-lg border-none  hover:bg-gray-100 text-brand-light"
                   >
-                    Kho
+                    <BoxesIcon/>
                   </Button>
                   <Button
                     size="sm"
-                    variant="secondary"
+                    variant="primary"
                     onClick={() => openEdit(variant)}
-                    className="h-9 w-9 p-0 flex items-center justify-center rounded-xl"
+                    className="h-8 w-8 p-0 rounded-lg border border-brand-dark hover:bg-gray-100 text-brand-dark"
                   >
                     <Pencil size={14} />
                   </Button>
                   <Button
                     size="sm"
-                    variant="danger"
+                    variant="primary"
                     onClick={() => handleDelete(variant.id)}
-                    className="h-9 w-9 p-0 flex items-center justify-center rounded-xl bg-red-50 border-none text-red-600 hover:bg-red-100"
+                    className="h-8 w-8 p-0 rounded-lg border border-brand-dark hover:bg-gray-100 text-brand-dark"
                   >
                     <Trash2 size={14} />
                   </Button>
@@ -264,7 +265,7 @@ const VariantContentDetail = ({
                 setEditingVariant(undefined);
                 reset();
               }}
-              className="p-1 text-gray-400 hover:bg-white rounded-full transition-colors"
+              className="p-1 text-gray-400 hover:bg-brltext-brand-light rounded-full transition-colors"
             >
               <X size={20} />
             </button>
@@ -275,18 +276,18 @@ const VariantContentDetail = ({
               <Input
                 {...register("size")}
                 label="Kích cỡ (Size)"
-                placeholder="Ví dụ: M, L, XL, 42..."
+                placeholder="M, L, XL, 42..."
               />
               <Input
                 {...register("color")}
                 label="Màu sắc"
-                placeholder="Ví dụ: Đỏ, Xanh Navy..."
+                placeholder="Đỏ, Xanh Navy..."
               />
               <Input
                 {...register("price")}
                 type="number"
                 label="Giá riêng (đ)"
-                placeholder="Để trống = dùng giá gốc"
+                placeholder="Để trống dùng giá gốc"
               />
               <Input
                 {...register("stock")}
@@ -301,7 +302,7 @@ const VariantContentDetail = ({
                 type="submit"
                 disabled={isCreating || isUpdating}
                 variant="secondary"
-                className="flex-1 font-bold h-11 bg-brand-red hover:bg-red-700 text-white shadow-lg shadow-red-100"
+                className="flex-1 font-bold h-11 bg-brand-red hover:bg-red-700 text-brand-light shadow-lg shadow-red-100"
                 leftIcon={Save}
               >
                 {isCreating || isUpdating
@@ -316,8 +317,9 @@ const VariantContentDetail = ({
                   setEditingVariant(undefined);
                   reset();
                 }}
-                variant="ghost"
-                className="flex-1 font-bold h-11 border border-gray-200"
+                variant="primary"
+                noHover
+                 className="rounded-2xl border-none bg-brand-red text-brand-light font-bold"
               >
                 Hủy
               </Button>
@@ -329,7 +331,7 @@ const VariantContentDetail = ({
           onClick={openCreate}
           className="group w-full border-2 border-dashed border-gray-200 rounded-2xl py-6 text-sm font-bold text-gray-400 hover:border-brand-red/50 hover:text-brand-red hover:bg-red-50/30 transition-all flex flex-col items-center justify-center gap-2"
         >
-          <div className="p-2 bg-gray-100 rounded-xl group-hover:bg-brand-red group-hover:text-white transition-all">
+          <div className="p-2 bg-gray-100 rounded-xl group-hover:bg-brand-red group-hover:text-brand-light transition-all">
             <Plus size={20} />
           </div>
           Thêm biến thể sản phẩm mới

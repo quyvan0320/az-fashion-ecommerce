@@ -17,6 +17,7 @@ import {
   Trash2,
   Truck,
 } from "lucide-react";
+import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 
 const Cart = () => {
@@ -62,6 +63,9 @@ const Cart = () => {
   }
   return (
     <div className="max-w-7xl mx-auto px-4  py-6">
+       <Helmet>
+                <title>Az Fashion - Giỏ hàng</title>
+              </Helmet>
       <Breadcrumb displayName={`Giỏ hàng (${summary?.totalQuantity || 0})`} />
 
       <div className="flex items-center justify-between mb-6">

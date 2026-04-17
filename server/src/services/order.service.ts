@@ -290,6 +290,24 @@ export const orderService = {
       where.status = query.status;
     }
 
+    if (query.search) {
+      const searchType = query.searchType || "orderNumber";
+
+      if (searchType === "orderNumber") {
+        where.orderNumber = { contains: query.search, mode: "insensitive" };
+      } else if (searchType === "customerName") {
+        where.user = {
+          OR: [
+            { firstName: { contains: query.search, mode: "insensitive" } },
+            { lastName: { contains: query.search, mode: "insensitive" } },
+          ],
+        };
+      } else if (searchType === "email") {
+        where.user = {
+          email: { contains: query.search, mode: "insensitive" },
+        };
+      }
+    }
     const [orders, total] = await Promise.all([
       prisma.order.findMany({
         where,
@@ -304,10 +322,12 @@ export const orderService = {
               email: true,
               firstName: true,
               lastName: true,
+              phone: true,
             },
           },
           items: {
             include: {
+              variant: true,
               product: {
                 select: {
                   id: true,
@@ -388,6 +408,7 @@ export const orderService = {
             email: true,
             firstName: true,
             lastName: true,
+            phone: true,
           },
         },
         items: {

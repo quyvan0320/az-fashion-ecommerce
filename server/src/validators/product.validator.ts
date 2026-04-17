@@ -12,8 +12,8 @@ export const createProductValidator = [
   body("description")
     .optional()
     .trim()
-    .isLength({ max: 2000 })
-    .withMessage("Mô tả không vượt quá 2000 ký tự"),
+    .isLength({ max: 15000 })
+    .withMessage("Mô tả không vượt quá 15000 ký tự"),
 
   body("price")
     .notEmpty()
@@ -157,8 +157,8 @@ export const updateProductValidator = [
   body("description")
     .optional()
     .trim()
-    .isLength({ max: 2000 })
-    .withMessage("Mô tả không vượt quá 2000 ký tự"),
+    .isLength({ max: 15000 })
+    .withMessage("Mô tả không vượt quá 15000 ký tự"),
 
   body("price")
     .notEmpty()

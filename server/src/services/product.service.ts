@@ -72,16 +72,30 @@ export const productService = {
   // get all by search filter and sort
   async getAll(query: GetProductsQuery) {
     const page = Number(query.page) || 1;
-    const limit = Number(query.limit) || 20;
+    const limit = Number(query.limit) || 50;
     const skip = (page - 1) * limit;
 
     const where: Prisma.ProductWhereInput = {};
 
     if (query.search) {
-      where.OR = [
-        { name: { contains: query.search, mode: "insensitive" } },
-        { brand: { contains: query.search, mode: "insensitive" } },
-      ];
+      const searchType = query.searchType || "name";
+
+      if (searchType === "sku") {
+        where.variants = {
+          some: {
+            sku: { contains: query.search, mode: "insensitive" },
+          },
+        };
+      } else if (searchType === "category") {
+        where.category = {
+          name: { contains: query.search, mode: "insensitive" },
+        };
+      } else {
+        where.OR = [
+          { name: { contains: query.search, mode: "insensitive" } },
+          { brand: { contains: query.search, mode: "insensitive" } },
+        ];
+      }
     }
 
     if (query.categoryId) {

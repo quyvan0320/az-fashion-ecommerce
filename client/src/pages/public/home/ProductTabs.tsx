@@ -21,7 +21,6 @@ const ProductTabs = () => {
     limit: 10,
   });
   const products = res?.data?.products || [];
-  console.log(products);
   const currentTabName = TABS.find((tab) => tab.slug === activeTab)?.name;
   return (
     <div className="max-w-7xl mx-auto px-6 py-10">
@@ -44,7 +43,7 @@ const ProductTabs = () => {
 
       {isLoading ? (
         <div className="grid grid-cols-2 lg:grid-cols-5 gap-6">
-          {Array.from({ length: 10 }).map((_, i) => (
+          {Array.from({ length: 5 }).map((_, i) => (
             <SkeletonProduct key={i} />
           ))}
         </div>

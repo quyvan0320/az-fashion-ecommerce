@@ -5,6 +5,7 @@ export interface User {
   email: string;
   firstName: string;
   lastName: string;
+  phone: string;
   role: "ADMIN" | "CUSTOMER";
   createdAt: string;
 }
@@ -19,6 +20,7 @@ export interface RegisterData {
   password: string;
   firstName: string;
   lastName: string;
+  phone: string;
 }
 
 export interface AuthResponse {
@@ -29,15 +31,12 @@ export interface AuthResponse {
   };
 }
 
-
 //api response
 export interface ApiResponse<T = any> {
   success: boolean;
   data: T;
   message?: string;
 }
-
-
 
 export interface PaginationResponse<T> {
   success: boolean;

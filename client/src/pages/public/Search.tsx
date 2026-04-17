@@ -5,6 +5,7 @@ import { useSearchParams } from "react-router-dom";
 import ProductCard from "./product/ProductCard";
 import SkeletonProduct from "@/components/common/SkeletonProduct";
 import { Pagination } from "@/components/common/Pagination";
+import { Helmet } from "react-helmet-async";
 
 const Search = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -22,7 +23,6 @@ const Search = () => {
     });
     setSearchParams(newParams);
   };
-  console.log("Search term:", search);
   useEffect(() => {
     const timer = setTimeout(() => {
       updateParams({ search: searchInput, page: "1" });
@@ -44,6 +44,9 @@ const Search = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-8">
+      <Helmet>
+        <title>Az Fashion - Tìm kiếm</title>
+      </Helmet>
       <div className="flex flex-col items-center justify-center">
         <h1 className="text-3xl font-bold mb-4 pb-2 border-b-4 border-brand-dark">
           Tìm kiếm

@@ -4,9 +4,9 @@ import { useAddToCart } from "@/services/queries/useCart";
 import { useAuth } from "@/store/authContext";
 import { Product } from "@/types/product";
 import { formatCurrency } from "@/utils/formatters";
-import {  ShoppingBag } from "lucide-react";
+import { ShoppingBag } from "lucide-react";
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 const ProductCard = ({ product }: { product: Product }) => {
   const { isAuthenticated } = useAuth();
@@ -32,30 +32,33 @@ const ProductCard = ({ product }: { product: Product }) => {
     (sum, v) => sum + (v.stock || 0),
     0,
   );
-  
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const handleAddToCart = (e: React.MouseEvent) => {
-  e.preventDefault();
-  e.stopPropagation(); 
+    e.preventDefault();
+    e.stopPropagation();
 
-  if (!isAuthenticated) {
-    window.location.href = ROUTES.LOGIN;
-    return;
-  }
+    if (!isAuthenticated) {
+      navigate(ROUTES.LOGIN, {
+        state: { from: location.pathname },
+      });
+      return;
+    }
 
-  const variantToAddToCart = product.variants?.find((v) => v.stock > 0);
+    const variantToAddToCart = product.variants?.find((v) => v.stock > 0);
 
-  if (!variantToAddToCart) {
-    alert("Sản phẩm đã hết hàng!");
-    return;
-  }
+    if (!variantToAddToCart) {
+      alert("Sản phẩm đã hết hàng!");
+      return;
+    }
 
-  AddToCart({
-    productId: product.id,
-    variantId: variantToAddToCart.id,
-    quantity: 1,
-  });
-};
+    AddToCart({
+      productId: product.id,
+      variantId: variantToAddToCart.id,
+      quantity: 1,
+    });
+  };
 
   return (
     <Link

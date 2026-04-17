@@ -8,7 +8,7 @@ import {
 
 import { Category } from "@/types/category";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ImagePlus, X } from "lucide-react";
+import { AlertCircle, ImagePlus, Save, X } from "lucide-react"; // Thêm AlertCircle, Save
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
@@ -122,72 +122,109 @@ const CategoryForm = ({ category, onSuccess }: CategoryFormProps) => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700">
-          Ảnh danh mục
-        </label>
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="flex flex-col gap-6 max-h-[80vh] overflow-y-auto px-1"
+    >
+      <div className="grid grid-cols-1 gap-6">
+        <div className="space-y-3">
+          <label className="text-sm font-bold text-gray-700 ml-1">
+            Ảnh đại diện danh mục
+          </label>
 
-        {/* Dùng key dựa trên link ảnh để ép React render lại hoàn toàn khi xóa/đổi */}
-        <div
-          className="flex items-center gap-4"
-          key={previewUrl || existingImage || "empty"}
-        >
-          {existingImage || previewUrl ? (
-            <div className="relative w-32 h-32 border rounded-lg overflow-hidden group">
-              <img
-                // Thêm timestamp ?t= để trình duyệt không lấy ảnh cũ từ cache
-                src={`${previewUrl || existingImage}${previewUrl ? "" : `?t=${Date.now()}`}`}
-                alt="category"
-                className="w-full h-full object-cover"
-              />
-              <button
-                type="button"
-                onClick={removeImage}
-                className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity z-10"
-              >
-                <X size={14} />
-              </button>
+          <div className="border-2 border-dashed border-gray-200 rounded-2xl p-4 bg-gray-50/50">
+            <div
+              className="flex items-center gap-4"
+              key={previewUrl || existingImage || "empty"}
+            >
+              {existingImage || previewUrl ? (
+                <div className="relative w-32 h-32 border rounded-xl overflow-hidden group shadow-sm bg-brand-litext-brand-light">
+                  <img
+                    src={`${previewUrl || existingImage}${
+                      previewUrl ? "" : `?t=${Date.now()}`
+                    }`}
+                    alt="category"
+                    className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                  />
+                  <button
+                    type="button"
+                    onClick={removeImage}
+                    className="absolute top-1 right-1 bg-brand-litext-brand-light text-red-500 rounded-full p-1.5 shadow-md hover:bg-red-50 transition-colors z-10"
+                  >
+                    <X size={14} strokeWidth={3} />
+                  </button>
+                  {previewUrl && (
+                    <div className="absolute top-1 left-1 bg-brand-red text-brand-light text-[8px] px-1.5 py-0.5 rounded uppercase font-bold">
+                      New
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <label className="w-32 h-32 border-2 border-dashed border-brand-red/20 rounded-xl flex flex-col items-center justify-center cursor-pointer bg-red-50/30 text-brand-red hover:bg-red-50 transition-all group">
+                  <ImagePlus
+                    className="text-brand-red/60 group-hover:scale-110 transition-transform"
+                    size={28}
+                  />
+                  <span className="text-[10px] font-bold mt-2">Chọn ảnh</span>
+                  <input
+                    type="file"
+                    className="hidden"
+                    onChange={handleFileChange}
+                    accept="image/*"
+                    value=""
+                  />
+                </label>
+              )}
+
+              <div className="flex-1">
+                <p className="text-[11px] text-gray-400 flex items-start gap-1 leading-relaxed">
+                  <AlertCircle size={12} className="mt-0.5 shrink-0" />
+                  Ảnh sẽ hiển thị ở trang chủ và danh sách lọc. Định dạng: JPG,
+                  PNG, WEBP.
+                </p>
+              </div>
             </div>
-          ) : (
-            <label className="w-32 h-32 border-2 border-dashed rounded-lg flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors">
-              <ImagePlus className="text-gray-400" size={28} />
-              <span className="text-xs text-gray-500 mt-2">Chọn ảnh</span>
-              <input
-                type="file"
-                className="hidden"
-                onChange={handleFileChange}
-                accept="image/*"
-                value="" // Luôn để trống để không giữ vết file cũ
-              />
-            </label>
-          )}
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <Input
+            {...register("name")}
+            label="Tên danh mục"
+            placeholder="Áo khoác"
+            error={errors.name?.message}
+            className="focus:ring-brand-red"
+          />
+          <Input
+            {...register("description")}
+            label="Mô tả danh mục"
+            placeholder="Nhập mô tả ngắn cho danh mục này..."
+            error={errors.description?.message}
+          />
         </div>
       </div>
 
-      {/* Phần Input Name và Description giữ nguyên */}
-      <Input
-        {...register("name")}
-        label="Tên danh mục"
-        error={errors.name?.message}
-      />
-      <Input
-        {...register("description")}
-        label="Mô tả"
-        error={errors.description?.message}
-      />
-
-      <div className="flex gap-3 pt-2">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-end gap-3 py-4 border-t sticky bottom-0 bg-brand-litext-brand-light mt-auto">
+        <Button
+          onClick={onSuccess}
+          variant="primary"
+          size="md"
+          type="button"
+          className="flex-1 sm:flex-none "
+        >
+          Hủy bỏ
+        </Button>
         <Button
           type="submit"
           disabled={isPending}
-          isLoading={isPending}
-          variant="secondary"
+          variant="primary"
+          className="rounded-2xl border-none bg-brand-red text-brand-light font-bold"
         >
-          {category ? "Cập nhật" : "Tạo danh mục"}
-        </Button>
-        <Button type="button" onClick={onSuccess} variant="danger">
-          Hủy
+          {isPending
+            ? "Đang xử lý..."
+            : category
+              ? "Cập nhật danh mục"
+              : "Tạo danh mục ngay"}
         </Button>
       </div>
     </form>

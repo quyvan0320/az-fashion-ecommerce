@@ -11,7 +11,7 @@ export const authService = {
     password: string;
     firstName: string;
     lastName: string;
-    phone?: string;
+    phone: string;
   }) {
     // checke if user already exists
     const existingUser = await prisma.user.findUnique({

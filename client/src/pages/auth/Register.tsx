@@ -6,12 +6,22 @@ import Input from "@/components/common/Input";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import z from "zod";
+import Logo from "@/components/layout/public/Header/Logo";
+import { Helmet } from "react-helmet-async";
 
 const registerSchema = z
   .object({
     firstName: z.string().min(1, "Vui lòng nhập tên"),
     lastName: z.string().min(1, "Vui lòng nhập họ"),
     email: z.string().email("Email không hợp lệ"),
+    phone: z
+      .string()
+      .min(1, "Vui lòng nhập số điện thoại")
+      .length(10, "Số điện thoại phải có đúng 10 chữ số")
+      .regex(
+        /^(0[3|5|7|8|9])([0-9]{8})$/,
+        "Số điện thoại không đúng định dạng",
+      ),
     password: z.string().min(6, "Mật khẩu tối thiểu 6 ký tự"),
     confirmPassword: z.string(),
   })
@@ -47,7 +57,13 @@ const Register = () => {
 
   return (
     <div className=" flex items-center justify-center bg-brand-light pt-12">
+      <Helmet>
+        <title>Az Fashion - Đăng ký</title>
+      </Helmet>
       <div className="w-full max-w-xl p-8  space-y-6">
+        <div className="flex items-center justify-center">
+          <Logo />
+        </div>
         <div className="flex items-center font-heading text-2xl  font-semibold gap-5 justify-center">
           <Link
             to={ROUTES.LOGIN}
@@ -63,7 +79,7 @@ const Register = () => {
           {/* last and first name */}
           <div className="grid grid-cols-2 gap-3">
             <Input
-              placeholder="Họ"
+              placeholder="Họ và tên đệm"
               {...registerField("lastName")}
               className="px-6 py-4 font-heading"
               error={errors.lastName?.message}
@@ -85,6 +101,15 @@ const Register = () => {
             className="px-6 py-4 font-heading"
             error={errors.email?.message}
             {...registerField("email")}
+            disabled={isPending}
+          />
+
+          <Input
+            type="text"
+            placeholder="Số điện thoại"
+            className="px-6 py-4 font-heading"
+            error={errors.phone?.message}
+            {...registerField("phone")}
             disabled={isPending}
           />
 
@@ -121,7 +146,7 @@ const Register = () => {
             </Button>
 
             <p className="text-center font-light text-sm text-brand-dark ">
-              Đã có tài khoản? {' '}
+              Đã có tài khoản?{" "}
               <Link to={ROUTES.LOGIN} className="text-blue-300 hover:underline">
                 Đăng nhập ngay
               </Link>

@@ -6,9 +6,7 @@ import SaleProductSlide from "./SaleProductSlide";
 import ProductTabs from "./ProductTabs";
 
 const Home = () => {
-  const { data: productsRes, isLoading: productLoading } = useProducts({
-    limit: 17,
-  });
+  const { data: productsRes, isLoading: productLoading } = useProducts();
   const { data: categoriesRes, isLoading: categoriesLoading } = useCategories();
   const products = productsRes?.data?.products || [];
   const categories = categoriesRes?.data || [];
@@ -16,7 +14,6 @@ const Home = () => {
     (ci) => ci.image !== null && ci.image !== "",
   );
   const saleProducts = products.filter((p: any) => p.salePrice > 0);
-  console.log(saleProducts);
   return (
     <div className="min-h-screen">
       <HeroSlide />

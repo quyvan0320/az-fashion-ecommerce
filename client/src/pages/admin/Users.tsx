@@ -1,4 +1,3 @@
-import Button from "@/components/common/Button";
 import Input from "@/components/common/Input";
 import Spinner from "@/components/common/Spinner";
 import {
@@ -9,8 +8,17 @@ import {
 } from "@/services/queries/useAdmin";
 import { useAuth } from "@/store/authContext";
 import { formatDate } from "@/utils/formatters";
-import { Search, Shield, ShieldOff, Trash2 } from "lucide-react";
+import {
+  Search,
+  Shield,
+  ShieldOff,
+  Trash2,
+  Users as UsersIcon,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import { useState } from "react";
+import { Helmet } from "react-helmet-async";
 
 const Users = () => {
   const [search, setSearch] = useState("");
@@ -32,7 +40,6 @@ const Users = () => {
 
   const users = res?.data || [];
   const pagination = res?.pagination;
-
   const stats = statsRes?.data;
 
   const handleToggleRole = (id: string, currentRole: "ADMIN" | "CUSTOMER") => {
@@ -53,34 +60,72 @@ const Users = () => {
       deleteUser(id);
     }
   };
+
   return (
-    <div className="space-y-4">
-      <h1 className="text-xl font-semibold">Người dùng</h1>
+    <div className="space-y-6 pb-10">
+      <Helmet>
+        <title>Az Fashion - Quản lý người dùng</title>
+      </Helmet>
+      {/* Header Section */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <h1 className="text-2xl font-black text-brand-dark flex items-center gap-2">
+          <UsersIcon className="text-brand-red" />
+          Người dùng
+          {pagination && (
+            <span className="text-sm font-medium text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">
+              {pagination?.total}
+            </span>
+          )}
+        </h1>
+      </div>
+
+      {/* Stats Grid */}
       {stats && (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {[
-            { label: "Tổng người dùng", value: stats.total },
-            { label: "Admin", value: stats.admins },
-            { label: "Khách hàng", value: stats.customers },
-            { label: "Mới nhất", value: stats.recentUsers?.length || 0 },
+            {
+              label: "Tổng người dùng",
+              value: stats.total,
+              color: "text-gray-900",
+            },
+            {
+              label: "Quản trị viên",
+              value: stats.admins,
+              color: "text-purple-600",
+            },
+            {
+              label: "Khách hàng",
+              value: stats.customers,
+              color: "text-blue-600",
+            },
+            {
+              label: "Mới trong tháng",
+              value: stats.recentUsers?.length || 0,
+              color: "text-green-600",
+            },
           ].map((stat) => (
             <div
               key={stat.label}
-              className="bg-white rounded-xl p-4 shadow-sm border"
+              className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100"
             >
-              <p className="text-sm text-gray-500"> {stat.label}</p>
-              <p className="text-2xl font-bold mt-1">{stat.value}</p>
+              <p className="text-[11px] font-bold uppercase tracking-wider text-gray-400">
+                {stat.label}
+              </p>
+              <p className={`text-2xl font-black mt-1 ${stat.color}`}>
+                {stat.value}
+              </p>
             </div>
           ))}
         </div>
       )}
 
-      <div className="flex gap-3">
+      {/* Filters Section */}
+      <div className="flex flex-col md:flex-row gap-3 bg-white p-3 rounded-2xl border border-gray-100 shadow-sm">
         <div className="relative flex-1">
           <Input
             leftIcon={Search}
             value={search}
-            placeholder="Tìm người dùng..."
+            placeholder="Tìm theo tên"
             onChange={(e) => {
               setSearch(e.target.value);
               setPage(1);
@@ -93,147 +138,170 @@ const Users = () => {
             setRoleFilter(e.target.value);
             setPage(1);
           }}
-          className="border rounded-lg px-3 py-2 text-sm"
+          className="bg-gray-50 border-none rounded-xl px-4 py-2 text-sm font-bold text-gray-700 outline-none focus:ring-2 focus:ring-black/5 transition-all"
         >
-          <option value="">Tất cả role</option>{" "}
-          <option value="ADMIN">Admin</option>
-          <option value="CUSTOMER">Customer</option>
+          <option value="">Tất cả vai trò</option>
+          <option value="ADMIN">Quản trị viên</option>
+          <option value="CUSTOMER">Khách hàng</option>
         </select>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
+      {/* Table Section */}
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         {isLoading ? (
-          <Spinner />
+          <div className="py-20">
+            <Spinner />
+          </div>
         ) : (
-          <table className="w-full text-sm">
-            <thead className="bg-gray-50 border-b">
-              <tr>
-                <th className="text-left px-4 py-3 font-medium text-gray-500">
-                  Người dùng
-                </th>
-                <th className="text-left px-4 py-3 font-medium text-gray-500">
-                  Role
-                </th>
-                <th className="text-left px-4 py-3 font-medium text-gray-500">
-                  Đơn / Review
-                </th>
-                <th className="text-left px-4 py-3 font-medium text-gray-500">
-                  Ngày tạo
-                </th>
-                <th className="text-left px-4 py-3 font-medium text-gray-500">
-                  Thao tác
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y">
-              {users.length === 0 ? (
-                <tr>
-                  <td colSpan={5} className="text-center py-12 text-gray-500">
-                    Không tìm thấy người dùng
-                  </td>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="bg-gray-50/50 border-b border-gray-100">
+                  <th className="text-left px-6 py-4 font-bold text-gray-400 uppercase tracking-widest text-[10px]">
+                    Thành viên
+                  </th>
+                  <th className="text-left px-6 py-4 font-bold text-gray-400 uppercase tracking-widest text-[10px]">
+                    Vai trò
+                  </th>
+                  <th className="text-left px-6 py-4 font-bold text-gray-400 uppercase tracking-widest text-[10px]">
+                    Hoạt động
+                  </th>
+                  <th className="text-left px-6 py-4 font-bold text-gray-400 uppercase tracking-widest text-[10px]">
+                    Ngày tham gia
+                  </th>
+                  <th className="text-right px-6 py-4 font-bold text-gray-400 uppercase tracking-widest text-[10px]">
+                    Thao tác
+                  </th>
                 </tr>
-              ) : (
-                users.map((user) => {
-                  const isSelf = user.id === currentUser?.id;
-                  return (
-                    <tr key={user.id} className="hover:bg-gray-50">
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-sm font-medium">
-                            {user.firstName.charAt(0).toUpperCase()}
+              </thead>
+              <tbody className="divide-y divide-gray-50">
+                {users.length === 0 ? (
+                  <tr>
+                    <td
+                      colSpan={5}
+                      className="text-center py-20 text-gray-500 font-medium"
+                    >
+                      Không tìm thấy người dùng nào phù hợp
+                    </td>
+                  </tr>
+                ) : (
+                  users.map((user) => {
+                    const isSelf = user.id === currentUser?.id;
+                    return (
+                      <tr
+                        key={user.id}
+                        className="hover:bg-gray-50/50 transition-colors group"
+                      >
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-black text-white flex items-center justify-center text-sm font-black shadow-sm uppercase">
+                              {user.firstName.charAt(0)}
+                            </div>
+                            <div>
+                              <p className="font-bold text-gray-900 flex items-center gap-1">
+                                {user.lastName} {user.firstName}
+                                {isSelf && (
+                                  <span className="text-[10px] bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded-md uppercase">
+                                    Bạn
+                                  </span>
+                                )}
+                              </p>
+                              <p className="text-xs text-gray-400">
+                                {user.email}
+                              </p>
+                              <p className="text-xs text-gray-400">
+                                {user.phone || "N/A"}
+                              </p>
+                            </div>
                           </div>
-                          <div>
-                            <p className="font-medium">
-                              {user.lastName} {user.firstName}
-                              {isSelf && (
-                                <span className="text-xs text-blue-500 ml-1">
-                                  (Bạn)
-                                </span>
-                              )}
-                            </p>
-                            <p className="text-xs text-gray-400">
-                              {user.email}
-                            </p>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span
+                            className={`px-2.5 py-1 rounded-lg text-[11px] font-black uppercase tracking-tight ${
+                              user.role === "ADMIN"
+                                ? "bg-purple-50 text-purple-600"
+                                : "bg-blue-50 text-blue-600"
+                            }`}
+                          >
+                            {user.role}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex flex-col gap-0.5">
+                            <span className="text-xs font-bold text-gray-600">
+                              {user._count?.orders || 0} đơn hàng
+                            </span>
+                            <span className="text-[10px] text-gray-400">
+                              {user._count?.reviews || 0} đánh giá
+                            </span>
                           </div>
-                        </div>
-                      </td>
-                      <td className="px-4 py-3">
-                        <span
-                          className={`px-2 py-1 rounded-full text-sm font-medium ${user.role === "ADMIN" ? "bg-purple-100 text-purple-700" : "bg-gray-100 text-gray-600"}`}
-                        >
-                          {user.role}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-gray-500 text-xs">
-                        <p>{user._count?.orders || 0} đơn</p>
-                        <p>{user._count?.reviews || 0} review</p>
-                      </td>
-                      <td className="px-4 py-3 text-gray-500">
-                        {formatDate(user.createdAt)}
-                      </td>
-                      <td className="px-4 py-3">
-                        {!isSelf && (
-                          <div className="flex items-center gap-2">
-                            <Button
-                              onClick={() =>
-                                handleToggleRole(user.id, user.role)
-                              }
-                              variant="outline"
-                              disabled={isUpdatingRole}
-                              title={
-                                user.role === "ADMIN"
-                                  ? "Thu hồi Admin"
-                                  : "Cấp Admin"
-                              }
-                            >
-                              {user.role === "ADMIN" ? (
-                                <ShieldOff
-                                  size={16}
-                                  className="text-orange-500 font-bold"
-                                />
-                              ) : (
-                                <Shield
-                                  size={16}
-                                  className="text-purple-500 font-bold"
-                                />
-                              )}
-                            </Button>
-                            <Button
-                              variant="danger"
-                              onClick={() => handleDelete(user.id)}
-                            >
-                              <Trash2 size={14} />
-                            </Button>
-                          </div>
-                        )}
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
+                        </td>
+                        <td className="px-6 py-4 text-gray-500 font-medium">
+                          {formatDate(user.createdAt)}
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          {!isSelf && (
+                            <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                              <button
+                                onClick={() =>
+                                  handleToggleRole(user.id, user.role)
+                                }
+                                disabled={isUpdatingRole}
+                                className={`p-2 rounded-xl transition-all shadow-sm border border-gray-100 ${
+                                  user.role === "ADMIN"
+                                    ? "bg-orange-50 text-orange-600 hover:bg-orange-600 hover:text-white"
+                                    : "bg-purple-50 text-purple-600 hover:bg-purple-600 hover:text-white"
+                                }`}
+                                title={
+                                  user.role === "ADMIN"
+                                    ? "Thu hồi Admin"
+                                    : "Cấp Admin"
+                                }
+                              >
+                                {user.role === "ADMIN" ? (
+                                  <ShieldOff size={16} />
+                                ) : (
+                                  <Shield size={16} />
+                                )}
+                              </button>
+                              <button
+                                onClick={() => handleDelete(user.id)}
+                                className="p-2 bg-red-50 text-red-600 border border-red-100 hover:bg-red-600 hover:text-white rounded-xl transition-all shadow-sm"
+                              >
+                                <Trash2 size={16} />
+                              </button>
+                            </div>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
         )}
 
+        {/* Pagination Section */}
         {pagination && pagination.totalPages > 1 && (
-          <div className="flex items-center justify-between px-4 py-3 border-t">
-            <p className="text-sm text-gray-500">
+          <div className="flex items-center justify-between px-6 py-4 border-t border-gray-50 bg-gray-50/30">
+            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">
               Trang {pagination.page} / {pagination.totalPages}
             </p>
             <div className="flex gap-2">
               <button
                 onClick={() => setPage((p) => p - 1)}
                 disabled={!pagination.hasPrev}
-                className="px-3 py-1 border rounded text-sm disabled:opacity-40 hover:bg-gray-50"
+                className="p-2 border border-gray-200 rounded-xl bg-white disabled:opacity-30 hover:bg-gray-50 transition-colors shadow-sm"
               >
-                Trước
+                <ChevronLeft size={18} />
               </button>
               <button
                 onClick={() => setPage((p) => p + 1)}
                 disabled={!pagination.hasNext}
-                className="px-3 py-1 border rounded text-sm disabled:opacity-40 hover:bg-gray-50"
+                className="p-2 border border-gray-200 rounded-xl bg-white disabled:opacity-30 hover:bg-gray-50 transition-colors shadow-sm"
               >
-                Sau
+                <ChevronRight size={18} />
               </button>
             </div>
           </div>

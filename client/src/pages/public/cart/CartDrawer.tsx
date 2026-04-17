@@ -24,7 +24,6 @@ const CartDrawer = () => {
   const limit = 500000;
   const progress = Math.min((total / limit) * 100, 100);
   const isFreeShipping = total >= limit;
-  console.log(summaryRes);
   return (
     <AnimatePresence>
       {isCartOpen && (

@@ -11,6 +11,7 @@ import { useAuth } from "@/store/authContext";
 import { Address } from "@/types/address";
 import { formatCurrency, formatDate, formatDateTime } from "@/utils/formatters";
 import {
+  Filter,
   MapPin,
   Pencil,
   Plus,
@@ -24,6 +25,8 @@ import { useSearchParams } from "react-router-dom";
 import AddressForm from "./AddressForm";
 import Breadcrumb from "@/components/common/Breadcrumb";
 import { Pagination } from "@/components/common/Pagination";
+import { ORDER_STATUSES } from "@/components/admin/Orders/StatusBadge";
+import { Helmet } from "react-helmet-async";
 
 const TABS = [
   { key: "info", label: "Thông tin", icon: User },
@@ -65,7 +68,7 @@ const Profile = () => {
     page: orderPage,
     limit: 5,
   });
-  const { data: reviewsRes } = useMyReviews({ limit: 10, page: reviewPage});
+  const { data: reviewsRes } = useMyReviews({ limit: 10, page: reviewPage });
 
   const addresses = addressesRes?.data || [];
   const orders = ordersRes?.data || [];
@@ -73,9 +76,12 @@ const Profile = () => {
   const reviews = reviewsRes?.data || [];
 
   const setTab = (tab: string) => setSearchParams({ tab });
-
+  console.log(orders);
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">
+       <Helmet>
+              <title>Az Fashion - Hồ sơ</title>
+            </Helmet>
       <Breadcrumb displayName="Hồ sơ" />
       <header className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900">Cài đặt tài khoản</h1>
@@ -131,11 +137,19 @@ const Profile = () => {
                 <p className="text-xs font-bold text-gray-400 uppercase">Tên</p>
                 <p className="text-gray-900 font-medium">{user.firstName}</p>
               </div>
-              <div className="space-y-1 sm:col-span-2">
+              <div className="space-y-1 ">
                 <p className="text-xs font-bold text-gray-400 uppercase">
                   Địa chỉ Email
                 </p>
                 <p className="text-gray-900 font-medium">{user.email}</p>
+              </div>
+              <div className="space-y-1 ">
+                <p className="text-xs font-bold text-gray-400 uppercase">
+                  Số điện thoại
+                </p>
+                <p className="text-gray-900 font-medium">
+                  {user.phone || "N/A"}
+                </p>
               </div>
             </div>
           </div>
@@ -240,19 +254,36 @@ const Profile = () => {
                     <div className="flex flex-col gap-1">
                       <p className="text-[10px] text-gray-400 font-medium">
                         Phương thức:{" "}
-                        <span className="text-gray-600">
+                        <span className="text-gray-600 font-bold">
                           {order.paymentMethod}
                         </span>
                       </p>
                       <p className="text-[10px] text-gray-400 font-medium">
                         Trạng thái thanh toán:{" "}
-                        <span className="text-gray-600">
-                          {order.paymentStatus}
+                        <span
+                          className={`font-bold ${order.paymentStatus === "PAID" ? "text-green-400" : order.paymentStatus === "REFUNDED" ? "text-brand-red" : "text-orange-400"}`}
+                        >
+                          {order.paymentStatus === "PAID"
+                            ? "HOÀN THÀNH"
+                            : order.paymentStatus === "REFUNDED"
+                              ? "THẤT BẠI"
+                              : "CHỜ XỬ LÝ"}
+                        </span>
+                      </p>
+
+                      <p className="text-[10px] text-gray-400 font-medium">
+                        Phí giao hàng:{" "}
+                        <span
+                          className={`font-bold ${order?.shippingCost === 0 ? "text-green-400" : "text-gray-600"}`}
+                        >
+                          {order?.shippingCost === 0
+                            ? "MIỄN PHÍ"
+                            : formatCurrency(order?.shippingCost || 0)}
                         </span>
                       </p>
                       <p className="text-[10px] text-gray-400 font-medium">
                         Thuế:{" "}
-                        <span className="text-gray-600">
+                        <span className="text-gray-600 font-bold">
                           {formatCurrency(order.tax)}
                         </span>
                       </p>

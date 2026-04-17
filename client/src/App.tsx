@@ -18,106 +18,105 @@ import Product from "./pages/public/product";
 import ProductDetail from "./pages/public/product/ProductDetail";
 import Cart from "./pages/public/cart";
 import Checkout from "./pages/public/checkout";
-import CartDrawer from "./pages/public/cart/CartDrawer";
 import Search from "./pages/public/Search";
+import NotFound from "./pages/public/NotFoud";
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const { isAuthenticated, isLoading } = useAuth();
+  if (isLoading) return null;
 
-// == protected route
-const ProtectedRoute = ({
-  children,
-  requiredAdmin = false,
-}: {
-  children: React.ReactNode;
-  requiredAdmin?: boolean;
-}) => {
+  if (!isAuthenticated) return <Navigate to={ROUTES.LOGIN} replace />;
+  return <>{children}</>;
+};
+
+// Require admin
+const AdminRoute = ({ children }: { children: React.ReactNode }) => {
   const { isAuthenticated, isAdmin, isLoading } = useAuth();
-  if (isLoading) {
-    return <Spinner />;
-  }
-
-  if (!isAuthenticated) {
-    return <Navigate to={ROUTES.LOGIN} replace />;
-  }
-
-  if (requiredAdmin && !isAdmin) {
-    return <Navigate to={ROUTES.HOME} replace />;
-  }
+  if (isLoading) return null;
+  if (!isAuthenticated) return <Navigate to={ROUTES.LOGIN} replace />;
+  if (!isAdmin) return <Navigate to="/" replace />;
   return <>{children}</>;
 };
 
 const GuestRoute = ({ children }: { children: React.ReactNode }) => {
-  const { isAuthenticated, isAdmin, isLoading } = useAuth();
-
-  if (isLoading) return <Spinner />;
-
-  if (isAuthenticated) {
-    return (
-      <Navigate to={isAdmin ? ROUTES.ADMIN_DASHBOARD : ROUTES.HOME} replace />
-    );
-  }
+  const { isAuthenticated, isLoading } = useAuth();
+  if (isLoading) return null;
+  if (isAuthenticated) return <Navigate to="/" replace />;
   return <>{children}</>;
 };
 
 // == app route
-const AppRoutes = () => {
-  return (
-    <Routes>
-      {/* admin routes */}
+const AppRoutes = () => (
+  <Routes>
+    {/* Auth */}
+    <Route
+      path={ROUTES.LOGIN}
+      element={
+        <GuestRoute>
+          <Login />
+        </GuestRoute>
+      }
+    />
+    <Route
+      path={ROUTES.REGISTER}
+      element={
+        <GuestRoute>
+          <Register />
+        </GuestRoute>
+      }
+    />
+
+    {/* Public */}
+    <Route element={<PublicLayout />}>
+      <Route path="/" element={<Home />} />
+      <Route path={ROUTES.PRODUCTS} element={<Product />} />
+      <Route path={`${ROUTES.PRODUCTS}/:slug`} element={<ProductDetail />} />
+      <Route path={ROUTES.SEARCH} element={<Search />} />
       <Route
-        path={ROUTES.ADMIN_DASHBOARD}
+        path={ROUTES.CART}
         element={
-          <ProtectedRoute requiredAdmin>
-            <AdminLayout />
+          <ProtectedRoute>
+            <Cart />
           </ProtectedRoute>
         }
-      >
-        <Route index element={<Dashboard />} />
-        <Route path="products" element={<Products />} />
-        <Route path="orders" element={<Orders />} />
-        <Route path="users" element={<Users />} />
-        <Route path="categories" element={<Categories />} />
-      </Route>
+      />
+      <Route
+        path={ROUTES.CHECKOUT}
+        element={
+          <ProtectedRoute>
+            <Checkout />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={ROUTES.PROFILE}
+        element={
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        }
+      />
+    </Route>
 
-      {/* Public routes */}
-      <Route path={ROUTES.HOME} element={<PublicLayout />}>
-        {/* Auth routes only guest */}
-        <Route path={ROUTES.LOGIN} element={<Login />} />
-        <Route path={ROUTES.REGISTER} element={<Register />} />
-        <Route index element={<Home />} />
-        <Route path={ROUTES.PRODUCTS} element={<Product />} />
-        <Route path={`${ROUTES.PRODUCTS}/:slug`} element={<ProductDetail />} />
-        <Route path={`${ROUTES.SEARCH}`} element={<Search />} />
-        <Route
-          path={ROUTES.CART}
-          element={
-            <ProtectedRoute>
-              <Cart />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path={ROUTES.CHECKOUT}
-          element={
-            <ProtectedRoute>
-              <Checkout />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path={ROUTES.PROFILE}
-          element={
-            <ProtectedRoute>
-              <Profile />
-            </ProtectedRoute>
-          }
-        />
-      </Route>
+    {/* Admin */}
+    <Route
+      path={ROUTES.ADMIN_DASHBOARD}
+      element={
+        <AdminRoute>
+          <AdminLayout />
+        </AdminRoute>
+      }
+    >
+      <Route index element={<Dashboard />} />
+      <Route path={ROUTES.ADMIN_PRODUCTS} element={<Products />} />
+      <Route path={ROUTES.ADMIN_CATEGORIES} element={<Categories />} />
+      <Route path={ROUTES.ADMIN_ORDERS} element={<Orders />} />
+      <Route path={ROUTES.ADMIN_USERS} element={<Users />} />
+    </Route>
 
-      {/* 404 fallback */}
-      <Route path="*" element={<Navigate to={ROUTES.HOME} replace />} />
-    </Routes>
-  );
-};
-
+    {/* 404 */}
+    <Route path="*" element={<NotFound />} />
+  </Routes>
+);
 // == main app
 
 const App = () => {

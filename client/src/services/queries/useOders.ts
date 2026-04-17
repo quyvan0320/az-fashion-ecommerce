@@ -1,4 +1,4 @@
-import { orderKeys } from "@/config/query-keys";
+import { cartKeys, orderKeys } from "@/config/query-keys";
 import { CreateOrderData, GetOrderParams } from "@/types/order";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { orderService } from "../api/orders";
@@ -39,6 +39,8 @@ export const useCreateOrder = () => {
     mutationFn: (data: CreateOrderData) => orderService.createOrder(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: orderKeys.all });
+      queryClient.invalidateQueries({ queryKey: cartKeys.cart });
+      queryClient.invalidateQueries({ queryKey: cartKeys.summary });
       toast.success("Đặt hàng thành công");
     },
     onError: (error: any) => {

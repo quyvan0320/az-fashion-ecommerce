@@ -7,6 +7,7 @@ import ProductCard from "./ProductCard";
 import Breadcrumb from "@/components/common/Breadcrumb";
 import { Pagination } from "@/components/common/Pagination";
 import SkeletonProduct from "@/components/common/SkeletonProduct";
+import { Helmet } from "react-helmet-async";
 
 const SORT_OPTIONS = [
   { value: "createdAt_desc", label: "Mới nhất" },
@@ -26,7 +27,6 @@ const COLOR_OPTIONS = [
   { name: "Hồng", hex: "#FFC0CB" },
   { name: "Xám", hex: "#808080" },
   { name: "Nâu", hex: "#733414" },
-
 ];
 
 const ProductsPage = () => {
@@ -101,6 +101,9 @@ const ProductsPage = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4  py-6">
+      <Helmet>
+        <title>Az Fashion - {displayName}</title>
+      </Helmet>
       <Breadcrumb displayName={displayName} />
 
       <div className="flex flex-col lg:flex-row gap-10">
@@ -349,9 +352,9 @@ const ProductsPage = () => {
 
           {isLoading ? (
             <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-y-10 gap-x-6">
-               {Array.from({ length: 12 }).map((_, i) => (
-              <SkeletonProduct key={i} />
-            ))}
+              {Array.from({ length: 12 }).map((_, i) => (
+                <SkeletonProduct key={i} />
+              ))}
             </div>
           ) : products.length === 0 ? (
             <div className="text-center py-20 text-gray-400 border rounded-xl">
