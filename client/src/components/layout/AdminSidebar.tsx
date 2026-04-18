@@ -11,7 +11,7 @@ import {
   X,
 } from "lucide-react";
 import toast from "react-hot-toast";
-import { Navigate, NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import Logo from "./public/Header/Logo";
 // define nav items
 const NAV_ITEMS = [

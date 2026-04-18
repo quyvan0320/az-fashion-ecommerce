@@ -6,7 +6,6 @@ import { Link } from "react-router-dom";
 import { ROUTES } from "@/config/constants";
 import Button from "@/components/common/Button";
 import Input from "@/components/common/Input";
-import { Home } from "lucide-react";
 import Logo from "@/components/layout/public/Header/Logo";
 import { Helmet } from "react-helmet-async";
 // define validation rules

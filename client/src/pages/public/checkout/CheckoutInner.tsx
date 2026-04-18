@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { MapPin, Plus, CreditCard, Truck } from "lucide-react";
+import { Plus, CreditCard, Truck } from "lucide-react";
 import z from "zod";
 import { ROUTES } from "@/config/constants";
 import {
@@ -12,7 +12,7 @@ import {
 import { useCartSummary } from "@/services/queries/useCart";
 import { useCreateOrder } from "@/services/queries/useOders";
 import { formatCurrency } from "@/utils/formatters";
-
+import type { Address } from "@/types/address";
 import Breadcrumb from "@/components/common/Breadcrumb";
 import Button from "@/components/common/Button";
 import Input from "@/components/common/Input";
@@ -51,15 +51,14 @@ const CheckoutInner = () => {
   const { mutate: createAddress, isPending: creatingAddress } =
     useCreateAddress();
   const { mutate: createOrder, isPending: creatingOrder } = useCreateOrder();
-
   const summary = summaryRes?.data;
-  const addresses = addressesRes?.data || [];
+  const addresses = (addressesRes?.data || []) as Address[];
 
   if (addresses.length > 0 && !selectedAddressId) {
     const def = addresses.find((a: any) => a.isDefault) || addresses[0];
     setSelectedAddressId(def.id);
   }
-
+  console.log(addresses);
   const {
     register,
     handleSubmit,

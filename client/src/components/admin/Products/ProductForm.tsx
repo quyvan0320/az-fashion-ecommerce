@@ -8,7 +8,7 @@ import {
 } from "@/services/queries/useProducts";
 import { Product } from "@/types/product";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AlertCircle, Save, Upload, X } from "lucide-react";
+import { Upload, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
@@ -70,9 +70,7 @@ const ProductForm = ({ product, onSuccess }: ProductFormProps) => {
       : { isActive: true, stock: 0 },
   });
 
-  const removeExistingImage = (url: string) => {
-    setExistingImages((prev) => prev.filter((img) => img !== url));
-  };
+
 
   useEffect(() => {
     if (product) {

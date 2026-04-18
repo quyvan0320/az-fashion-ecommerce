@@ -9,7 +9,7 @@ import Button from "@/components/common/Button";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 
-const ProductInfo = ({ product, ...props }: { product: any }) => {
+const ProductInfo = ({ product }: { product: any }) => {
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const { isAuthenticated } = useAuth();

@@ -22,7 +22,7 @@ const AdminHeader = ({ onMenuClick }: AdminHeaderProps) => {
   const { pathname } = useLocation();
   const { user } = useAuth();
   const pageTitle = PAGE_TITLES[pathname] || "Hệ thống Quản trị";
-  const { data: res, isLoading } = useAdminOrders({});
+  const { data: res } = useAdminOrders({});
   const orders = res?.data || [];
   const navigate = useNavigate();
   const pendingOrders = orders.filter((order) => order.status === "PENDING");

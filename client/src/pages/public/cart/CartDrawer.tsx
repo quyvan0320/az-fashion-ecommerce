@@ -13,9 +13,9 @@ import { Link } from "react-router-dom";
 
 const CartDrawer = () => {
   const { isCartOpen, closeCart } = useCartStore();
-  const { data: carRes, isLoading } = useCart();
-  const { mutate: updateItem, isPending: isUpdating } = useUpdateCartItem();
-  const { data: summaryRes, isLoading: summaryLoading } = useCartSummary();
+  const { data: carRes } = useCart();
+  const { mutate: updateItem } = useUpdateCartItem();
+  const { data: summaryRes } = useCartSummary();
   const { mutate: removeItem } = useRemoveCartItem();
   const cartBanner = "cart_banner_image.jpg";
   const items = carRes?.data?.items || [];

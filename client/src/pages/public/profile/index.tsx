@@ -11,7 +11,6 @@ import { useAuth } from "@/store/authContext";
 import { Address } from "@/types/address";
 import { formatCurrency, formatDate, formatDateTime } from "@/utils/formatters";
 import {
-  Filter,
   MapPin,
   Pencil,
   Plus,
@@ -20,12 +19,11 @@ import {
   Trash2,
   User,
 } from "lucide-react";
-import React, { useState } from "react";
+import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import AddressForm from "./AddressForm";
 import Breadcrumb from "@/components/common/Breadcrumb";
 import { Pagination } from "@/components/common/Pagination";
-import { ORDER_STATUSES } from "@/components/admin/Orders/StatusBadge";
 import { Helmet } from "react-helmet-async";
 
 const TABS = [
@@ -70,7 +68,7 @@ const Profile = () => {
   });
   const { data: reviewsRes } = useMyReviews({ limit: 10, page: reviewPage });
 
-  const addresses = addressesRes?.data || [];
+  const addresses = (addressesRes?.data || []) as Address[];
   const orders = ordersRes?.data || [];
   const orderPagination = ordersRes?.pagination;
   const reviews = reviewsRes?.data || [];
@@ -79,9 +77,9 @@ const Profile = () => {
   console.log(orders);
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">
-       <Helmet>
-              <title>Az Fashion - Hồ sơ</title>
-            </Helmet>
+      <Helmet>
+        <title>Az Fashion - Hồ sơ</title>
+      </Helmet>
       <Breadcrumb displayName="Hồ sơ" />
       <header className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900">Cài đặt tài khoản</h1>

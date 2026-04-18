@@ -11,7 +11,6 @@ import RelatedProducts from "./RelatedProducts";
 import ProductInfo from "./ProductInfo";
 import ProductDescription from "./ProductDescription";
 import ProductReviews from "./ProductReviews";
-import { Helmet } from "react-helmet-async";
 const TABS = ["Mô tả sản phẩm", "Đánh Giá - Nhận Xét Từ Khách Hàng"];
 
 const ProductDetail = () => {

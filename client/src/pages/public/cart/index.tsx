@@ -8,7 +8,7 @@ import {
   useUpdateCartItem,
 } from "@/services/queries/useCart";
 import { formatCurrency } from "@/utils/formatters";
-import { motion, MotionConfig } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   ArrowRight,
   Minus,
@@ -22,7 +22,7 @@ import { Link } from "react-router-dom";
 
 const Cart = () => {
   const { data: carRes, isLoading } = useCart();
-  const { mutate: updateItem, isPending: isUpdating } = useUpdateCartItem();
+  const { mutate: updateItem } = useUpdateCartItem();
   const { mutate: removeItem } = useRemoveCartItem();
   const { mutate: clearCart } = useClearCart();
 
@@ -127,10 +127,7 @@ const Cart = () => {
             </div>
           </div>
           {items.map((item) => {
-            const displayPrice =
-              item.product.salePrice > 0
-                ? item.product.salePrice
-                : item.product.price;
+          
             return (
               <div
                 key={item.id}

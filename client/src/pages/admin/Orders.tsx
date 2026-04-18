@@ -11,11 +11,9 @@ import {
   ShoppingBag,
   Filter,
   Calendar,
-  XCircle,
   Search,
   ChevronDown,
   Trash2,
-  Package,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import OrderDetailContent from "@/components/admin/Orders/OrderDetailContent";

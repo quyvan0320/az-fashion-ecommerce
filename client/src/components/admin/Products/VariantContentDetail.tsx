@@ -20,12 +20,11 @@ import {
   Plus,
   Save,
   Trash2,
-  UploadCloudIcon,
   X,
 } from "lucide-react";
-import React, { useState } from "react";
+import  { useState } from "react";
 import { useForm } from "react-hook-form";
-import z, { size } from "zod";
+import z from "zod";
 
 interface VariantContentDetailProps {
   product?: Product;
