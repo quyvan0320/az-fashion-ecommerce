@@ -1,5 +1,5 @@
 import axios from "axios";
-import { API_URL, STORAGE_KEYS } from "@/config/constants";
+import { API_URL, ROUTES, STORAGE_KEYS } from "@/config/constants";
 
 const axiosInstance = axios.create({
   baseURL: API_URL,
@@ -26,16 +26,24 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
-    const isLoginPage = window.location.pathname === "/login";
+    const isLoginPage = window.location.pathname === ROUTES.LOGIN;
+    const isRegisterPage = window.location.pathname === ROUTES.REGISTER;
 
-    if (error.response?.status === 401 && !isLoginPage) {
+    const hasToken = localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
+
+    if (
+      error.response?.status === 401 &&
+      !isLoginPage &&
+      !isRegisterPage &&
+      hasToken
+    ) {
       localStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
       localStorage.removeItem(STORAGE_KEYS.USER);
-      window.location.href = "/login";
+      window.location.href = ROUTES.LOGIN;
     }
-    
+
     return Promise.reject(error);
-  }
+  },
 );
 
 export default axiosInstance;
