@@ -27,8 +27,12 @@ const PORT = process.env.PORT || 3000;
 app.use(helmet()); // security headers http
 app.use(
   cors({
-    origin: process.env.ALLOWED_ORIGINS?.split(",") || "http://localhost:5000",
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+    // origin: process.env.ALLOWED_ORIGINS?.split(",") || "http://localhost:5000",
+    // methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+    origin: [
+      "http://localhost:5000",
+      "https://az-fashion-ecommerce-client.vercel.app",
+    ],
     credentials: true,
   }),
 ); // CORS configuration
