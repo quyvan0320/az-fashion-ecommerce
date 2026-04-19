@@ -34,7 +34,7 @@ export const authenticate = async (
     // verify token
     const decoded = jwt.verify(
       token,
-      process.env.JWt_SECRET as string
+      process.env.JWT_SECRET as string
     ) as JwtPayload;
 
     // user info into req.user
