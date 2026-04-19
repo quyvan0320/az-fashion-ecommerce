@@ -22,7 +22,7 @@ dotenv.config();
 
 const app: Application = express();
 const PORT = process.env.PORT || 3000;
-
+console.log('JWT_SECRET:', process.env.JWT_SECRET);
 // middleware and security
 app.use(helmet()); // security headers http
 app.use(
