@@ -27,15 +27,11 @@ console.log('JWT_SECRET:', process.env.JWT_SECRET);
 app.use(helmet()); // security headers http
 app.use(
   cors({
-    // origin: process.env.ALLOWED_ORIGINS?.split(",") || "http://localhost:5000",
-    // methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
-    origin: [
-      "http://localhost:5000",
-      "https://az-fashion-ecommerce-client.vercel.app",
-    ],
+    origin: process.env.ALLOWED_ORIGINS?.split(",") || "http://localhost:5000",
     credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
   }),
-); // CORS configuration
+);
 
 app.use(morgan("dev")); // request status log
 app.use(compression() as any);
