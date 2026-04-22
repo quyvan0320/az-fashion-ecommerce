@@ -1,9 +1,12 @@
 import cloudinary from "../config/cloudinary";
 import { AppError } from "../middleware/errorHandler";
 import streamifier from "streamifier";
+import multer from "multer";
+
+type MulterFile = Express.Multer.File;
 export const uploadService = {
   // upload 1 pic to cloudinary
-  async uploadSingle(file: Express.Multer.File, folder: string = "products") {
+  async uploadSingle(file: MulterFile, folder: string = "products") {
     try {
       return new Promise((resolve, reject) => {
         const uploadStream = cloudinary.uploader.upload_stream(
@@ -37,10 +40,7 @@ export const uploadService = {
   },
 
   // upload many images
-  async uploadMultiple(
-    files: Express.Multer.File[],
-    folder: string = "products",
-  ) {
+  async uploadMultiple(files: MulterFile[], folder: string = "products") {
     try {
       const uploadPromises = files.map((file) => {
         return this.uploadSingle(file, folder);
@@ -51,7 +51,6 @@ export const uploadService = {
       throw new AppError("Không thể tải hình ảnh lên", 500);
     }
   },
-
 
   // delete image from cloudinary
   async deleteImage(publicId: string) {
