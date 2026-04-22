@@ -21,7 +21,7 @@ declare global {
 export const authenticate = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     // get token from header authorization bearer token
@@ -34,7 +34,7 @@ export const authenticate = async (
     // verify token
     const decoded = jwt.verify(
       token,
-      process.env.JWT_SECRET as string
+      process.env.JWT_SECRET || "secret",
     ) as JwtPayload;
 
     // user info into req.user
@@ -50,7 +50,7 @@ export const authorize = (...roles: string[]) => {
   return (req: Request, res: Response, next: NextFunction) => {
     if (!req.user || !roles.includes(req.user.role)) {
       return next(
-        new AppError("Bạn không có quyền truy cập tài nguyên này", 403)
+        new AppError("Bạn không có quyền truy cập tài nguyên này", 403),
       );
     }
     next();
