@@ -65,6 +65,22 @@ const ProductInfo = ({ product }: { product: any }) => {
     return !variants.some((v: any) => v.color === color && v.stock > 0);
   };
 
+  const handleSelectSize = (size: string) => {
+    setSelectedSize(size);
+    const isColorValid = variants.some(
+      (v: any) => v.size === size && v.color === selectedColor && v.stock > 0,
+    );
+    if (!isColorValid) setSelectedColor(null);
+  };
+
+  const handleSelectColor = (color: string) => {
+    setSelectedColor(color);
+    const isSizeValid = variants.some(
+      (v: any) => v.color === color && v.size === selectedSize && v.stock > 0,
+    );
+    if (!isSizeValid) setSelectedSize(null);
+  };
+
   const isSizeDisabled = (size: string) => {
     if (selectedColor) {
       const variant = variants.find(
@@ -166,7 +182,7 @@ const ProductInfo = ({ product }: { product: any }) => {
               {product.averageRating?.toFixed(1)}
             </div>
             <span className=" text-gray-500">
-              ({product?.reviews === 0 ? "0" : product.reviews.length} Lượt)
+              (({product?.reviewCount || 0} Lượt))
             </span>
           </div>
         </div>
@@ -190,7 +206,7 @@ const ProductInfo = ({ product }: { product: any }) => {
                 return (
                   <button
                     key={color}
-                    onClick={() => setSelectedColor(color)}
+                    onClick={() => handleSelectColor(color)}
                     className={`min-w-[80px] font-semibold px-3 py-1.5 border rounded-sm text-xs uppercase transition-all ${
                       selectedColor === color
                         ? "border-brand-red ring-1 ring-brand-red text-brand-red"
@@ -222,7 +238,7 @@ const ProductInfo = ({ product }: { product: any }) => {
                 return (
                   <button
                     key={size}
-                    onClick={() => setSelectedSize(size)}
+                    onClick={() => handleSelectSize(size)}
                     className={`min-w-[80px] font-semibold px-3 py-1.5 border rounded-sm text-xs uppercase transition-all ${
                       selectedSize === size
                         ? "border-brand-red ring-1 ring-brand-red text-brand-red"
