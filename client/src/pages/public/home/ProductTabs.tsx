@@ -18,7 +18,7 @@ const ProductTabs = () => {
 
   const { data: res, isLoading } = useProducts({
     categorySlug: activeTab,
-    limit: 10,
+    limit: 5,
   });
   const products = res?.data?.products || [];
   const currentTabName = TABS.find((tab) => tab.slug === activeTab)?.name;
